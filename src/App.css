@@ -1,0 +1,598 @@
+/* =========================================
+   1. GLOBAL RESET & LAYOUT
+   ========================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: #DA1C1C;
+  /* Airtel Red */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  /* Centers horizontally */
+  align-items: center;
+  /* Centers vertically */
+  padding: 20px;
+}
+
+.airtel-container {
+  width: 100%;
+  max-width: 400px;
+  /* Keeps the mobile app look on desktop */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+/* =========================================
+   2. HEADER SECTION
+   ========================================= */
+.airtel-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.airtel-hamburger {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  cursor: pointer;
+}
+
+.airtel-logo {
+  font-size: 28px;
+  font-weight: 900;
+  font-style: italic;
+  color: #000000;
+  margin-bottom: 5px;
+  letter-spacing: -1px;
+}
+
+.airtel-tagline {
+  font-size: 13px;
+  color: #000000;
+  font-weight: 500;
+}
+
+/* =========================================
+   3. SHARED CARD & FORM ELEMENTS
+   ========================================= */
+.airtel-card {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.airtel-welcome {
+  font-size: 24px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.airtel-subtext {
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 20px;
+}
+
+.airtel-input-group {
+  margin-bottom: 20px;
+}
+
+.airtel-input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 8px;
+}
+
+/* Error Alert Box */
+.airtel-alert {
+  display: flex;
+  align-items: center;
+  background-color: #FDE8E8;
+  border: 1px solid #F8B4B4;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #C81E1E;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.alert-icon {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* =========================================
+   4. LOGIN PAGE SPECIFIC
+   ========================================= */
+.airtel-phone-container {
+  display: flex;
+  border: 1px solid #CCCCCC;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #FAFAFA;
+}
+
+.airtel-country-code {
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  border-right: 1px solid #CCCCCC;
+  background-color: #F0F0F0;
+}
+
+.airtel-phone-container input {
+  flex: 1;
+  padding: 14px 16px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background-color: transparent;
+  color: #333333;
+}
+
+.airtel-phone-container input::placeholder {
+  color: #999999;
+}
+
+.airtel-pin-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.airtel-pin-box {
+  width: 60px;
+  height: 60px;
+  border: 1.5px solid #CCCCCC;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+  background-color: #FAFAFA;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.airtel-pin-box::placeholder {
+  color: #CCCCCC;
+  font-weight: normal;
+}
+
+.airtel-pin-box:focus {
+  border-color: #DA1C1C;
+  background-color: #FFFFFF;
+}
+
+.airtel-login-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #E0E0E0;
+  color: #333333;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.airtel-login-btn:hover {
+  background-color: #D3D3D3;
+}
+
+.airtel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666666;
+}
+
+/* =========================================
+   5. OTP VERIFICATION PAGE SPECIFIC
+   ========================================= */
+.airtel-back-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.airtel-otp-heading {
+  font-size: 24px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.airtel-otp-subtext {
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 25px;
+}
+
+.airtel-otp-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.airtel-otp-box {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #E5E7EB;
+  /* Default gray border */
+  border-radius: 10px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000000;
+  background-color: #FFFFFF;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.airtel-otp-box:focus {
+  border-color: #DA1C1C;
+  /* Red border when focused */
+}
+
+.airtel-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #E53E3E;
+  /* Red text for timer */
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+.airtel-verify-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #F87171;
+  /* Light red/pink for verify button */
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+  margin-bottom: 15px;
+}
+
+.airtel-verify-btn:hover {
+  background-color: #EF4444;
+  /* Slightly darker red on hover */
+}
+
+.airtel-resend-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #E5E7EB;
+  /* Light gray for resend button */
+  color: #4B5563;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.airtel-resend-btn:hover {
+  background-color: #D1D5DB;
+}
+
+/* =========================================
+   6. LOAN LIMIT PAGE SPECIFIC
+   ========================================= */
+.airtel-limit-heading {
+  font-size: 24px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.airtel-limit-subtext {
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 20px;
+}
+
+.airtel-limit-box {
+  background-color: #FDE8E8;
+  /* Light pink background */
+  border: 1px solid #F8B4B4;
+  /* Pink border */
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.airtel-limit-label {
+  display: block;
+  font-size: 14px;
+  color: #666666;
+  margin-bottom: 10px;
+}
+
+.airtel-limit-amount {
+  display: block;
+  font-size: 36px;
+  font-weight: 900;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.airtel-limit-currency {
+  display: block;
+  font-size: 18px;
+  color: #666666;
+  font-weight: 500;
+}
+
+.airtel-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.airtel-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid #E5E7EB;
+  /* Light gray border */
+  border-radius: 8px;
+  background-color: #FAFAFA;
+  /* Very light gray background */
+  font-size: 15px;
+}
+
+.airtel-detail-row span:first-child {
+  color: #555555;
+}
+
+.airtel-detail-row span:last-child {
+  font-weight: 700;
+  color: #000000;
+}
+
+.airtel-continue-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #F87171;
+  /* Light red/pink for continue button */
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+}
+
+.airtel-continue-btn:hover {
+  background-color: #EF4444;
+  /* Slightly darker red on hover */
+}
+
+/* =========================================
+   7. PAYMENT PAGE SPECIFIC
+   ========================================= */
+.airtel-payment-method {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.airtel-payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background-color: #FAFAFA;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 15px;
+  color: #555555;
+}
+
+.airtel-payment-option.selected {
+  border: 2px solid #DA1C1C;
+  /* Red border when selected */
+  background-color: #FDE8E8;
+  /* Light red background */
+  color: #000000;
+  font-weight: 700;
+}
+
+.airtel-payment-option svg {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   8. DENIED & SUCCESS PAGE SPECIFIC
+   ========================================= */
+.airtel-denied-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.airtel-denied-heading {
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.airtel-denied-subtext {
+  font-size: 14px;
+  text-align: center;
+  color: #666666;
+  margin-bottom: 25px;
+}
+
+.airtel-inactive-box {
+  background-color: #FDE8E8;
+  /* Light pink */
+  border: 1px solid #F8B4B4;
+  /* Pink border */
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.airtel-inactive-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #000000;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.airtel-inactive-text {
+  font-size: 13px;
+  color: #666666;
+  margin-bottom: 5px;
+}
+
+.airtel-inactive-amount {
+  font-size: 28px;
+  font-weight: 900;
+  color: #2E7D32;
+  /* Green text for the amount */
+  margin: 10px 0;
+}
+
+.airtel-checklist-box {
+  background-color: #FDE8E8;
+  /* Light pink */
+  border: 1px solid #F8B4B4;
+  /* Pink border */
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.airtel-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #000000;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.checkmark {
+  font-weight: bold;
+  color: #000000;
+}
+
+.airtel-dashboard-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #F87171;
+  /* Light red/pink */
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+  margin-bottom: 15px;
+}
+
+.airtel-dashboard-btn:hover {
+  background-color: #EF4444;
+}
+
+.airtel-back-to-login {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: #666666;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.airtel-success-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  /* Green */
+  margin: 0 auto 20px auto;
+}
