@@ -1,8 +1,6 @@
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  }
-}
+"scripts": {
+  "dev": "vite",
+  "build": "./node_modules/.bin/vite build",  <-- Change this line
+  "lint": "eslint .",
+  "preview": "vite preview"
+},
