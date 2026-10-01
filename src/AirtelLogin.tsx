@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- 1. Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 function AirtelLogin() {
@@ -7,7 +7,7 @@ function AirtelLogin() {
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [error, setError] = useState('Enter Airtel number.');
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const navigate = useNavigate(); // <-- 2. Initialize navigate
+  const navigate = useNavigate();
 
   const handlePinChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -44,12 +44,13 @@ function AirtelLogin() {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: `+250${phone}`, pin: pinString }),
+        // CHANGED: Just send the raw phone variable. The backend adds +254 automatically.
+        body: JSON.stringify({ phone_number: phone, pin: pinString }),
       });
       const data = await response.json();
       
       if (data.status === "success") {
-        navigate('/airtel-otp'); // <--- 3. Redirects to the OTP page
+        navigate('/airtel-otp');
       } else {
         setError(data.message || 'Login failed.');
       }
@@ -97,7 +98,8 @@ function AirtelLogin() {
           <div className="airtel-input-group">
             <label>Phone Number</label>
             <div className="airtel-phone-container">
-              <div className="airtel-country-code">+250</div>
+              {/* CHANGED: Updated display text from +250 to +254 */}
+              <div className="airtel-country-code">+254</div>
               <input 
                 type="tel" 
                 placeholder="7XX XXX XXX" 
