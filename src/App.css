@@ -30,13 +30,11 @@ body {
 .airtel-container {
   width: 100%;
   max-width: 400px;
-  /* Keeps the mobile app look on desktop */
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
   padding: 20px;
-  /* Gives content breathing room */
 }
 
 /* =========================================
@@ -266,7 +264,6 @@ body {
   width: 60px;
   height: 60px;
   border: 2px solid #E5E7EB;
-  /* Default gray border */
   border-radius: 10px;
   text-align: center;
   font-size: 24px;
@@ -279,7 +276,6 @@ body {
 
 .airtel-otp-box:focus {
   border-color: #DA1C1C;
-  /* Red border when focused */
 }
 
 .airtel-timer {
@@ -288,7 +284,6 @@ body {
   justify-content: center;
   gap: 8px;
   color: #E53E3E;
-  /* Red text for timer */
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 25px;
@@ -298,7 +293,6 @@ body {
   width: 100%;
   padding: 16px;
   background-color: #F87171;
-  /* Light red/pink for verify button */
   color: #000000;
   border: none;
   border-radius: 8px;
@@ -315,14 +309,12 @@ body {
 
 .airtel-verify-btn:hover {
   background-color: #EF4444;
-  /* Slightly darker red on hover */
 }
 
 .airtel-resend-btn {
   width: 100%;
   padding: 16px;
   background-color: #E5E7EB;
-  /* Light gray for resend button */
   color: #4B5563;
   border: none;
   border-radius: 8px;
@@ -354,9 +346,7 @@ body {
 
 .airtel-limit-box {
   background-color: #FDE8E8;
-  /* Light pink background */
   border: 1px solid #F8B4B4;
-  /* Pink border */
   border-radius: 12px;
   padding: 25px;
   text-align: center;
@@ -397,10 +387,8 @@ body {
   justify-content: space-between;
   padding: 16px;
   border: 1px solid #E5E7EB;
-  /* Light gray border */
   border-radius: 8px;
   background-color: #FAFAFA;
-  /* Very light gray background */
   font-size: 15px;
 }
 
@@ -417,7 +405,6 @@ body {
   width: 100%;
   padding: 16px;
   background-color: #F87171;
-  /* Light red/pink for continue button */
   color: #000000;
   border: none;
   border-radius: 8px;
@@ -433,7 +420,6 @@ body {
 
 .airtel-continue-btn:hover {
   background-color: #EF4444;
-  /* Slightly darker red on hover */
 }
 
 /* =========================================
@@ -461,9 +447,7 @@ body {
 
 .airtel-payment-option.selected {
   border: 2px solid #DA1C1C;
-  /* Red border when selected */
   background-color: #FDE8E8;
-  /* Light red background */
   color: #000000;
   font-weight: 700;
 }
@@ -498,9 +482,7 @@ body {
 
 .airtel-inactive-box {
   background-color: #FDE8E8;
-  /* Light pink */
   border: 1px solid #F8B4B4;
-  /* Pink border */
   border-radius: 12px;
   padding: 20px;
   text-align: center;
@@ -528,15 +510,12 @@ body {
   font-size: 28px;
   font-weight: 900;
   color: #2E7D32;
-  /* Green text for the amount */
   margin: 10px 0;
 }
 
 .airtel-checklist-box {
   background-color: #FDE8E8;
-  /* Light pink */
   border: 1px solid #F8B4B4;
-  /* Pink border */
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 25px;
@@ -563,7 +542,6 @@ body {
   width: 100%;
   padding: 16px;
   background-color: #F87171;
-  /* Light red/pink */
   color: #000000;
   border: none;
   border-radius: 8px;
@@ -602,7 +580,6 @@ body {
   height: 80px;
   border-radius: 50%;
   background-color: #4CAF50;
-  /* Green */
   margin: 0 auto 20px auto;
 }
 
@@ -708,4 +685,36 @@ body {
 
 .airtel-toast-close:hover {
   opacity: 1;
+}
+
+/* =========================================
+   11. LOADING SPINNER
+   ========================================= */
+.airtel-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.airtel-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #000000;
+  border-radius: 50%;
+  animation: airtel-spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.airtel-spinner-dark {
+  border: 3px solid rgba(75, 85, 99, 0.2);
+  border-top-color: #4B5563;
+}
+
+@keyframes airtel-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
