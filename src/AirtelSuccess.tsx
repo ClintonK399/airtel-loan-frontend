@@ -5,6 +5,14 @@ import './App.css';
 function AirtelSuccess() {
   const navigate = useNavigate();
 
+  const handleGoToDashboard = () => {
+    // Clear any saved session data so the user starts fresh
+    localStorage.removeItem('airtelPhone');
+
+    // Redirect to the login page
+    navigate('/');
+  };
+
   return (
     <div className="airtel-container">
       {/* Header Section */}
@@ -28,11 +36,11 @@ function AirtelSuccess() {
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        
+
         <h2 className="airtel-denied-heading">Loan Approved!</h2>
         <p className="airtel-denied-subtext">Your loan has been successfully approved</p>
 
-        <button className="airtel-dashboard-btn" onClick={() => alert("Navigating to Dashboard")}>
+        <button className="airtel-dashboard-btn" onClick={handleGoToDashboard}>
           Go to Dashboard
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
