@@ -835,3 +835,35 @@ body {
   color: #6B7280;
   line-height: 1.5;
 }
+
+/* =========================================
+   15. MODAL ERROR STATE & CLOSE BUTTON
+   ========================================= */
+.airtel-modal-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.airtel-modal-icon-error {
+  /* Icon is inline SVG — no extra styling needed */
+}
+
+.airtel-modal-close-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  background-color: #F3F4F6;
+  color: #374151;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.airtel-modal-close-btn:hover {
+  background-color: #E5E7EB;
+}
