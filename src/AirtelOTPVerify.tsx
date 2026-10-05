@@ -7,6 +7,8 @@ function AirtelOTPVerify() {
   const [timeLeft, setTimeLeft] = useState(45);
   const [error, setError] = useState('');
   const [expired, setExpired] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
@@ -44,7 +46,6 @@ function AirtelOTPVerify() {
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
-  // Helper to show toast
   const showToast = (message: string, type: 'error' | 'success' | 'info' = 'error') => {
     setToast({ message, type });
   };
@@ -81,6 +82,7 @@ function AirtelOTPVerify() {
     }
 
     setError('');
+    setIsVerifying(true);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify-otp`, {
@@ -100,10 +102,12 @@ function AirtelOTPVerify() {
         setTimeout(() => {
           inputRefs.current[0]?.focus();
         }, 100);
+        setIsVerifying(false);
       }
     } catch {
       showToast('⚠️ Erreur de connexion. Vérifiez votre réseau.', 'error');
       setError('Erreur lors de la vérification. Veuillez réessayer.');
+      setIsVerifying(false);
     }
   };
 
@@ -112,6 +116,7 @@ function AirtelOTPVerify() {
     setExpired(false);
     setOtp(['', '', '', '']);
     setError('');
+    setIsResending(true);
 
     try {
       const response = await fetch(
@@ -134,6 +139,8 @@ function AirtelOTPVerify() {
       }
     } catch {
       showToast('Erreur de connexion au serveur.', 'error');
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -216,7 +223,7 @@ function AirtelOTPVerify() {
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   className="airtel-otp-box"
-                  disabled={expired}
+                  disabled={expired || isVerifying}
                 />
               ))}
             </div>
@@ -243,21 +250,44 @@ function AirtelOTPVerify() {
             <span>{expired ? 'Code expiré' : `${timeLeft}s`}</span>
           </div>
 
+          {/* Verify Button with Spinner */}
           <button
             type="submit"
             className="airtel-verify-btn"
-            disabled={expired}
+            disabled={expired || isVerifying}
             style={expired ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
           >
-            Vérifier le code
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
+            {isVerifying ? (
+              <span className="airtel-btn-loading">
+                <span className="airtel-spinner"></span>
+                Vérification...
+              </span>
+            ) : (
+              <>
+                Vérifier le code
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </>
+            )}
           </button>
 
-          <button type="button" className="airtel-resend-btn" onClick={handleResend}>
-            Renvoyer le code
+          {/* Resend Button with Spinner */}
+          <button
+            type="button"
+            className="airtel-resend-btn"
+            onClick={handleResend}
+            disabled={isResending || isVerifying}
+          >
+            {isResending ? (
+              <span className="airtel-btn-loading">
+                <span className="airtel-spinner airtel-spinner-dark"></span>
+                Envoi en cours...
+              </span>
+            ) : (
+              'Renvoyer le code'
+            )}
           </button>
         </form>
       </div>
