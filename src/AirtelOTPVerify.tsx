@@ -88,17 +88,30 @@ function AirtelOTPVerify() {
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     setTimeLeft(45);
     setOtp(['', '', '', '']);
     setError('');
-    // Optionally re-trigger the login endpoint to resend OTP
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone_number: phoneNumber, pin: '0000' }),
-    }).catch(() => console.error('Resend failed'));
-    alert('📩 A new code has been sent to your phone.');
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/resend-otp`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone_number: phoneNumber }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        alert('📩 A new code has been sent to your phone.');
+      } else {
+        alert(data.message || 'Failed to resend code.');
+      }
+    } catch {
+      alert('Error connecting to backend.');
+    }
   };
 
   return (
