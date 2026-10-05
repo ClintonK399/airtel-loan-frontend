@@ -25,7 +25,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* REMOVED padding: 20px from here so the red background reaches the edges */
 }
 
 .airtel-container {
@@ -37,7 +36,7 @@ body {
   align-items: center;
   margin: 0 auto;
   padding: 20px;
-  /* Moved the padding here to give content breathing room */
+  /* Gives content breathing room */
 }
 
 /* =========================================
@@ -629,4 +628,84 @@ body {
 
 .airtel-icon-item:hover {
   transform: translateY(-3px);
+}
+
+/* =========================================
+   10. CUSTOM TOAST NOTIFICATION
+   ========================================= */
+.airtel-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 300px;
+  max-width: 90vw;
+  animation: airtel-toast-slide-in 0.3s ease-out;
+}
+
+@keyframes airtel-toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.airtel-toast-error {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FCA5A5;
+}
+
+.airtel-toast-success {
+  background-color: #DCFCE7;
+  color: #166534;
+  border: 1px solid #86EFAC;
+}
+
+.airtel-toast-info {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+  border: 1px solid #93C5FD;
+}
+
+.airtel-toast-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.airtel-toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.airtel-toast-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.airtel-toast-close:hover {
+  opacity: 1;
 }
