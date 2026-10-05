@@ -22,7 +22,7 @@ function AirtelLoanLimit() {
           </svg>
         </div>
         <h1 className="airtel-logo">Airtel Loans</h1>
-        <p className="airtel-tagline">Quick loans. Anytime. Anywhere.</p>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
       {/* Main White Card */}
@@ -33,38 +33,38 @@ function AirtelLoanLimit() {
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          Back
+          Retour
         </button>
 
-        <h2 className="airtel-limit-heading">Your Loan Limit</h2>
-        <p className="airtel-limit-subtext">Here is the amount you can borrow</p>
+        <h2 className="airtel-limit-heading">Votre limite de prêt</h2>
+        <p className="airtel-limit-subtext">Voici le montant que vous pouvez emprunter</p>
 
         {/* Available Amount Box */}
         <div className="airtel-limit-box">
-          <span className="airtel-limit-label">Available Loan Amount</span>
-          <span className="airtel-limit-amount">1,200</span>
+          <span className="airtel-limit-label">Montant du prêt disponible</span>
+          <span className="airtel-limit-amount">1 200</span>
           <span className="airtel-limit-currency">USD</span>
         </div>
 
         {/* Loan Details List */}
         <div className="airtel-details-list">
           <div className="airtel-detail-row">
-            <span>Loan Term</span>
-            <span>12 months</span>
+            <span>Durée du prêt</span>
+            <span>12 mois</span>
           </div>
           <div className="airtel-detail-row">
-            <span>Interest Rate</span>
-            <span>13%</span>
+            <span>Taux d'intérêt</span>
+            <span>13 %</span>
           </div>
           <div className="airtel-detail-row">
-            <span>Processing Fee</span>
-            <span>$5</span>
+            <span>Frais de traitement</span>
+            <span>5 $</span>
           </div>
         </div>
 
         {/* Continue Button */}
         <button className="airtel-continue-btn" onClick={handleContinue}>
-          Continue to Get Loan
+          Continuer pour obtenir le prêt
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
