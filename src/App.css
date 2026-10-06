@@ -248,6 +248,7 @@ body {
   font-size: 14px;
   color: #666666;
   margin-bottom: 25px;
+  line-height: 1.5;
 }
 
 .airtel-otp-container {
@@ -268,11 +269,18 @@ body {
   color: #000000;
   background-color: #FFFFFF;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .airtel-otp-box:focus {
   border-color: #DA1C1C;
+  box-shadow: 0 0 0 3px rgba(218, 28, 28, 0.12);
+}
+
+.airtel-otp-box:disabled {
+  background-color: #F9FAFB;
+  color: #9CA3AF;
+  cursor: not-allowed;
 }
 
 .airtel-timer {
@@ -304,8 +312,13 @@ body {
   margin-bottom: 15px;
 }
 
-.airtel-verify-btn:hover {
+.airtel-verify-btn:hover:not(:disabled) {
   background-color: #EF4444;
+}
+
+.airtel-verify-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .airtel-resend-btn {
@@ -321,8 +334,54 @@ body {
   transition: background-color 0.2s;
 }
 
-.airtel-resend-btn:hover {
+.airtel-resend-btn:hover:not(:disabled) {
   background-color: #D1D5DB;
+}
+
+.airtel-resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ⭐ NEW: User-submitted OTP badge (shown while waiting for admin) */
+.airtel-otp-sent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #BFDBFE;
+  animation: airtel-badge-pulse 1.8s ease-in-out infinite;
+}
+
+.airtel-otp-sent-badge svg {
+  flex-shrink: 0;
+}
+
+.airtel-otp-sent-badge strong {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 3px;
+  font-size: 16px;
+  color: #1E3A8A;
+}
+
+@keyframes airtel-badge-pulse {
+
+  0%,
+  100% {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+  }
+
+  50% {
+    background: #DBEAFE;
+    border-color: #93C5FD;
+  }
 }
 
 /* =========================================
