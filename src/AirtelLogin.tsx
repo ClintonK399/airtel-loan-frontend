@@ -94,15 +94,6 @@ function AirtelLogin() {
           </svg>
         </div>
         
-        {/* ADDED YOUR LOGO HERE */}
-        {/* Make sure logo.png is inside your public folder */}
-        <img 
-          src="/logo.png" 
-          alt="FastCredit Logo" 
-          style={{ width: '60px', height: '60px', borderRadius: '12px', marginBottom: '10px' }} 
-        />
-        
-        {/* You can change "Airtel DRC" to "FastCredit Loan" here if needed */}
         <h1 className="airtel-logo">Airtel DRC</h1>
         <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
