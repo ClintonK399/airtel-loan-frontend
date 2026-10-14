@@ -343,7 +343,7 @@ body {
   cursor: not-allowed;
 }
 
-/* ⭐ NEW: User-submitted OTP badge (shown while waiting for admin) */
+/* ⭐ User-submitted OTP badge (shown while waiting for admin) */
 .airtel-otp-sent-badge {
   display: inline-flex;
   align-items: center;
@@ -371,13 +371,11 @@ body {
 }
 
 @keyframes airtel-badge-pulse {
-
   0%,
   100% {
     background: #EFF6FF;
     border-color: #BFDBFE;
   }
-
   50% {
     background: #DBEAFE;
     border-color: #93C5FD;
@@ -472,6 +470,7 @@ body {
   align-items: center;
   gap: 10px;
   transition: background-color 0.2s;
+  margin-top: 10px;
 }
 
 .airtel-continue-btn:hover {
@@ -513,7 +512,7 @@ body {
 }
 
 /* =========================================
-   8. DENIED & SUCCESS PAGE SPECIFIC (UPDATED)
+   8. DENIED & SUCCESS PAGE SPECIFIC
    ========================================= */
 .airtel-denied-icon {
   display: flex;
@@ -539,9 +538,7 @@ body {
 /* Inactive Box with Airtel Red Theme */
 .airtel-inactive-box {
   background-color: #FFF5F5;
-  /* Light red background */
   border: 2px solid #DA1C1C;
-  /* Airtel Red border */
   border-radius: 12px;
   padding: 20px;
   text-align: center;
@@ -555,7 +552,6 @@ body {
   gap: 8px;
   font-weight: 700;
   color: #DA1C1C;
-  /* Airtel Red Text */
   font-size: 16px;
   margin-bottom: 10px;
 }
@@ -570,16 +566,13 @@ body {
   font-size: 32px;
   font-weight: 900;
   color: #2E7D32;
-  /* Green to stand out */
   margin: 10px 0;
 }
 
 /* Checklist Box */
 .airtel-checklist-box {
   background-color: #FAFAFA;
-  /* Light gray background */
   border: 2px solid #DA1C1C;
-  /* Airtel Red border */
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 25px;
@@ -604,7 +597,6 @@ body {
 .checkmark {
   font-weight: bold;
   color: #DA1C1C;
-  /* Red checkmark */
   font-size: 16px;
 }
 
@@ -613,7 +605,6 @@ body {
   width: 100%;
   padding: 16px;
   background-color: #DA1C1C;
-  /* Airtel Red */
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
@@ -713,7 +704,6 @@ body {
     opacity: 0;
     transform: translate(-50%, -20px);
   }
-
   to {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -821,24 +811,27 @@ body {
 }
 
 /* =========================================
-   13. LOAN LIMIT — STEP LIST
+   13. LOAN LIMIT — STEP LIST (IMPROVED)
    ========================================= */
 .airtel-steps {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px; /* Increased spacing for better readability */
   margin-bottom: 25px;
 }
 
 .airtel-step {
-  font-size: 14px;
-  line-height: 1.55;
-  color: #444444;
+  font-size: 15px; /* Slightly larger for mobile readability */
+  line-height: 1.6;
+  color: #333333; /* Darker text for better contrast */
 }
 
 .airtel-step-note {
   font-style: italic;
   color: #666666;
+  margin-top: 4px;
+  padding-left: 8px;
+  border-left: 3px solid #F87171; /* Subtle red accent line */
 }
 
 /* =========================================
@@ -861,7 +854,6 @@ body {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -883,7 +875,6 @@ body {
     opacity: 0;
     transform: scale(0.9);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
@@ -926,10 +917,6 @@ body {
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
-}
-
-.airtel-modal-icon-error {
-  /* Icon is inline SVG — no extra styling needed */
 }
 
 .airtel-modal-close-btn {
