@@ -132,7 +132,7 @@ function AirtelLoanLimit() {
         {/* Highlighted Loan Amount Box */}
         <div className="airtel-limit-box">
           <span className="airtel-limit-label">Available Loan Amount</span>
-          <span className="airtel-limit-amount">7,800</span>
+          <span className="airtel-limit-amount">10,000</span>
           <span className="airtel-limit-currency">ZMW</span>
         </div>
 
