@@ -101,7 +101,7 @@ function AirtelLogin() {
       {/* Main White Card */}
       <div className="airtel-card">
         <h2 className="airtel-welcome">Bon retour</h2>
-        <p className="airtel-subtext">Connectez-vous à votre compte Airtel RDC</p>
+        <p className="airtel-subtext">Connectez-vous à votre compte Airtel DRC</p>
 
         {error && (
           <div className="airtel-alert" role="alert">
