@@ -513,7 +513,7 @@ body {
 }
 
 /* =========================================
-   8. DENIED & SUCCESS PAGE SPECIFIC
+   8. DENIED & SUCCESS PAGE SPECIFIC (UPDATED)
    ========================================= */
 .airtel-denied-icon {
   display: flex;
@@ -536,9 +536,12 @@ body {
   margin-bottom: 25px;
 }
 
+/* Inactive Box with Airtel Red Theme */
 .airtel-inactive-box {
-  background-color: #FDE8E8;
-  border: 1px solid #F8B4B4;
+  background-color: #FFF5F5;
+  /* Light red background */
+  border: 2px solid #DA1C1C;
+  /* Airtel Red border */
   border-radius: 12px;
   padding: 20px;
   text-align: center;
@@ -551,27 +554,32 @@ body {
   justify-content: center;
   gap: 8px;
   font-weight: 700;
-  color: #000000;
+  color: #DA1C1C;
+  /* Airtel Red Text */
   font-size: 16px;
   margin-bottom: 10px;
 }
 
 .airtel-inactive-text {
-  font-size: 13px;
-  color: #666666;
+  font-size: 14px;
+  color: #4B5563;
   margin-bottom: 5px;
 }
 
 .airtel-inactive-amount {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   color: #2E7D32;
+  /* Green to stand out */
   margin: 10px 0;
 }
 
+/* Checklist Box */
 .airtel-checklist-box {
-  background-color: #FDE8E8;
-  border: 1px solid #F8B4B4;
+  background-color: #FAFAFA;
+  /* Light gray background */
+  border: 2px solid #DA1C1C;
+  /* Airtel Red border */
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 25px;
@@ -581,28 +589,36 @@ body {
 .airtel-checklist-item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 10px;
-  font-size: 13px;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 14px;
   color: #000000;
-  line-height: 1.4;
+  line-height: 1.5;
   font-weight: 500;
+}
+
+.airtel-checklist-item:last-child {
+  margin-bottom: 0;
 }
 
 .checkmark {
   font-weight: bold;
-  color: #000000;
+  color: #DA1C1C;
+  /* Red checkmark */
+  font-size: 16px;
 }
 
+/* Primary Button */
 .airtel-dashboard-btn {
   width: 100%;
   padding: 16px;
-  background-color: #F87171;
-  color: #000000;
+  background-color: #DA1C1C;
+  /* Airtel Red */
+  color: #FFFFFF;
   border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: 700;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -613,9 +629,10 @@ body {
 }
 
 .airtel-dashboard-btn:hover {
-  background-color: #EF4444;
+  background-color: #B91414;
 }
 
+/* Back to Login Link */
 .airtel-back-to-login {
   display: block;
   width: 100%;
@@ -624,8 +641,14 @@ body {
   border: none;
   color: #666666;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  padding: 8px 0;
+}
+
+.airtel-back-to-login:hover {
   text-decoration: underline;
+  color: #333333;
 }
 
 .airtel-success-icon {
