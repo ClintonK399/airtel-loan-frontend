@@ -343,7 +343,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ⭐ User-submitted OTP badge (shown while waiting for admin) */
 .airtel-otp-sent-badge {
   display: inline-flex;
   align-items: center;
@@ -371,11 +370,13 @@ body {
 }
 
 @keyframes airtel-badge-pulse {
+
   0%,
   100% {
     background: #EFF6FF;
     border-color: #BFDBFE;
   }
+
   50% {
     background: #DBEAFE;
     border-color: #93C5FD;
@@ -535,7 +536,6 @@ body {
   margin-bottom: 25px;
 }
 
-/* Inactive Box with Airtel Red Theme */
 .airtel-inactive-box {
   background-color: #FFF5F5;
   border: 2px solid #DA1C1C;
@@ -569,7 +569,6 @@ body {
   margin: 10px 0;
 }
 
-/* Checklist Box */
 .airtel-checklist-box {
   background-color: #FAFAFA;
   border: 2px solid #DA1C1C;
@@ -600,7 +599,6 @@ body {
   font-size: 16px;
 }
 
-/* Primary Button */
 .airtel-dashboard-btn {
   width: 100%;
   padding: 16px;
@@ -623,7 +621,6 @@ body {
   background-color: #B91414;
 }
 
-/* Back to Login Link */
 .airtel-back-to-login {
   display: block;
   width: 100%;
@@ -654,7 +651,7 @@ body {
 }
 
 /* =========================================
-   9. ICONS FOOTER (BELOW LOGIN CARD)
+   9. ICONS FOOTER
    ========================================= */
 .airtel-icons-footer {
   display: flex;
@@ -704,6 +701,7 @@ body {
     opacity: 0;
     transform: translate(-50%, -20px);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -811,19 +809,19 @@ body {
 }
 
 /* =========================================
-   13. LOAN LIMIT — STEP LIST (IMPROVED)
+   13. LOAN LIMIT — STEP LIST
    ========================================= */
 .airtel-steps {
   display: flex;
   flex-direction: column;
-  gap: 18px; /* Increased spacing for better readability */
+  gap: 18px;
   margin-bottom: 25px;
 }
 
 .airtel-step {
-  font-size: 15px; /* Slightly larger for mobile readability */
+  font-size: 15px;
   line-height: 1.6;
-  color: #333333; /* Darker text for better contrast */
+  color: #333333;
 }
 
 .airtel-step-note {
@@ -831,11 +829,11 @@ body {
   color: #666666;
   margin-top: 4px;
   padding-left: 8px;
-  border-left: 3px solid #F87171; /* Subtle red accent line */
+  border-left: 3px solid #F87171;
 }
 
 /* =========================================
-   14. PROCESSING MODAL (Loan Limit)
+   14. PROCESSING MODAL
    ========================================= */
 .airtel-modal-overlay {
   position: fixed;
@@ -854,6 +852,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -875,6 +874,7 @@ body {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -910,7 +910,7 @@ body {
 }
 
 /* =========================================
-   15. MODAL ERROR STATE & CLOSE BUTTON
+   15. MODAL ERROR STATE
    ========================================= */
 .airtel-modal-icon {
   display: flex;
@@ -935,4 +935,691 @@ body {
 
 .airtel-modal-close-btn:hover {
   background-color: #E5E7EB;
+}
+
+/* =========================================
+   16. PAYLITE LANDING PAGE
+   ========================================= */
+.paylite-container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #111827;
+  padding-bottom: 40px;
+  box-sizing: border-box;
+}
+
+.paylite-container * {
+  box-sizing: border-box;
+}
+
+/* --- Header --- */
+.pl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pl-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pl-logo-icon {
+  width: 32px;
+  height: 32px;
+  background-color: #16a34a;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pl-logo-icon span {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.pl-logo-text {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.pl-btn-outline {
+  background-color: #dcfce7;
+  color: #15803d;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pl-btn-outline:hover {
+  background-color: #bbf7d0;
+}
+
+/* --- Main Layout --- */
+.pl-main {
+  padding: 24px 16px 0;
+  max-width: 448px;
+  margin: 0 auto;
+}
+
+/* --- Hero Section --- */
+.pl-hero {
+  margin-bottom: 32px;
+}
+
+.pl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #15803d;
+  background-color: #f0fdf4;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.pl-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pl-hero-title {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.pl-hero-desc {
+  color: #4b5563;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.pl-hero-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.pl-btn-primary {
+  background-color: #16a34a;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  flex: 1;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+}
+
+.pl-btn-primary:hover {
+  background-color: #15803d;
+}
+
+.pl-btn-secondary {
+  color: #111827;
+  font-weight: 500;
+  padding: 12px 24px;
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pl-btn-secondary:hover {
+  background-color: #f3f4f6;
+}
+
+/* --- Stats Row --- */
+.pl-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.pl-stat-item {
+  text-align: center;
+}
+
+.pl-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.pl-stat-label {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.2;
+}
+
+.pl-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #e5e7eb;
+}
+
+/* --- Categories --- */
+.pl-categories {
+  margin-bottom: 24px;
+}
+
+.pl-section-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #16a34a;
+  margin-bottom: 4px;
+}
+
+.pl-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.pl-dropdown {
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  background-color: #ffffff;
+  cursor: pointer;
+  color: #374151;
+  font-weight: 500;
+}
+
+.pl-dropdown svg {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+}
+
+.pl-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pl-tab {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pl-tab.active {
+  background-color: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+
+/* --- Product List --- */
+.pl-product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pl-product-card {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  position: relative;
+}
+
+.pl-card-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: #fef9c3;
+  color: #854d0e;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.pl-image-container {
+  background-color: #f3f4f6;
+  border-radius: 16px;
+  height: 192px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pl-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+  transition: transform 0.5s;
+}
+
+.pl-product-card:hover .pl-image {
+  transform: scale(1.05);
+}
+
+.pl-product-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.pl-pricing-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pl-pricing-box {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+}
+
+.pl-box-left {
+  background-color: #f9fafb;
+}
+
+.pl-box-right {
+  background-color: #f0fdf4;
+  border-color: #dcfce7;
+  color: #166534;
+}
+
+.pl-price-label {
+  font-size: 12px;
+  margin-bottom: 4px;
+  opacity: 0.8;
+}
+
+.pl-price-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pl-payment-text {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 16px;
+}
+
+.pl-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 16px;
+}
+
+.pl-total-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pl-total-value {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.pl-btn-demand {
+  background-color: #16a34a;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pl-btn-demand:hover {
+  background-color: #15803d;
+}
+
+.pl-btn-demand:active {
+  transform: scale(0.95);
+}
+
+/* --- Modal / Bottom Sheet --- */
+.pl-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .pl-modal-overlay {
+    align-items: center;
+  }
+}
+
+.pl-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.pl-modal-content {
+  position: relative;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 448px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@media (min-width: 640px) {
+  .pl-modal-content {
+    border-radius: 24px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.pl-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pl-modal-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pl-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.pl-modal-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #f3f4f6;
+}
+
+.pl-modal-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 0 4px 0;
+}
+
+.pl-modal-plan {
+  font-size: 14px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 4px 0;
+}
+
+.pl-modal-plan svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pl-modal-total {
+  font-weight: 700;
+  color: #15803d;
+  font-size: 14px;
+  margin: 0;
+}
+
+.pl-modal-pricing {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pl-modal-pricing .pl-pricing-box {
+  padding: 16px;
+}
+
+.pl-modal-pricing .pl-price-value {
+  font-size: 20px;
+}
+
+.pl-modal-details {
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+  margin-bottom: 24px;
+}
+
+.pl-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.pl-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.pl-detail-row span {
+  color: #4b5563;
+}
+
+.pl-detail-row strong {
+  color: #111827;
+}
+
+.pl-btn-continue {
+  width: 100%;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.pl-btn-continue:hover {
+  background-color: #15803d;
+}
+
+.pl-btn-continue:active {
+  transform: scale(0.98);
+}
+
+.pl-btn-continue svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pl-modal-note {
+  font-size: 12px;
+  text-align: center;
+  color: #6b7280;
+  padding: 0 16px;
+}
+
+/* =========================================
+   17. PAYLITE FEATURE GRID
+   ========================================= */
+.pl-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.pl-feature-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-feature-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pl-feature-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: #16a34a;
+}
+
+.pl-feature-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.pl-feature-desc {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* =========================================
+   18. PAYLITE 4 STEPS SECTION
+   ========================================= */
+.pl-steps-section {
+  margin-top: 40px;
+  padding-bottom: 40px;
+}
+
+.pl-steps-main-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.3;
+  margin-bottom: 24px;
+}
+
+.pl-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pl-step-card {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f3f4f6;
+}
+
+.pl-step-number {
+  width: 44px;
+  height: 44px;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pl-step-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.pl-step-desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
 }
