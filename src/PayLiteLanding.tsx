@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 const products = [
-  // --- iPhones (Phone Images) ---
+  // --- iPhones ---
   {
     id: 1,
     brand: "iPhone",
@@ -71,7 +71,7 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung (Phone Images) ---
+  // --- Samsung ---
   {
     id: 7,
     brand: "Samsung",
@@ -106,7 +106,7 @@ const products = [
     totalPrice: 425,
   },
 
-  // --- Tecno (Phone Images) ---
+  // --- Tecno ---
   {
     id: 10,
     brand: "Tecno",
@@ -130,7 +130,7 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix (Phone Images) ---
+  // --- Infinix ---
   {
     id: 12,
     brand: "Infinix",
@@ -154,7 +154,7 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto (Motorcycle Images) ---
+  // --- Moto ---
   {
     id: 14,
     brand: "Moto",
@@ -215,7 +215,15 @@ export default function PayLiteLanding() {
       ? products
       : products.filter((p) => p.brand === activeCategory);
 
-  // ⭐ UPDATED: Saves the selected device before navigating
+  // Function to scroll smoothly to specific sections
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Saves the selected device before navigating to login
   const goToLogin = () => {
     if (selectedProduct) {
       localStorage.setItem('selectedDevice', JSON.stringify(selectedProduct));
@@ -256,10 +264,12 @@ export default function PayLiteLanding() {
             Infinix et motos.
           </p>
           <div className="pl-hero-actions">
-            <button onClick={goToLogin} className="pl-btn-primary">
+            {/* Changed to scroll to the offers section */}
+            <button onClick={() => scrollToSection("offers")} className="pl-btn-primary">
               Voir les offres
             </button>
-            <button onClick={goToLogin} className="pl-btn-secondary">
+            {/* Changed to scroll to the steps section */}
+            <button onClick={() => scrollToSection("how-it-works")} className="pl-btn-secondary">
               Comment ça marche
             </button>
           </div>
@@ -332,8 +342,8 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Categories */}
-        <div className="pl-categories">
+        {/* Categories - ADDED ID HERE */}
+        <div className="pl-categories" id="offers">
           <h2 className="pl-section-subtitle">Choisissez une marque</h2>
           <h3 className="pl-section-title">Parcourez les offres disponibles</h3>
 
@@ -412,8 +422,8 @@ export default function PayLiteLanding() {
           ))}
         </div>
 
-        {/* 4 Steps Section */}
-        <div className="pl-steps-section">
+        {/* 4 Steps Section - ADDED ID HERE */}
+        <div className="pl-steps-section" id="how-it-works">
           <h2 className="pl-steps-main-title">
             Quatre étapes simples pour en devenir propriétaire
           </h2>
