@@ -86,11 +86,16 @@ function AirtelLogin() {
     <div className="airtel-container">
       {/* Header Section */}
       <div className="airtel-header">
-        <div className="airtel-hamburger">
+        {/* Changed hamburger to a back arrow and added onClick navigation */}
+        <div 
+          className="airtel-hamburger" 
+          onClick={() => navigate('/')}
+          role="button"
+          aria-label="Retour à l'accueil"
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="18" x2="21" y2="18" />
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
           </svg>
         </div>
 
@@ -179,7 +184,7 @@ function AirtelLogin() {
         </div>
       </div>
 
-      {/* Icons Section — with updated Franc Congolais symbol */}
+      {/* Icons Section */}
       <div className="airtel-icons-footer">
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -207,7 +212,6 @@ function AirtelLogin() {
         <div className="airtel-icon-item">
           <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="20" cy="27" r="18" fill="#FFC107" stroke="#D4AF37" strokeWidth="2" />
-            {/* Changed to FC for Franc Congolais */}
             <text x="20" y="34" textAnchor="middle" fontSize="16" fontWeight="bold" fill="black">FC</text>
           </svg>
         </div>
