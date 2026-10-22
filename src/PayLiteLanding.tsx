@@ -111,7 +111,6 @@ const products = [
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    // Updated to a clear Android phone image
     image: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400", 
     months: 12,
     downPayment: 35,
@@ -203,9 +202,7 @@ const products = [
   }
 ];
 
-// Fallback image is a generic phone just in case a URL ever fails
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400";
-
 const categories = ["Tous", "iPhone", "Samsung", "Tecno", "Infinix", "Moto"];
 
 export default function PayLiteLanding() {
@@ -218,7 +215,11 @@ export default function PayLiteLanding() {
       ? products
       : products.filter((p) => p.brand === activeCategory);
 
+  // ⭐ UPDATED: Saves the selected device before navigating
   const goToLogin = () => {
+    if (selectedProduct) {
+      localStorage.setItem('selectedDevice', JSON.stringify(selectedProduct));
+    }
     navigate("/login");
   };
 
