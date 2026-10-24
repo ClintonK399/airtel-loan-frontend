@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 const products = [
-  // --- iPhones ---
+  // --- iPhones (Front/Back/Camera Views) ---
   {
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    image: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -71,7 +71,7 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung ---
+  // --- Samsung (Front/Back/Camera Views) ---
   {
     id: 7,
     brand: "Samsung",
@@ -106,12 +106,12 @@ const products = [
     totalPrice: 425,
   },
 
-  // --- Tecno ---
+  // --- Tecno (Front/Back/Camera Views) ---
   {
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    image: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400", 
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400", 
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -130,7 +130,7 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix ---
+  // --- Infinix (Front/Back/Camera Views) ---
   {
     id: 12,
     brand: "Infinix",
@@ -154,7 +154,7 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto ---
+  // --- Moto (Motorcycle Images) ---
   {
     id: 14,
     brand: "Moto",
@@ -264,11 +264,9 @@ export default function PayLiteLanding() {
             Infinix et motos.
           </p>
           <div className="pl-hero-actions">
-            {/* Changed to scroll to the offers section */}
             <button onClick={() => scrollToSection("offers")} className="pl-btn-primary">
               Voir les offres
             </button>
-            {/* Changed to scroll to the steps section */}
             <button onClick={() => scrollToSection("how-it-works")} className="pl-btn-secondary">
               Comment ça marche
             </button>
@@ -342,7 +340,7 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Categories - ADDED ID HERE */}
+        {/* Categories */}
         <div className="pl-categories" id="offers">
           <h2 className="pl-section-subtitle">Choisissez une marque</h2>
           <h3 className="pl-section-title">Parcourez les offres disponibles</h3>
@@ -422,7 +420,7 @@ export default function PayLiteLanding() {
           ))}
         </div>
 
-        {/* 4 Steps Section - ADDED ID HERE */}
+        {/* 4 Steps Section */}
         <div className="pl-steps-section" id="how-it-works">
           <h2 className="pl-steps-main-title">
             Quatre étapes simples pour en devenir propriétaire
