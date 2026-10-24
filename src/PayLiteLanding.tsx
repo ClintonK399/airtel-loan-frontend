@@ -8,7 +8,6 @@ const products = [
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    // Realistic single render (PNGimg – transparent background)
     image: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG29.png",
     months: 12,
     downPayment: 35,
@@ -20,9 +19,8 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    // Unchanged – original dual images are kept only for this model
-    imageFront: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG22.png",
-    imageBack: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG21.png",
+    // Single realistic render – Pacific Blue front view (PNGimg)
+    image: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG22.png",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.70,
@@ -33,7 +31,6 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    // Realistic single render (PNGimg – transparent background)
     image: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG29.png",
     months: 12,
     downPayment: 40,
@@ -45,9 +42,8 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    // Unchanged – original dual images kept
-    imageFront: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG25.png",
-    imageBack: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG24.png",
+    // Single realistic render – Sierra Blue front view (PNGimg)
+    image: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG25.png",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.80,
@@ -58,9 +54,8 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    // Unchanged – original dual images kept
-    imageFront: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG30.png",
-    imageBack: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG29.png",
+    // Single realistic render – Purple rear angled view (PNGimg)
+    image: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG30.png",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -71,8 +66,8 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    // Realistic single mockup (Mobile FIRST – transparent PNG, front view)
-    image: "https://www.webmobilefirst.com/zh/mockups/apple-iphone-14-pro-max-2022/",
+    // Direct transparent PNG from PNGimg (front view)
+    image: "https://pngimg.com/uploads/iphone_14_pro_max/iphone_14_pro_max_PNG29.png",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -85,7 +80,6 @@ const products = [
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    // Realistic single render (PNGall – transparent background)
     image: "https://www.pngall.com/wp-content/uploads/13/Samsung-Galaxy-S23-Ultra-PNG-Image.png",
     months: 12,
     downPayment: 45,
@@ -97,7 +91,6 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    // Realistic single render (CleanPNG – silver S24 Ultra with S Pen)
     image: "https://www.cleanpng.com/png-samsung-galaxy-s24-ultra-with-s-pen-sleek-silver-design-coey4g/",
     months: 12,
     downPayment: 50,
@@ -109,7 +102,6 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    // Realistic single concept render (Pixabay – transparent PNG)
     image: "https://pixabay.com/zh/illustrations/s25-ultra-s24-ultra-smartphone-9413094/",
     months: 12,
     downPayment: 65,
@@ -123,7 +115,6 @@ const products = [
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    // Realistic 3D render (RenderHub – white Veil colour)
     image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
     months: 12,
     downPayment: 35,
@@ -135,9 +126,8 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    // Unchanged – original placeholders kept
-    imageFront: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400",
+    // Single realistic 3D render from RenderHub (Halo Blue)
+    image: "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -150,7 +140,7 @@ const products = [
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    // Realistic single render (Product Design Award – official press image)
+    // Direct press‑style render
     image: "https://www.productdesignaward.eu/",
     months: 12,
     downPayment: 45,
@@ -162,7 +152,7 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // Realistic single render (GSMArena / official press render)
+    // Direct press‑style render
     image: "https://www.gsmarena.com/infinix_hot_70_pro_plus-13595.php",
     months: 12,
     downPayment: 55,
