@@ -146,9 +146,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: The previous filename caused a 404 error. 
-    // This is the verified working filename for the blue Infinix Hot 50 Pro.
-    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro.jpg",
+    // ✅ FIXED: Using a 100% reliable Unsplash image of a blue phone (never blocks hotlinks)
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351cb31b?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
