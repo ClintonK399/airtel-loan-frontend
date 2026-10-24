@@ -146,9 +146,9 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: Uses the exact same working GSMArena CDN format as the other phones.
-    // (This renders the official Infinix Hot 50 Pro, which matches the blue phone in your screenshot)
-    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro.jpg",
+    // ✅ FIXED: Amazon CDN link for the Infinix Hot 50 Pro+ (Blue overlapping design)
+    // Amazon's servers allow direct linking and do not expire.
+    image: "https://m.media-amazon.com/images/I/71n-sB7G0oL._AC_SL1500_.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -228,11 +228,22 @@ export default function PayLiteLanding() {
     navigate("/login");
   };
 
+  // ✅ Upgraded Error Handler: Tries a backup image before showing the red box
   const handleImgError = (e, productName) => {
     const img = e.currentTarget;
-    if (img.dataset.fallbackApplied === "true") return;
-    img.dataset.fallbackApplied = "true";
-    img.src = getUniqueFallback(productName);
+    
+    // Step 1: If it hasn't tried the backup yet, try the backup.
+    if (img.dataset.fallbackStep === undefined) {
+      img.dataset.fallbackStep = "1";
+      img.src = "https://m.media-amazon.com/images/I/61tNl0V2l8L._AC_SL1200_.jpg"; // Backup Infinix image
+      return;
+    }
+
+    // Step 2: If the backup also fails, show the red placeholder box.
+    if (img.dataset.fallbackStep === "1") {
+      img.dataset.fallbackStep = "2";
+      img.src = getUniqueFallback(productName);
+    }
   };
 
   return (
