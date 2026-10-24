@@ -1203,7 +1203,7 @@ body {
   position: relative;
 }
 
-/* ⭐ DUAL IMAGE CONTAINER STYLES (From your snippet) ⭐ */
+/* ⭐ DUAL IMAGE CONTAINER STYLES ⭐ */
 .pl-image-container {
   position: relative;
   background-color: #e5e7eb;
@@ -1249,13 +1249,12 @@ body {
   transition: transform 0.3s ease;
 }
 
-/* Individual sizing for the front and back photos */
+/* Individual sizing + realistic studio shadow for the front and back photos */
 .pl-image.dual-img {
   width: 45%;
   max-height: 180px;
   object-fit: contain;
-  /* Adds a shadow so the phones stand out beautifully against the gray */
-  filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.15));
 }
 
 /* Keeps the hover effect */
@@ -1349,7 +1348,7 @@ body {
   transform: scale(0.95);
 }
 
-/* Extracted standard disclaimer styling */
+/* Standard disclaimer styling */
 .pl-disclaimer-text {
   font-size: 12px;
   color: #6b7280;
@@ -1436,7 +1435,7 @@ body {
   margin-top: 16px;
 }
 
-/* ⭐ MODAL DUAL IMAGE STYLES (From your snippet) ⭐ */
+/* ⭐ MODAL DUAL IMAGE STYLES ⭐ */
 .pl-modal-dual-img {
   display: flex;
   gap: 8px;
