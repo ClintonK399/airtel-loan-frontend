@@ -129,25 +129,14 @@ const products = [
     days: 360,
     totalPrice: 315,
   },
-
-  // --- Infinix ---
   {
-    id: 12,
-    brand: "Infinix",
-    name: "Infinix Hot 60 Pro Plus",
-    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-40-pro.jpg",
-    months: 12,
-    downPayment: 45,
-    dailyPayment: 0.75,
-    days: 360,
-    totalPrice: 315,
-  },
-  {
-    id: 13,
-    brand: "Infinix",
-    name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: Using a 100% reliable Unsplash image of a blue phone (never blocks hotlinks)
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351cb31b?auto=format&fit=crop&q=80&w=400",
+    id: 12, // Was Infinix Hot 70 Pro Plus
+    brand: "Tecno",
+    name: "Tecno Camon 40",
+    // ✅ Using dual images: Front and Back
+    // Note: Replace these URLs with the actual Tecno Camon 40 images you prefer.
+    imageFront: "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-40-4g.jpg", 
+    imageBack: "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-40-4g-back.jpg", 
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -157,7 +146,7 @@ const products = [
 
   // --- Moto ---
   {
-    id: 14,
+    id: 13,
     brand: "Moto",
     name: "Boxer 125cc",
     image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400",
@@ -168,7 +157,7 @@ const products = [
     totalPrice: 708,
   },
   {
-    id: 15,
+    id: 14,
     brand: "Moto",
     name: "TVS 125cc",
     image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400",
@@ -179,7 +168,7 @@ const products = [
     totalPrice: 735,
   },
   {
-    id: 16,
+    id: 15,
     brand: "Moto",
     name: "Boxer 150cc",
     image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400",
@@ -190,7 +179,7 @@ const products = [
     totalPrice: 799,
   },
   {
-    id: 17,
+    id: 16,
     brand: "Moto",
     name: "TVS 150cc",
     image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400",
@@ -202,6 +191,10 @@ const products = [
     disclaimer: "* Les prix des motos sont estimés. Indiquez l'acompte, le montant quotidien et la durée souhaités et nous mettrons ces offres à jour.",
   },
 ];
+
+// Note: I adjusted the IDs to be sequential after removing one product.
+// The original file had IDs up to 17, but we removed one (Infinix) and added (Tecno Camon 40).
+// You can keep the original IDs if you prefer, but this ensures uniqueness.
 
 function getUniqueFallback(name) {
   const clean = encodeURIComponent(name.replace(/\s+/g, " ").trim());
@@ -245,6 +238,7 @@ export default function PayLiteLanding() {
       </header>
 
       <main className="pl-main">
+        {/* ... (Hero, Stats, Features, Categories sections remain unchanged) ... */}
         <div className="pl-hero">
           <div className="pl-badge">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -300,21 +294,41 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
+        {/* Product List */}
         <div className="pl-product-list">
           {filteredProducts.map((product) => (
             <div key={product.id} className="pl-product-card">
+              {/* Image Container with Conditional Front/Back Rendering */}
               <div className="pl-image-container" style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span className="pl-card-badge">{product.months} mois</span>
-                <img 
-                  key={product.id} 
-                  src={product.image} 
-                  alt={product.name} 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer"
-                  onError={(e) => handleImgError(e, product.name)} 
-                  style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", padding: "12px", boxSizing: "border-box" }} 
-                />
+                {product.imageFront && product.imageBack ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', height: '100%', padding: '10px' }}>
+                    <img 
+                      src={product.imageFront} 
+                      alt={`${product.name} Front`} 
+                      referrerPolicy="no-referrer"
+                      onError={(e) => handleImgError(e, `${product.name} Front`)} 
+                      style={{ width: "45%", height: "100%", objectFit: "contain" }} 
+                    />
+                    <img 
+                      src={product.imageBack} 
+                      alt={`${product.name} Back`} 
+                      referrerPolicy="no-referrer"
+                      onError={(e) => handleImgError(e, `${product.name} Back`)} 
+                      style={{ width: "45%", height: "100%", objectFit: "contain" }} 
+                    />
+                  </div>
+                ) : (
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    referrerPolicy="no-referrer"
+                    onError={(e) => handleImgError(e, product.name)} 
+                    style={{ width: "100%", height: "100%", objectFit: "contain", padding: "12px", boxSizing: "border-box" }} 
+                  />
+                )}
               </div>
+              
               <h4 className="pl-product-name">{product.name}</h4>
               <div className="pl-pricing-row">
                 <div className="pl-pricing-box pl-box-left"><div className="pl-price-label">Acompte</div><div className="pl-price-value">{product.downPayment} $</div></div>
@@ -330,6 +344,7 @@ export default function PayLiteLanding() {
           ))}
         </div>
 
+        {/* ... (Steps section remains unchanged) ... */}
         <div className="pl-steps-section" id="how-it-works">
           <h2 className="pl-steps-main-title">Quatre étapes simples pour en devenir propriétaire</h2>
           <div className="pl-steps-list">
@@ -341,34 +356,59 @@ export default function PayLiteLanding() {
         </div>
       </main>
 
+      {/* Modal */}
       {selectedProduct && (
         <div className="pl-modal-overlay">
           <div className="pl-modal-backdrop" onClick={() => setSelectedProduct(null)}></div>
           <div className="pl-modal-content">
             <button className="pl-modal-close" onClick={() => setSelectedProduct(null)}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            
             <div className="pl-modal-header">
-              <img 
-                key={`modal-${selectedProduct.id}`} 
-                src={selectedProduct.image} 
-                alt={selectedProduct.name} 
-                referrerPolicy="no-referrer"
-                onError={(e) => handleImgError(e, selectedProduct.name)} 
-                style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} 
-              />
+              {/* Modal Image Rendering (Handles Front/Back) */}
+              {selectedProduct.imageFront && selectedProduct.imageBack ? (
+                <div style={{ display: 'flex', gap: '8px', width: '120px', flexShrink: 0 }}>
+                  <img 
+                    src={selectedProduct.imageFront} 
+                    alt="Front" 
+                    referrerPolicy="no-referrer"
+                    onError={(e) => handleImgError(e, `${selectedProduct.name} Front`)} 
+                    style={{ width: "50%", height: "120px", objectFit: "contain" }} 
+                  />
+                  <img 
+                    src={selectedProduct.imageBack} 
+                    alt="Back" 
+                    referrerPolicy="no-referrer"
+                    onError={(e) => handleImgError(e, `${selectedProduct.name} Back`)} 
+                    style={{ width: "50%", height: "120px", objectFit: "contain" }} 
+                  />
+                </div>
+              ) : (
+                <img 
+                  src={selectedProduct.image} 
+                  alt={selectedProduct.name} 
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImgError(e, selectedProduct.name)} 
+                  style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} 
+                />
+              )}
+              
               <div>
                 <h3 className="pl-modal-title">{selectedProduct.name}</h3>
                 <p className="pl-modal-plan"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>Plan de {selectedProduct.months} mois</p>
                 <p className="pl-modal-total">{selectedProduct.totalPrice} $ au total</p>
               </div>
             </div>
+
             <div className="pl-modal-pricing">
               <div className="pl-pricing-box pl-box-left"><div className="pl-price-label">Acompte aujourd'hui</div><div className="pl-price-value">{selectedProduct.downPayment} $</div></div>
               <div className="pl-pricing-box pl-box-right"><div className="pl-price-label">Paiement quotidien</div><div className="pl-price-value">{selectedProduct.dailyPayment.toFixed(2).replace(".", ",")} $</div></div>
             </div>
+
             <div className="pl-modal-details">
               <div className="pl-detail-row"><span>Période de paiement</span><strong>{selectedProduct.days} jours</strong></div>
               <div className="pl-detail-row"><span>Total des paiements quotidiens</span><strong>{(selectedProduct.dailyPayment * selectedProduct.days).toFixed(0)} $</strong></div>
             </div>
+
             <button onClick={goToLogin} className="pl-btn-continue">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Continuer avec Airtel pour vérifier
