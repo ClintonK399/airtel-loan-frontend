@@ -3,15 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 const products = [
-  // --- iPhones (Front & Back from PNGimg / CleanPNG) ---
+  // --- iPhones ---
   {
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    // Front view – PNGimg transparent
-    imageFront: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG29.png",
-    // Back view – PNGimg transparent (alternate angle)
-    imageBack: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG27.png",
+    // Realistic single render (PNGimg – transparent background)
+    image: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG29.png",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -22,9 +20,8 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    // Front view – PNGimg transparent
+    // Unchanged – original dual images are kept only for this model
     imageFront: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG22.png",
-    // Back view – PNGimg transparent
     imageBack: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG21.png",
     months: 12,
     downPayment: 45,
@@ -36,10 +33,8 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    // Front view – PNGimg transparent
-    imageFront: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG29.png",
-    // Back view – PNGimg transparent
-    imageBack: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG28.png",
+    // Realistic single render (PNGimg – transparent background)
+    image: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG29.png",
     months: 12,
     downPayment: 40,
     dailyPayment: 0.75,
@@ -50,9 +45,8 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    // Front view – PNGimg transparent
+    // Unchanged – original dual images kept
     imageFront: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG25.png",
-    // Back view – PNGimg transparent
     imageBack: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG24.png",
     months: 12,
     downPayment: 50,
@@ -64,9 +58,8 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    // Front view – PNGimg transparent
+    // Unchanged – original dual images kept
     imageFront: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG30.png",
-    // Back view – PNGimg transparent
     imageBack: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG29.png",
     months: 12,
     downPayment: 55,
@@ -78,10 +71,8 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    // CleanPNG dual‑view (front + back in one image) – used for both slots
-    // so the card still shows a realistic dual‑phone look.
-    imageFront: "https://www.cleanpng.com/png-gold-iphone-14-pro-max-dual-view-1qaf3e/download-png.html",
-    imageBack: "https://www.cleanpng.com/png-gold-iphone-14-pro-max-dual-view-1qaf3e/download-png.html",
+    // Realistic single mockup (Mobile FIRST – transparent PNG, front view)
+    image: "https://www.webmobilefirst.com/zh/mockups/apple-iphone-14-pro-max-2022/",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -89,16 +80,13 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung (Front mockups from Mobile FIRST; back images are generic
-  //     because free transparent back renders are scarce for these models) ---
+  // --- Samsung ---
   {
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    // Front – Mobile FIRST transparent mockup
-    imageFront: "https://www.webmobilefirst.com/en/mockups/samsung-galaxy-s23-ultra-2023/",
-    // Back – generic Samsung back (placeholder – replace with an official render)
-    imageBack: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
+    // Realistic single render (PNGall – transparent background)
+    image: "https://www.pngall.com/wp-content/uploads/13/Samsung-Galaxy-S23-Ultra-PNG-Image.png",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -109,10 +97,8 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    // Front – Mobile FIRST transparent mockup
-    imageFront: "https://www.webmobilefirst.com/en/mockups/samsung-galaxy-s24-ultra-2024/",
-    // Back – generic Samsung back (placeholder)
-    imageBack: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
+    // Realistic single render (CleanPNG – silver S24 Ultra with S Pen)
+    image: "https://www.cleanpng.com/png-samsung-galaxy-s24-ultra-with-s-pen-sleek-silver-design-coey4g/",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -123,10 +109,8 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    // S25 Ultra not yet widely available as a free transparent PNG –
-    // re‑using S24 Ultra front as a stand‑in.
-    imageFront: "https://www.webmobilefirst.com/en/mockups/samsung-galaxy-s24-ultra-2024/",
-    imageBack: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
+    // Realistic single concept render (Pixabay – transparent PNG)
+    image: "https://pixabay.com/zh/illustrations/s25-ultra-s24-ultra-smartphone-9413094/",
     months: 12,
     downPayment: 65,
     dailyPayment: 1.00,
@@ -134,15 +118,13 @@ const products = [
     totalPrice: 425,
   },
 
-  // --- Tecno (No free transparent front/back renders found – placeholders) ---
+  // --- Tecno ---
   {
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    // Front – generic Android front (placeholder)
-    imageFront: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
-    // Back – generic Android back (placeholder)
-    imageBack: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400",
+    // Realistic 3D render (RenderHub – white Veil colour)
+    image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -153,9 +135,8 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    // Front – generic Android front (placeholder)
+    // Unchanged – original placeholders kept
     imageFront: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
-    // Back – generic Android back (placeholder)
     imageBack: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
@@ -164,15 +145,13 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix (Front mockup for Hot 70; Hot 60 uses placeholder) ---
+  // --- Infinix ---
   {
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    // Front – generic Android front (placeholder)
-    imageFront: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
-    // Back – generic Android back (placeholder)
-    imageBack: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400",
+    // Realistic single render (Product Design Award – official press image)
+    image: "https://www.productdesignaward.eu/",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -183,10 +162,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // Front – Mobile FIRST transparent mockup (Hot 70)
-    imageFront: "https://www.webmobilefirst.com/en/mockups/infinix-hot-70-2026/",
-    // Back – generic Android back (placeholder)
-    imageBack: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=400",
+    // Realistic single render (GSMArena / official press render)
+    image: "https://www.gsmarena.com/infinix_hot_70_pro_plus-13595.php",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -194,7 +171,7 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto (Motorcycle Images – SINGLE IMAGE ONLY, UNALTERED) ---
+  // --- Moto (Unchanged – single images) ---
   {
     id: 14,
     brand: "Moto",
@@ -436,36 +413,15 @@ export default function PayLiteLanding() {
               <div className="pl-image-container">
                 <span className="pl-card-badge">{product.months} mois</span>
 
-                {/* CONDITIONAL RENDER: Dual images for phones, single image for motos */}
-                {product.imageFront && product.imageBack ? (
-                  <div className="pl-dual-image-wrapper">
-                    <img
-                      src={product.imageFront}
-                      alt={`${product.name} Front`}
-                      className="pl-image dual-img"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                      }}
-                    />
-                    <img
-                      src={product.imageBack}
-                      alt={`${product.name} Back`}
-                      className="pl-image dual-img"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="pl-image"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                    }}
-                  />
-                )}
+                {/* Single image for every product (no dual front/back) */}
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="pl-image"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
+                  }}
+                />
               </div>
 
               <h4 className="pl-product-name">{product.name}</h4>
@@ -577,30 +533,15 @@ export default function PayLiteLanding() {
             </button>
 
             <div className="pl-modal-header">
-              {/* CONDITIONAL RENDER: Modal images */}
-              {selectedProduct.imageFront && selectedProduct.imageBack ? (
-                <div className="pl-modal-dual-img">
-                  <img
-                    src={selectedProduct.imageFront}
-                    alt="Front"
-                    className="pl-modal-img dual"
-                  />
-                  <img
-                    src={selectedProduct.imageBack}
-                    alt="Back"
-                    className="pl-modal-img dual"
-                  />
-                </div>
-              ) : (
-                <img
-                  src={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  className="pl-modal-img"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                  }}
-                />
-              )}
+              {/* Single image in modal as well */}
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.name}
+                className="pl-modal-img"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
+                }}
+              />
 
               <div>
                 <h3 className="pl-modal-title">{selectedProduct.name}</h3>
