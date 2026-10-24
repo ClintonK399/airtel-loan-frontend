@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 const products = [
-  // --- iPhones (Front/Back/Camera Views) ---
+  // --- iPhones (Front and Back Views) ---
   {
     id: 1,
     brand: "iPhone",
@@ -19,7 +19,7 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    image: "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.70,
@@ -30,7 +30,7 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 40,
     dailyPayment: 0.75,
@@ -41,7 +41,7 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    image: "https://images.unsplash.com/photo-1632516643720-e7f5d7d6b5f5?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.80,
@@ -52,7 +52,7 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    image: "https://images.unsplash.com/photo-1663499482523-1c0c1bae4ce1?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -63,7 +63,7 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?auto=format&fit=crop&q=80&w=400", 
+    image: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400", 
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -71,7 +71,7 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung (Front/Back/Camera Views) ---
+  // --- Samsung (Front and Back Views) ---
   {
     id: 7,
     brand: "Samsung",
@@ -87,6 +87,7 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
+    // This is the exact image style from your screenshot
     image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 50,
@@ -106,7 +107,7 @@ const products = [
     totalPrice: 425,
   },
 
-  // --- Tecno (Front/Back/Camera Views) ---
+  // --- Tecno (Front and Back Views) ---
   {
     id: 10,
     brand: "Tecno",
@@ -130,7 +131,7 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix (Front/Back/Camera Views) ---
+  // --- Infinix (Front and Back Views) ---
   {
     id: 12,
     brand: "Infinix",
