@@ -1203,38 +1203,62 @@ body {
   position: relative;
 }
 
-.pl-card-badge {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  background-color: #fef9c3;
-  color: #854d0e;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 4px;
-  z-index: 10;
-}
-
+/* ⭐ NEW DUAL IMAGE CONTAINER STYLES ⭐ */
 .pl-image-container {
-  background-color: #f3f4f6;
-  border-radius: 16px;
-  height: 192px;
-  margin-bottom: 16px;
-  overflow: hidden;
+  position: relative;
+  background-color: #e5e7eb;
+  /* Light gray background */
+  border-radius: 12px 12px 0 0;
+  padding: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 220px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  /* Kept from original */
 }
 
-.pl-image {
+.pl-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #facc15;
+  color: #422006;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  z-index: 10;
+}
+
+/* Wrapper for splitting the front/back view */
+.pl-dual-image-wrapper {
+  display: flex;
+  gap: 12px;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  mix-blend-mode: multiply;
-  transition: transform 0.5s;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
+/* Base image styling */
+.pl-image {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+/* The split size logic for phones */
+.pl-image.dual-img {
+  width: 45%;
+  max-height: 180px;
+  /* Adds a studio-style drop shadow assuming you use transparent PNGs */
+  filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.15));
+}
+
+/* Keeps the hover effect */
 .pl-product-card:hover .pl-image {
   transform: scale(1.05);
 }
@@ -1243,12 +1267,15 @@ body {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 16px;
+  padding: 0 16px;
+  /* Added padding to align with card content */
 }
 
 .pl-pricing-row {
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+  padding: 0 16px;
 }
 
 .pl-pricing-box {
@@ -1283,6 +1310,7 @@ body {
   font-size: 14px;
   color: #4b5563;
   margin-bottom: 16px;
+  padding: 0 16px;
 }
 
 .pl-card-footer {
@@ -1290,7 +1318,7 @@ body {
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid #f3f4f6;
-  padding-top: 16px;
+  padding: 16px 16px 0 16px;
 }
 
 .pl-total-label {
@@ -1320,6 +1348,15 @@ body {
 
 .pl-btn-demand:active {
   transform: scale(0.95);
+}
+
+/* Extracted standard disclaimer styling */
+.pl-disclaimer-text {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 12px;
+  line-height: 1.4;
+  padding: 0 16px;
 }
 
 /* --- Modal / Bottom Sheet --- */
@@ -1400,12 +1437,16 @@ body {
   margin-top: 16px;
 }
 
-.pl-modal-img {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
-  object-fit: cover;
-  background-color: #f3f4f6;
+/* ⭐ NEW MODAL DUAL IMAGE STYLES ⭐ */
+.pl-modal-dual-img {
+  display: flex;
+  gap: 8px;
+  width: 120px;
+}
+
+.pl-modal-img.dual {
+  width: 50%;
+  object-fit: contain;
 }
 
 .pl-modal-title {

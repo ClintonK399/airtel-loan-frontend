@@ -8,7 +8,8 @@ const products = [
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    image: "https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -19,7 +20,8 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    image: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.70,
@@ -30,7 +32,8 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    image: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 40,
     dailyPayment: 0.75,
@@ -41,7 +44,8 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.80,
@@ -52,7 +56,8 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    image: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -63,7 +68,8 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    image: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400", 
+    imageFront: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400", 
+    imageBack: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -76,7 +82,8 @@ const products = [
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    image: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1679051515252-873b22415124?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -87,8 +94,8 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    // This is the exact image style from your screenshot
-    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1707227156558-74219a0a229d?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -99,7 +106,8 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    image: "https://images.unsplash.com/photo-1707227156558-74219a0a229d?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1707227156558-74219a0a229d?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 65,
     dailyPayment: 1.00,
@@ -112,7 +120,8 @@ const products = [
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400", 
+    imageFront: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400", 
+    imageBack: "https://images.unsplash.com/photo-1644982647844-5ee1bdc5b114?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -123,7 +132,8 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    image: "https://images.unsplash.com/photo-1644982647844-5ee1bdc5b114?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1644982647844-5ee1bdc5b114?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -136,7 +146,8 @@ const products = [
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -147,7 +158,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400",
+    imageFront: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400",
+    imageBack: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -155,7 +167,7 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto (Motorcycle Images) ---
+  // --- Moto (Motorcycle Images - SINGLE IMAGE ONLY) ---
   {
     id: 14,
     brand: "Moto",
@@ -216,7 +228,6 @@ export default function PayLiteLanding() {
       ? products
       : products.filter((p) => p.brand === activeCategory);
 
-  // Function to scroll smoothly to specific sections
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -224,7 +235,6 @@ export default function PayLiteLanding() {
     }
   };
 
-  // Saves the selected device before navigating to login
   const goToLogin = () => {
     if (selectedProduct) {
       localStorage.setItem('selectedDevice', JSON.stringify(selectedProduct));
@@ -304,7 +314,6 @@ export default function PayLiteLanding() {
             <h4 className="pl-feature-title">Derniers appareils</h4>
             <p className="pl-feature-desc">iPhone, Galaxy Ultra, Tecno et Infinix en stock.</p>
           </div>
-
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
@@ -317,7 +326,6 @@ export default function PayLiteLanding() {
             <h4 className="pl-feature-title">Plans quotidiens</h4>
             <p className="pl-feature-desc">Remboursez un peu chaque jour sur 12 à 18 mois.</p>
           </div>
-
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
@@ -328,7 +336,6 @@ export default function PayLiteLanding() {
             <h4 className="pl-feature-title">Aucuns frais cachés</h4>
             <p className="pl-feature-desc">Acompte et montant quotidien clairs dès le départ.</p>
           </div>
-
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
@@ -345,14 +352,12 @@ export default function PayLiteLanding() {
         <div className="pl-categories" id="offers">
           <h2 className="pl-section-subtitle">Choisissez une marque</h2>
           <h3 className="pl-section-title">Parcourez les offres disponibles</h3>
-
           <div className="pl-dropdown">
             <span>Toutes les offres</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-
           <div className="pl-tabs">
             {categories.map((cat) => (
               <button
@@ -370,17 +375,36 @@ export default function PayLiteLanding() {
         <div className="pl-product-list">
           {filteredProducts.map((product) => (
             <div key={product.id} className="pl-product-card">
-              <span className="pl-card-badge">{product.months} mois</span>
+              
+              {/* Product Image Container handling both Phones (Front/Back) & Moto (Single) */}
               <div className="pl-image-container">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="pl-image" 
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                  }}
-                />
+                <span className="pl-card-badge">{product.months} mois</span>
+                
+                {product.imageFront && product.imageBack ? (
+                  <div className="pl-dual-image-wrapper">
+                    <img 
+                      src={product.imageFront} 
+                      alt={`${product.name} Front`} 
+                      className="pl-image dual-img" 
+                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+                    />
+                    <img 
+                      src={product.imageBack} 
+                      alt={`${product.name} Back`} 
+                      className="pl-image dual-img" 
+                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+                    />
+                  </div>
+                ) : (
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="pl-image" 
+                    onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+                  />
+                )}
               </div>
+
               <h4 className="pl-product-name">{product.name}</h4>
 
               <div className="pl-pricing-row">
@@ -413,7 +437,7 @@ export default function PayLiteLanding() {
               
               {/* Disclaimer text for Moto items */}
               {product.disclaimer && (
-                <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "12px", lineHeight: "1.4" }}>
+                <p className="pl-disclaimer-text">
                   {product.disclaimer}
                 </p>
               )}
@@ -426,7 +450,6 @@ export default function PayLiteLanding() {
           <h2 className="pl-steps-main-title">
             Quatre étapes simples pour en devenir propriétaire
           </h2>
-          
           <div className="pl-steps-list">
             <div className="pl-step-card">
               <div className="pl-step-number">1</div>
@@ -435,7 +458,6 @@ export default function PayLiteLanding() {
                 Sélectionnez un téléphone ou une moto parmi les offres et vérifiez l'acompte et le montant quotidien.
               </p>
             </div>
-
             <div className="pl-step-card">
               <div className="pl-step-number">2</div>
               <h3 className="pl-step-title">Payez l'acompte</h3>
@@ -443,7 +465,6 @@ export default function PayLiteLanding() {
                 Versez le petit acompte unique pour réserver votre article et démarrer votre plan.
               </p>
             </div>
-
             <div className="pl-step-card">
               <div className="pl-step-number">3</div>
               <h3 className="pl-step-title">Payez chaque jour</h3>
@@ -451,7 +472,6 @@ export default function PayLiteLanding() {
                 Remboursez un petit montant fixe chaque jour sur la durée choisie de 12 à 18 mois.
               </p>
             </div>
-
             <div className="pl-step-card">
               <div className="pl-step-number">4</div>
               <h3 className="pl-step-title">Devenez propriétaire</h3>
@@ -477,14 +497,21 @@ export default function PayLiteLanding() {
             </button>
 
             <div className="pl-modal-header">
-              <img 
-                src={selectedProduct.image} 
-                alt={selectedProduct.name} 
-                className="pl-modal-img"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
-                }}
-              />
+              {/* Conditional Modal Image Rendering */}
+              {selectedProduct.imageFront && selectedProduct.imageBack ? (
+                <div className="pl-modal-dual-img">
+                  <img src={selectedProduct.imageFront} alt="Front" className="pl-modal-img dual" />
+                  <img src={selectedProduct.imageBack} alt="Back" className="pl-modal-img dual" />
+                </div>
+              ) : (
+                <img 
+                  src={selectedProduct.image} 
+                  alt={selectedProduct.name} 
+                  className="pl-modal-img"
+                  onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+                />
+              )}
+              
               <div>
                 <h3 className="pl-modal-title">{selectedProduct.name}</h3>
                 <p className="pl-modal-plan">
