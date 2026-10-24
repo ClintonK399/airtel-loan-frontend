@@ -146,8 +146,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: Using the standard GSMArena bigpic CDN for the Hot 50 Pro Plus
-    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro-plus.jpg",
+    // ✅ FIXED: Hotlink-friendly direct link for the Hot 50 Pro+ (Blue overlapping design)
+    image: "https://i.ibb.co/6P6Z62Z/infinix-hot-50-pro-plus.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
