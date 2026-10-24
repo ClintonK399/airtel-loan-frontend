@@ -2,13 +2,19 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 
+/* -----------------------------------------
+   Product catalog
+   Every phone uses a DIRECT image URL.
+   If a URL fails, a unique placeholder with
+   the phone's name is displayed instead of
+   a generic duplicate photo.
+   ----------------------------------------- */
 const products = [
-  // --- iPhones ---
+  // --- iPhones (PNGimg transparent renders) ---
   {
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    // Direct PNG from PNGimg – real iPhone 12 render
     image: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG29.png",
     months: 12,
     downPayment: 35,
@@ -20,11 +26,10 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    // Direct PNG from PNGimg – real iPhone 12 Pro Max render
     image: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG22.png",
     months: 12,
     downPayment: 45,
-    dailyPayment: 0.70,
+    dailyPayment: 0.7,
     days: 360,
     totalPrice: 297,
   },
@@ -32,7 +37,6 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    // Direct PNG from PNGimg – real iPhone 13 render
     image: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG29.png",
     months: 12,
     downPayment: 40,
@@ -44,11 +48,10 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    // Direct PNG from PNGimg – real iPhone 13 Pro Max render
     image: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG25.png",
     months: 12,
     downPayment: 50,
-    dailyPayment: 0.80,
+    dailyPayment: 0.8,
     days: 360,
     totalPrice: 338,
   },
@@ -56,7 +59,6 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    // Direct PNG from PNGimg – real iPhone 14 render
     image: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG30.png",
     months: 12,
     downPayment: 55,
@@ -68,7 +70,6 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    // Direct PNG from PNGimg – real iPhone 14 Pro Max render
     image: "https://pngimg.com/uploads/iphone_14_pro_max/iphone_14_pro_max_PNG29.png",
     months: 12,
     downPayment: 55,
@@ -77,13 +78,13 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung ---
+  // --- Samsung (GSMArena official renders) ---
   {
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    // Direct PNG from PNGall – real S23 Ultra render
-    image: "https://www.pngall.com/wp-content/uploads/13/Samsung-Galaxy-S23-Ultra-PNG-Image.png",
+    image:
+      "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s23-ultra-5g-1.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -94,8 +95,8 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    // Direct JPG from GSMArena – official S24 Ultra render
-    image: "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-1.jpg",
+    image:
+      "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-1.jpg",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -106,22 +107,22 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    // Direct JPG from Gizmochina – concept render of S25 Ultra
-    image: "https://www.gizmochina.com/wp-content/uploads/2023/11/Samsung-Galaxy-S25-Ultra-Concept-1.jpg",
+    image:
+      "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s25-ultra-1.jpg",
     months: 12,
     downPayment: 65,
-    dailyPayment: 1.00,
+    dailyPayment: 1.0,
     days: 360,
     totalPrice: 425,
   },
 
-  // --- Tecno ---
+  // --- Tecno (RenderHub 3D renders) ---
   {
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    // Direct JPG from RenderHub – real Spark 40 render (Veil White)
-    image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
+    image:
+      "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -132,8 +133,8 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    // Direct JPG from RenderHub – real Spark 50 render (Halo Blue)
-    image: "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
+    image:
+      "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -141,13 +142,13 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix ---
+  // --- Infinix (GSMArena official renders) ---
   {
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    // Direct JPG from Gizmochina – official Hot 60 Pro Plus render
-    image: "https://www.gizmochina.com/wp-content/uploads/2024/03/Infinix-Hot-60-Pro-Plus-1.jpg",
+    image:
+      "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-60-pro-plus-1.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -158,8 +159,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // Direct JPG from GSMArena – official Hot 70 Pro Plus render
-    image: "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-70-pro-plus-1.jpg",
+    image:
+      "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-70-pro-plus-1.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -172,10 +173,11 @@ const products = [
     id: 14,
     brand: "Moto",
     name: "Boxer 125cc",
-    image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 60,
-    dailyPayment: 1.20,
+    dailyPayment: 1.2,
     days: 540,
     totalPrice: 708,
   },
@@ -183,7 +185,8 @@ const products = [
     id: 15,
     brand: "Moto",
     name: "TVS 125cc",
-    image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 60,
     dailyPayment: 1.25,
@@ -194,7 +197,8 @@ const products = [
     id: 16,
     brand: "Moto",
     name: "Boxer 150cc",
-    image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 70,
     dailyPayment: 1.35,
@@ -205,10 +209,11 @@ const products = [
     id: 17,
     brand: "Moto",
     name: "TVS 150cc",
-    image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 70,
-    dailyPayment: 1.40,
+    dailyPayment: 1.4,
     days: 540,
     totalPrice: 826,
     disclaimer:
@@ -216,8 +221,17 @@ const products = [
   },
 ];
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400";
+/* -----------------------------------------
+   Per-product unique fallback.
+   If a photo fails to load, we generate a
+   placeholder with that phone's own name —
+   so you NEVER see two identical photos.
+   ----------------------------------------- */
+function getUniqueFallback(name) {
+  const clean = encodeURIComponent(name.replace(/\s+/g, " ").trim());
+  // placehold.co returns an SVG placeholder with the model name on a red Airtel colour
+  return `https://placehold.co/600x600/DA1C1C/ffffff?text=${clean}&font=montserrat`;
+}
 
 const categories = ["Tous", "iPhone", "Samsung", "Tecno", "Infinix", "Moto"];
 
@@ -245,9 +259,18 @@ export default function PayLiteLanding() {
     navigate("/login");
   };
 
+  /* Attach this to every <img> so a failed load becomes a
+     product-specific placeholder — never a shared duplicate. */
+  const handleImgError = (e, productName) => {
+    const img = e.currentTarget;
+    if (img.dataset.fallbackApplied === "true") return;
+    img.dataset.fallbackApplied = "true";
+    img.src = getUniqueFallback(productName);
+  };
+
   return (
     <div className="paylite-container">
-      {/* Header */}
+      {/* ===================== HEADER ===================== */}
       <header className="pl-header">
         <div className="pl-logo-wrapper">
           <div className="pl-logo-icon">
@@ -261,7 +284,7 @@ export default function PayLiteLanding() {
       </header>
 
       <main className="pl-main">
-        {/* Hero Section */}
+        {/* ===================== HERO ===================== */}
         <div className="pl-hero">
           <div className="pl-badge">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,7 +321,7 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* ===================== STATS ===================== */}
         <div className="pl-stats-row">
           <div className="pl-stat-item">
             <div className="pl-stat-value">18+</div>
@@ -320,7 +343,7 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Features Grid */}
+        {/* ===================== FEATURES ===================== */}
         <div className="pl-features-grid">
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
@@ -374,7 +397,7 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Categories */}
+        {/* ===================== CATEGORIES ===================== */}
         <div className="pl-categories" id="offers">
           <h2 className="pl-section-subtitle">Choisissez une marque</h2>
           <h3 className="pl-section-title">Parcourez les offres disponibles</h3>
@@ -402,20 +425,34 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Product List */}
+        {/* ===================== PRODUCT LIST ===================== */}
         <div className="pl-product-list">
           {filteredProducts.map((product) => (
             <div key={product.id} className="pl-product-card">
-              <div className="pl-image-container">
+              <div
+                className="pl-image-container"
+                style={{
+                  height: "260px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <span className="pl-card-badge">{product.months} mois</span>
 
-                {/* Single image for every product (no dual front/back) */}
                 <img
+                  key={product.id} /* forces React to fully reset on category switch */
                   src={product.image}
                   alt={product.name}
-                  className="pl-image"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
+                  loading="lazy"
+                  onError={(e) => handleImgError(e, product.name)}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    display: "block",
+                    padding: "12px",
+                    boxSizing: "border-box",
                   }}
                 />
               </div>
@@ -463,7 +500,7 @@ export default function PayLiteLanding() {
           ))}
         </div>
 
-        {/* 4 Steps Section */}
+        {/* ===================== 4 STEPS ===================== */}
         <div className="pl-steps-section" id="how-it-works">
           <h2 className="pl-steps-main-title">
             Quatre étapes simples pour en devenir propriétaire
@@ -505,7 +542,7 @@ export default function PayLiteLanding() {
         </div>
       </main>
 
-      {/* Modal / Bottom Sheet */}
+      {/* ===================== MODAL ===================== */}
       {selectedProduct && (
         <div className="pl-modal-overlay">
           <div
@@ -529,13 +566,17 @@ export default function PayLiteLanding() {
             </button>
 
             <div className="pl-modal-header">
-              {/* Single image in modal as well */}
               <img
+                key={`modal-${selectedProduct.id}`}
                 src={selectedProduct.image}
                 alt={selectedProduct.name}
-                className="pl-modal-img"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
+                onError={(e) => handleImgError(e, selectedProduct.name)}
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  objectFit: "contain",
+                  display: "block",
+                  flexShrink: 0,
                 }}
               />
 
