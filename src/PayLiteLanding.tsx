@@ -146,9 +146,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: Amazon CDN link for the Infinix Hot 50 Pro+ (Blue overlapping design)
-    // Amazon's servers allow direct linking and do not expire.
-    image: "https://m.media-amazon.com/images/I/71n-sB7G0oL._AC_SL1500_.jpg",
+    // ✅ Using the direct GSMArena link for the Hot 50 Pro+
+    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro-plus.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -228,22 +227,11 @@ export default function PayLiteLanding() {
     navigate("/login");
   };
 
-  // ✅ Upgraded Error Handler: Tries a backup image before showing the red box
   const handleImgError = (e, productName) => {
     const img = e.currentTarget;
-    
-    // Step 1: If it hasn't tried the backup yet, try the backup.
-    if (img.dataset.fallbackStep === undefined) {
-      img.dataset.fallbackStep = "1";
-      img.src = "https://m.media-amazon.com/images/I/61tNl0V2l8L._AC_SL1200_.jpg"; // Backup Infinix image
-      return;
-    }
-
-    // Step 2: If the backup also fails, show the red placeholder box.
-    if (img.dataset.fallbackStep === "1") {
-      img.dataset.fallbackStep = "2";
-      img.src = getUniqueFallback(productName);
-    }
+    if (img.dataset.fallbackApplied === "true") return;
+    img.dataset.fallbackApplied = "true";
+    img.src = getUniqueFallback(productName);
   };
 
   return (
@@ -317,7 +305,16 @@ export default function PayLiteLanding() {
             <div key={product.id} className="pl-product-card">
               <div className="pl-image-container" style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span className="pl-card-badge">{product.months} mois</span>
-                <img key={product.id} src={product.image} alt={product.name} loading="lazy" onError={(e) => handleImgError(e, product.name)} style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", padding: "12px", boxSizing: "border-box" }} />
+                <img 
+                  key={product.id} 
+                  src={product.image} 
+                  alt={product.name} 
+                  loading="lazy" 
+                  // ✅ THIS FIXES THE HOTLINK PROTECTION
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImgError(e, product.name)} 
+                  style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", padding: "12px", boxSizing: "border-box" }} 
+                />
               </div>
               <h4 className="pl-product-name">{product.name}</h4>
               <div className="pl-pricing-row">
@@ -351,7 +348,15 @@ export default function PayLiteLanding() {
           <div className="pl-modal-content">
             <button className="pl-modal-close" onClick={() => setSelectedProduct(null)}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
             <div className="pl-modal-header">
-              <img key={`modal-${selectedProduct.id}`} src={selectedProduct.image} alt={selectedProduct.name} onError={(e) => handleImgError(e, selectedProduct.name)} style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} />
+              <img 
+                key={`modal-${selectedProduct.id}`} 
+                src={selectedProduct.image} 
+                alt={selectedProduct.name} 
+                // ✅ THIS FIXES THE HOTLINK PROTECTION IN THE MODAL
+                referrerPolicy="no-referrer"
+                onError={(e) => handleImgError(e, selectedProduct.name)} 
+                style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} 
+              />
               <div>
                 <h3 className="pl-modal-title">{selectedProduct.name}</h3>
                 <p className="pl-modal-plan"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>Plan de {selectedProduct.months} mois</p>
