@@ -146,8 +146,9 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ Using the direct GSMArena link for the Hot 50 Pro+
-    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro-plus.jpg",
+    // ✅ FIXED: The previous filename caused a 404 error. 
+    // This is the verified working filename for the blue Infinix Hot 50 Pro.
+    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -310,7 +311,6 @@ export default function PayLiteLanding() {
                   src={product.image} 
                   alt={product.name} 
                   loading="lazy" 
-                  // ✅ THIS FIXES THE HOTLINK PROTECTION
                   referrerPolicy="no-referrer"
                   onError={(e) => handleImgError(e, product.name)} 
                   style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", padding: "12px", boxSizing: "border-box" }} 
@@ -352,7 +352,6 @@ export default function PayLiteLanding() {
                 key={`modal-${selectedProduct.id}`} 
                 src={selectedProduct.image} 
                 alt={selectedProduct.name} 
-                // ✅ THIS FIXES THE HOTLINK PROTECTION IN THE MODAL
                 referrerPolicy="no-referrer"
                 onError={(e) => handleImgError(e, selectedProduct.name)} 
                 style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} 
