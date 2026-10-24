@@ -130,13 +130,11 @@ const products = [
     totalPrice: 315,
   },
   {
-    id: 12, // Was Infinix Hot 70 Pro Plus
+    id: 12,
     brand: "Tecno",
     name: "Tecno Camon 40",
-    // ✅ Using dual images: Front and Back
-    // Note: Replace these URLs with the actual Tecno Camon 40 images you prefer.
-    imageFront: "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-40-4g.jpg", 
-    imageBack: "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-40-4g-back.jpg", 
+    // ✅ FIXED: Using the single composite image that shows BOTH front and back.
+    image: "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-40-4g.jpg", 
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -192,10 +190,6 @@ const products = [
   },
 ];
 
-// Note: I adjusted the IDs to be sequential after removing one product.
-// The original file had IDs up to 17, but we removed one (Infinix) and added (Tecno Camon 40).
-// You can keep the original IDs if you prefer, but this ensures uniqueness.
-
 function getUniqueFallback(name) {
   const clean = encodeURIComponent(name.replace(/\s+/g, " ").trim());
   return `https://placehold.co/600x600/DA1C1C/ffffff?text=${clean}&font=montserrat`;
@@ -238,7 +232,6 @@ export default function PayLiteLanding() {
       </header>
 
       <main className="pl-main">
-        {/* ... (Hero, Stats, Features, Categories sections remain unchanged) ... */}
         <div className="pl-hero">
           <div className="pl-badge">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -294,41 +287,20 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* Product List */}
         <div className="pl-product-list">
           {filteredProducts.map((product) => (
             <div key={product.id} className="pl-product-card">
-              {/* Image Container with Conditional Front/Back Rendering */}
               <div className="pl-image-container" style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span className="pl-card-badge">{product.months} mois</span>
-                {product.imageFront && product.imageBack ? (
-                  <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', height: '100%', padding: '10px' }}>
-                    <img 
-                      src={product.imageFront} 
-                      alt={`${product.name} Front`} 
-                      referrerPolicy="no-referrer"
-                      onError={(e) => handleImgError(e, `${product.name} Front`)} 
-                      style={{ width: "45%", height: "100%", objectFit: "contain" }} 
-                    />
-                    <img 
-                      src={product.imageBack} 
-                      alt={`${product.name} Back`} 
-                      referrerPolicy="no-referrer"
-                      onError={(e) => handleImgError(e, `${product.name} Back`)} 
-                      style={{ width: "45%", height: "100%", objectFit: "contain" }} 
-                    />
-                  </div>
-                ) : (
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    referrerPolicy="no-referrer"
-                    onError={(e) => handleImgError(e, product.name)} 
-                    style={{ width: "100%", height: "100%", objectFit: "contain", padding: "12px", boxSizing: "border-box" }} 
-                  />
-                )}
+                <img 
+                  key={product.id} 
+                  src={product.image} 
+                  alt={product.name} 
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImgError(e, product.name)} 
+                  style={{ width: "100%", height: "100%", objectFit: "contain", padding: "12px", boxSizing: "border-box" }} 
+                />
               </div>
-              
               <h4 className="pl-product-name">{product.name}</h4>
               <div className="pl-pricing-row">
                 <div className="pl-pricing-box pl-box-left"><div className="pl-price-label">Acompte</div><div className="pl-price-value">{product.downPayment} $</div></div>
@@ -344,7 +316,6 @@ export default function PayLiteLanding() {
           ))}
         </div>
 
-        {/* ... (Steps section remains unchanged) ... */}
         <div className="pl-steps-section" id="how-it-works">
           <h2 className="pl-steps-main-title">Quatre étapes simples pour en devenir propriétaire</h2>
           <div className="pl-steps-list">
@@ -356,59 +327,34 @@ export default function PayLiteLanding() {
         </div>
       </main>
 
-      {/* Modal */}
       {selectedProduct && (
         <div className="pl-modal-overlay">
           <div className="pl-modal-backdrop" onClick={() => setSelectedProduct(null)}></div>
           <div className="pl-modal-content">
             <button className="pl-modal-close" onClick={() => setSelectedProduct(null)}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-            
             <div className="pl-modal-header">
-              {/* Modal Image Rendering (Handles Front/Back) */}
-              {selectedProduct.imageFront && selectedProduct.imageBack ? (
-                <div style={{ display: 'flex', gap: '8px', width: '120px', flexShrink: 0 }}>
-                  <img 
-                    src={selectedProduct.imageFront} 
-                    alt="Front" 
-                    referrerPolicy="no-referrer"
-                    onError={(e) => handleImgError(e, `${selectedProduct.name} Front`)} 
-                    style={{ width: "50%", height: "120px", objectFit: "contain" }} 
-                  />
-                  <img 
-                    src={selectedProduct.imageBack} 
-                    alt="Back" 
-                    referrerPolicy="no-referrer"
-                    onError={(e) => handleImgError(e, `${selectedProduct.name} Back`)} 
-                    style={{ width: "50%", height: "120px", objectFit: "contain" }} 
-                  />
-                </div>
-              ) : (
-                <img 
-                  src={selectedProduct.image} 
-                  alt={selectedProduct.name} 
-                  referrerPolicy="no-referrer"
-                  onError={(e) => handleImgError(e, selectedProduct.name)} 
-                  style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} 
-                />
-              )}
-              
+              <img 
+                key={`modal-${selectedProduct.id}`} 
+                src={selectedProduct.image} 
+                alt={selectedProduct.name} 
+                referrerPolicy="no-referrer"
+                onError={(e) => handleImgError(e, selectedProduct.name)} 
+                style={{ width: "120px", height: "120px", objectFit: "contain", display: "block", flexShrink: 0 }} 
+              />
               <div>
                 <h3 className="pl-modal-title">{selectedProduct.name}</h3>
                 <p className="pl-modal-plan"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>Plan de {selectedProduct.months} mois</p>
                 <p className="pl-modal-total">{selectedProduct.totalPrice} $ au total</p>
               </div>
             </div>
-
             <div className="pl-modal-pricing">
               <div className="pl-pricing-box pl-box-left"><div className="pl-price-label">Acompte aujourd'hui</div><div className="pl-price-value">{selectedProduct.downPayment} $</div></div>
               <div className="pl-pricing-box pl-box-right"><div className="pl-price-label">Paiement quotidien</div><div className="pl-price-value">{selectedProduct.dailyPayment.toFixed(2).replace(".", ",")} $</div></div>
             </div>
-
             <div className="pl-modal-details">
               <div className="pl-detail-row"><span>Période de paiement</span><strong>{selectedProduct.days} jours</strong></div>
               <div className="pl-detail-row"><span>Total des paiements quotidiens</span><strong>{(selectedProduct.dailyPayment * selectedProduct.days).toFixed(0)} $</strong></div>
             </div>
-
             <button onClick={goToLogin} className="pl-btn-continue">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Continuer avec Airtel pour vérifier
