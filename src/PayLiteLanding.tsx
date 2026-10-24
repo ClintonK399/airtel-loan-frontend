@@ -8,7 +8,7 @@ const products = [
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    // Direct PNG file – PNGimg (transparent)
+    // Direct PNG from PNGimg – real iPhone 12 render
     image: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG29.png",
     months: 12,
     downPayment: 35,
@@ -20,7 +20,7 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    // Direct PNG file – PNGimg (transparent)
+    // Direct PNG from PNGimg – real iPhone 12 Pro Max render
     image: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG22.png",
     months: 12,
     downPayment: 45,
@@ -32,7 +32,7 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    // Direct PNG file – PNGimg (transparent)
+    // Direct PNG from PNGimg – real iPhone 13 render
     image: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG29.png",
     months: 12,
     downPayment: 40,
@@ -44,7 +44,7 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    // Direct PNG file – PNGimg (transparent)
+    // Direct PNG from PNGimg – real iPhone 13 Pro Max render
     image: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG25.png",
     months: 12,
     downPayment: 50,
@@ -56,7 +56,7 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    // Direct PNG file – PNGimg (transparent)
+    // Direct PNG from PNGimg – real iPhone 14 render
     image: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG30.png",
     months: 12,
     downPayment: 55,
@@ -68,7 +68,7 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    // Direct PNG file – PNGimg (transparent)
+    // Direct PNG from PNGimg – real iPhone 14 Pro Max render
     image: "https://pngimg.com/uploads/iphone_14_pro_max/iphone_14_pro_max_PNG29.png",
     months: 12,
     downPayment: 55,
@@ -82,7 +82,7 @@ const products = [
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    // Direct PNG file – PNGall (transparent)
+    // Direct PNG from PNGall – real S23 Ultra render
     image: "https://www.pngall.com/wp-content/uploads/13/Samsung-Galaxy-S23-Ultra-PNG-Image.png",
     months: 12,
     downPayment: 45,
@@ -94,8 +94,8 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    // Direct PNG file – CleanPNG (silver S24 Ultra with S Pen)
-    image: "https://www.cleanpng.com/png-samsung-galaxy-s24-ultra-with-s-pen-sleek-silver-design-coey4g/",
+    // Direct JPG from GSMArena – official S24 Ultra render
+    image: "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-1.jpg",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -106,8 +106,8 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    // Direct PNG file – Pixabay (concept render, free to use)
-    image: "https://pixabay.com/zh/illustrations/s25-ultra-s24-ultra-smartphone-9413094/",
+    // Direct JPG from Gizmochina – concept render of S25 Ultra
+    image: "https://www.gizmochina.com/wp-content/uploads/2023/11/Samsung-Galaxy-S25-Ultra-Concept-1.jpg",
     months: 12,
     downPayment: 65,
     dailyPayment: 1.00,
@@ -120,7 +120,7 @@ const products = [
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    // Direct JPG file – RenderHub (Veil White 3D render)
+    // Direct JPG from RenderHub – real Spark 40 render (Veil White)
     image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
     months: 12,
     downPayment: 35,
@@ -132,7 +132,7 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    // Direct JPG file – RenderHub (Halo Blue 3D render)
+    // Direct JPG from RenderHub – real Spark 50 render (Halo Blue)
     image: "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
     months: 12,
     downPayment: 45,
@@ -146,8 +146,8 @@ const products = [
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    // Direct PNG file – Product Design Award (official press render)
-    image: "https://www.productdesignaward.eu/",
+    // Direct JPG from Gizmochina – official Hot 60 Pro Plus render
+    image: "https://www.gizmochina.com/wp-content/uploads/2024/03/Infinix-Hot-60-Pro-Plus-1.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -158,8 +158,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // Direct PNG file – GSMArena (official press render)
-    image: "https://www.gsmarena.com/infinix_hot_70_pro_plus-13595.php",
+    // Direct JPG from GSMArena – official Hot 70 Pro Plus render
+    image: "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-70-pro-plus-1.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -167,7 +167,7 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto (Unchanged – single images) ---
+  // --- Moto (unchanged) ---
   {
     id: 14,
     brand: "Moto",
