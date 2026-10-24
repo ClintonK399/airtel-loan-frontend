@@ -275,7 +275,7 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* ===================== NEW: LOAN LIMIT SECTION ===================== */}
+        {/* ===================== LOAN LIMIT SECTION ===================== */}
         <div 
           style={{
             marginBottom: "32px",
@@ -301,7 +301,7 @@ export default function PayLiteLanding() {
           </button>
         </div>
 
-        {/* ===================== NEW: CAR HIRE SECTION ===================== */}
+        {/* ===================== CAR HIRE SECTION ===================== */}
         <div 
           style={{
             marginBottom: "32px",
