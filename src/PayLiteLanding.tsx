@@ -194,7 +194,7 @@ function getUniqueFallback(name) {
   return `https://placehold.co/600x600/DA1C1C/ffffff?text=${clean}&font=montserrat`;
 }
 
-const categories = ["Tous", "iPhone", "Samsung", "Tecno", "Infinix", "Moto"];
+const categories = ["Tous", "iPhone", "Samsung", "Tecno", "Moto"];
 
 export default function PayLiteLanding() {
   const [activeCategory, setActiveCategory] = useState("Tous");
