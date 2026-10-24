@@ -146,8 +146,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: Direct render CDN link (replaces the broken GSMArena link)
-    image: "https://gloimg.gbtcdn.com/soa/gb/pdm-product-pic/Electronic/2024/06/17/goods-img/1718621234567.jpg",
+    // ✅ FIX: Local path. Ensure "hot70.png" is saved in your project's /public folder.
+    image: "/hot70.png",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,

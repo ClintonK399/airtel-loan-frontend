@@ -1,0 +1,12 @@
+  {
+    id: 13,
+    brand: "Infinix",
+    name: "Infinix Hot 70 Pro Plus",
+    // ✅ Fix: Pointing to the local image in your public folder
+    image: "/hot70.png", 
+    months: 12,
+    downPayment: 55,
+    dailyPayment: 0.85,
+    days: 360,
+    totalPrice: 361,
+  },
