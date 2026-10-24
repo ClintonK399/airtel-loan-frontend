@@ -135,7 +135,6 @@ const products = [
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    // GSMArena Render (Infinix Hot 40 Pro)
     image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-40-pro.jpg",
     months: 12,
     downPayment: 45,
@@ -147,8 +146,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIXED: Direct link to the exact blue overlapping render from your screenshot
-    image: "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-50-pro-plus-1.jpg",
+    // ✅ FIXED: Using the standard GSMArena bigpic CDN for the Hot 50 Pro Plus
+    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro-plus.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
