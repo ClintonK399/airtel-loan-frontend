@@ -135,7 +135,8 @@ const products = [
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-60-pro-plus.jpg",
+    // ✅ Reliable GSMArena Render (Infinix Hot 40 Pro - Latest official CDN)
+    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-40-pro.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -146,8 +147,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // ✅ FIX: Local path. Ensure "hot70.png" is saved in your project's /public folder.
-    image: "/hot70.png",
+    // ✅ Reliable GSMArena Render (Infinix Hot 50 Pro - Latest official CDN)
+    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-50-pro.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
