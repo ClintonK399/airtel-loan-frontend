@@ -2,15 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 
-/* -----------------------------------------
-   Product catalog
-   Every phone uses a DIRECT image URL.
-   If a URL fails, a unique placeholder with
-   the phone's name is displayed instead of
-   a generic duplicate photo.
-   ----------------------------------------- */
 const products = [
-  // --- iPhones (PNGimg transparent renders) ---
+  // --- iPhones ---
   {
     id: 1,
     brand: "iPhone",
@@ -48,7 +41,8 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    image: "https://pngimg.com/uploads/iphone_13_pro_max/iphone_13_pro_max_PNG25.png",
+    // Direct PNG from PNGArts
+    image: "https://www.pngarts.com/files/16/iPhone-13-Pro-Max-Transparent.png",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.8,
@@ -78,13 +72,13 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung (GSMArena official renders) ---
+  // --- Samsung ---
   {
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    image:
-      "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s23-ultra-5g-1.jpg",
+    // Direct PNG from PNGAll
+    image: "https://www.pngall.com/wp-content/uploads/13/Samsung-Galaxy-S23-Ultra-PNG-Image.png",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -95,8 +89,8 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    image:
-      "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s24-ultra-1.jpg",
+    // Direct JPG from Wikimedia Commons
+    image: "https://upload.wikimedia.org/wikipedia/commons/b/be/Samsung-Galaxy-S24-Ultra-Front.jpg",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -107,8 +101,8 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    image:
-      "https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s25-ultra-1.jpg",
+    // Direct JPG from GSMArena
+    image: "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg",
     months: 12,
     downPayment: 65,
     dailyPayment: 1.0,
@@ -116,13 +110,12 @@ const products = [
     totalPrice: 425,
   },
 
-  // --- Tecno (RenderHub 3D renders) ---
+  // --- Tecno ---
   {
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    image:
-      "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
+    image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -133,8 +126,7 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    image:
-      "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
+    image: "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -142,13 +134,12 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix (GSMArena official renders) ---
+  // --- Infinix ---
   {
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    image:
-      "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-60-pro-plus-1.jpg",
+    image: "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-60-pro-plus-1.jpg",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -159,8 +150,8 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    image:
-      "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-70-pro-plus-1.jpg",
+    // GSMArena bigpic – if this fails, the unique fallback will show the model name
+    image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-70-pro-plus.jpg",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -168,13 +159,12 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto (unchanged) ---
+  // --- Moto ---
   {
     id: 14,
     brand: "Moto",
     name: "Boxer 125cc",
-    image:
-      "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 60,
     dailyPayment: 1.2,
@@ -185,8 +175,7 @@ const products = [
     id: 15,
     brand: "Moto",
     name: "TVS 125cc",
-    image:
-      "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 60,
     dailyPayment: 1.25,
@@ -197,8 +186,7 @@ const products = [
     id: 16,
     brand: "Moto",
     name: "Boxer 150cc",
-    image:
-      "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 70,
     dailyPayment: 1.35,
@@ -209,8 +197,7 @@ const products = [
     id: 17,
     brand: "Moto",
     name: "TVS 150cc",
-    image:
-      "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 70,
     dailyPayment: 1.4,
@@ -221,15 +208,8 @@ const products = [
   },
 ];
 
-/* -----------------------------------------
-   Per-product unique fallback.
-   If a photo fails to load, we generate a
-   placeholder with that phone's own name —
-   so you NEVER see two identical photos.
-   ----------------------------------------- */
 function getUniqueFallback(name) {
   const clean = encodeURIComponent(name.replace(/\s+/g, " ").trim());
-  // placehold.co returns an SVG placeholder with the model name on a red Airtel colour
   return `https://placehold.co/600x600/DA1C1C/ffffff?text=${clean}&font=montserrat`;
 }
 
@@ -259,8 +239,6 @@ export default function PayLiteLanding() {
     navigate("/login");
   };
 
-  /* Attach this to every <img> so a failed load becomes a
-     product-specific placeholder — never a shared duplicate. */
   const handleImgError = (e, productName) => {
     const img = e.currentTarget;
     if (img.dataset.fallbackApplied === "true") return;
@@ -270,7 +248,7 @@ export default function PayLiteLanding() {
 
   return (
     <div className="paylite-container">
-      {/* ===================== HEADER ===================== */}
+      {/* Header */}
       <header className="pl-header">
         <div className="pl-logo-wrapper">
           <div className="pl-logo-icon">
@@ -284,16 +262,11 @@ export default function PayLiteLanding() {
       </header>
 
       <main className="pl-main">
-        {/* ===================== HERO ===================== */}
+        {/* Hero */}
         <div className="pl-hero">
           <div className="pl-badge">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             Petit acompte. Paiements quotidiens faciles.
           </div>
@@ -306,30 +279,20 @@ export default function PayLiteLanding() {
             Infinix et motos.
           </p>
           <div className="pl-hero-actions">
-            <button
-              onClick={() => scrollToSection("offers")}
-              className="pl-btn-primary"
-            >
+            <button onClick={() => scrollToSection("offers")} className="pl-btn-primary">
               Voir les offres
             </button>
-            <button
-              onClick={() => scrollToSection("how-it-works")}
-              className="pl-btn-secondary"
-            >
+            <button onClick={() => scrollToSection("how-it-works")} className="pl-btn-secondary">
               Comment ça marche
             </button>
           </div>
         </div>
 
-        {/* ===================== STATS ===================== */}
+        {/* Stats */}
         <div className="pl-stats-row">
           <div className="pl-stat-item">
             <div className="pl-stat-value">18+</div>
-            <div className="pl-stat-label">
-              Appareils et
-              <br />
-              motos
-            </div>
+            <div className="pl-stat-label">Appareils et<br />motos</div>
           </div>
           <div className="pl-divider"></div>
           <div className="pl-stat-item">
@@ -343,73 +306,60 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* ===================== FEATURES ===================== */}
+        {/* Features */}
         <div className="pl-features-grid">
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
               </svg>
             </div>
             <h4 className="pl-feature-title">Derniers appareils</h4>
-            <p className="pl-feature-desc">
-              iPhone, Galaxy Ultra, Tecno et Infinix en stock.
-            </p>
+            <p className="pl-feature-desc">iPhone, Galaxy Ultra, Tecno et Infinix en stock.</p>
           </div>
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
             </div>
             <h4 className="pl-feature-title">Plans quotidiens</h4>
-            <p className="pl-feature-desc">
-              Remboursez un peu chaque jour sur 12 à 18 mois.
-            </p>
+            <p className="pl-feature-desc">Remboursez un peu chaque jour sur 12 à 18 mois.</p>
           </div>
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <polyline points="9 12 11 14 15 10"></polyline>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <polyline points="9 12 11 14 15 10" />
               </svg>
             </div>
             <h4 className="pl-feature-title">Aucuns frais cachés</h4>
-            <p className="pl-feature-desc">
-              Acompte et montant quotidien clairs dès le départ.
-            </p>
+            <p className="pl-feature-desc">Acompte et montant quotidien clairs dès le départ.</p>
           </div>
           <div className="pl-feature-card">
             <div className="pl-feature-icon">
               <svg fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                <line x1="2" y1="10" x2="22" y2="10"></line>
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
               </svg>
             </div>
             <h4 className="pl-feature-title">Propriété totale</h4>
-            <p className="pl-feature-desc">
-              Terminez votre plan et l'article est 100 % à vous.
-            </p>
+            <p className="pl-feature-desc">Terminez votre plan et l'article est 100 % à vous.</p>
           </div>
         </div>
 
-        {/* ===================== CATEGORIES ===================== */}
+        {/* Categories */}
         <div className="pl-categories" id="offers">
           <h2 className="pl-section-subtitle">Choisissez une marque</h2>
           <h3 className="pl-section-title">Parcourez les offres disponibles</h3>
           <div className="pl-dropdown">
             <span>Toutes les offres</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
           <div className="pl-tabs">
@@ -425,7 +375,7 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* ===================== PRODUCT LIST ===================== */}
+        {/* Product List */}
         <div className="pl-product-list">
           {filteredProducts.map((product) => (
             <div key={product.id} className="pl-product-card">
@@ -441,7 +391,7 @@ export default function PayLiteLanding() {
                 <span className="pl-card-badge">{product.months} mois</span>
 
                 <img
-                  key={product.id} /* forces React to fully reset on category switch */
+                  key={product.id}
                   src={product.image}
                   alt={product.name}
                   loading="lazy"
@@ -474,9 +424,7 @@ export default function PayLiteLanding() {
 
               <p className="pl-payment-text">
                 Payez <strong>{product.downPayment} $</strong> aujourd'hui, puis{" "}
-                <strong>
-                  {product.dailyPayment.toFixed(2).replace(".", ",")} $/jour
-                </strong>{" "}
+                <strong>{product.dailyPayment.toFixed(2).replace(".", ",")} $/jour</strong>{" "}
                 pendant {product.days} jours.
               </p>
 
@@ -485,83 +433,61 @@ export default function PayLiteLanding() {
                   <div className="pl-total-label">Prix total à payer</div>
                   <div className="pl-total-value">{product.totalPrice} $*</div>
                 </div>
-                <button
-                  onClick={() => setSelectedProduct(product)}
-                  className="pl-btn-demand"
-                >
+                <button onClick={() => setSelectedProduct(product)} className="pl-btn-demand">
                   Demander
                 </button>
               </div>
 
-              {product.disclaimer && (
-                <p className="pl-disclaimer-text">{product.disclaimer}</p>
-              )}
+              {product.disclaimer && <p className="pl-disclaimer-text">{product.disclaimer}</p>}
             </div>
           ))}
         </div>
 
-        {/* ===================== 4 STEPS ===================== */}
+        {/* 4 Steps */}
         <div className="pl-steps-section" id="how-it-works">
-          <h2 className="pl-steps-main-title">
-            Quatre étapes simples pour en devenir propriétaire
-          </h2>
+          <h2 className="pl-steps-main-title">Quatre étapes simples pour en devenir propriétaire</h2>
           <div className="pl-steps-list">
             <div className="pl-step-card">
               <div className="pl-step-number">1</div>
               <h3 className="pl-step-title">Choisissez votre article</h3>
               <p className="pl-step-desc">
-                Sélectionnez un téléphone ou une moto parmi les offres et
-                vérifiez l'acompte et le montant quotidien.
+                Sélectionnez un téléphone ou une moto parmi les offres et vérifiez l'acompte et le montant quotidien.
               </p>
             </div>
             <div className="pl-step-card">
               <div className="pl-step-number">2</div>
               <h3 className="pl-step-title">Payez l'acompte</h3>
               <p className="pl-step-desc">
-                Versez le petit acompte unique pour réserver votre article et
-                démarrer votre plan.
+                Versez le petit acompte unique pour réserver votre article et démarrer votre plan.
               </p>
             </div>
             <div className="pl-step-card">
               <div className="pl-step-number">3</div>
               <h3 className="pl-step-title">Payez chaque jour</h3>
               <p className="pl-step-desc">
-                Remboursez un petit montant fixe chaque jour sur la durée choisie
-                de 12 à 18 mois.
+                Remboursez un petit montant fixe chaque jour sur la durée choisie de 12 à 18 mois.
               </p>
             </div>
             <div className="pl-step-card">
               <div className="pl-step-number">4</div>
               <h3 className="pl-step-title">Devenez propriétaire</h3>
               <p className="pl-step-desc">
-                Une fois votre plan terminé, l'article est 100 % à vous, sans rien
-                de plus à payer.
+                Une fois votre plan terminé, l'article est 100 % à vous, sans rien de plus à payer.
               </p>
             </div>
           </div>
         </div>
       </main>
 
-      {/* ===================== MODAL ===================== */}
+      {/* Modal */}
       {selectedProduct && (
         <div className="pl-modal-overlay">
-          <div
-            className="pl-modal-backdrop"
-            onClick={() => setSelectedProduct(null)}
-          ></div>
+          <div className="pl-modal-backdrop" onClick={() => setSelectedProduct(null)}></div>
 
           <div className="pl-modal-content">
-            <button
-              className="pl-modal-close"
-              onClick={() => setSelectedProduct(null)}
-            >
+            <button className="pl-modal-close" onClick={() => setSelectedProduct(null)}>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
@@ -593,18 +519,14 @@ export default function PayLiteLanding() {
                   </svg>
                   Plan de {selectedProduct.months} mois
                 </p>
-                <p className="pl-modal-total">
-                  {selectedProduct.totalPrice} $ au total
-                </p>
+                <p className="pl-modal-total">{selectedProduct.totalPrice} $ au total</p>
               </div>
             </div>
 
             <div className="pl-modal-pricing">
               <div className="pl-pricing-box pl-box-left">
                 <div className="pl-price-label">Acompte aujourd'hui</div>
-                <div className="pl-price-value">
-                  {selectedProduct.downPayment} $
-                </div>
+                <div className="pl-price-value">{selectedProduct.downPayment} $</div>
               </div>
               <div className="pl-pricing-box pl-box-right">
                 <div className="pl-price-label">Paiement quotidien</div>
@@ -621,12 +543,7 @@ export default function PayLiteLanding() {
               </div>
               <div className="pl-detail-row">
                 <span>Total des paiements quotidiens</span>
-                <strong>
-                  {(
-                    selectedProduct.dailyPayment * selectedProduct.days
-                  ).toFixed(0)}{" "}
-                  $
-                </strong>
+                <strong>{(selectedProduct.dailyPayment * selectedProduct.days).toFixed(0)} $</strong>
               </div>
             </div>
 
