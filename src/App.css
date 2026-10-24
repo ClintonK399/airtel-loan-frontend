@@ -1203,7 +1203,7 @@ body {
   position: relative;
 }
 
-/* ⭐ NEW DUAL IMAGE CONTAINER STYLES ⭐ */
+/* ⭐ DUAL IMAGE CONTAINER STYLES (From your snippet) ⭐ */
 .pl-image-container {
   position: relative;
   background-color: #e5e7eb;
@@ -1216,7 +1216,6 @@ body {
   min-height: 220px;
   overflow: hidden;
   margin-bottom: 16px;
-  /* Kept from original */
 }
 
 .pl-card-badge {
@@ -1232,7 +1231,7 @@ body {
   z-index: 10;
 }
 
-/* Wrapper for splitting the front/back view */
+/* Wrapper that forces front and back photos to sit perfectly side-by-side */
 .pl-dual-image-wrapper {
   display: flex;
   gap: 12px;
@@ -1250,11 +1249,12 @@ body {
   transition: transform 0.3s ease;
 }
 
-/* The split size logic for phones */
+/* Individual sizing for the front and back photos */
 .pl-image.dual-img {
   width: 45%;
   max-height: 180px;
-  /* Adds a studio-style drop shadow assuming you use transparent PNGs */
+  object-fit: contain;
+  /* Adds a shadow so the phones stand out beautifully against the gray */
   filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.15));
 }
 
@@ -1268,7 +1268,6 @@ body {
   font-weight: 700;
   margin-bottom: 16px;
   padding: 0 16px;
-  /* Added padding to align with card content */
 }
 
 .pl-pricing-row {
@@ -1437,7 +1436,7 @@ body {
   margin-top: 16px;
 }
 
-/* ⭐ NEW MODAL DUAL IMAGE STYLES ⭐ */
+/* ⭐ MODAL DUAL IMAGE STYLES (From your snippet) ⭐ */
 .pl-modal-dual-img {
   display: flex;
   gap: 8px;
