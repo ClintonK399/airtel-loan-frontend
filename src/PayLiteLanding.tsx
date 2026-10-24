@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 const products = [
-  // --- iPhones (Front and Back Views) ---
+  // --- iPhones (Single image property expecting a photo with both front and back) ---
   {
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
-    imageFront: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -20,8 +19,8 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    imageFront: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?auto=format&fit=crop&q=80&w=400",
+    // Real phone photo, replacing the previous incorrect mockup
+    image: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.70,
@@ -32,8 +31,7 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    imageFront: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 40,
     dailyPayment: 0.75,
@@ -44,8 +42,7 @@ const products = [
     id: 4,
     brand: "iPhone",
     name: "iPhone 13 Pro Max",
-    imageFront: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1611472173362-3f53dbd65d80?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.80,
@@ -56,8 +53,7 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
-    imageFront: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -68,8 +64,7 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    imageFront: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400", 
-    imageBack: "https://images.unsplash.com/photo-1664478546384-d57ffe74a78c?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1663591370310-940df1ff343b?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -77,13 +72,12 @@ const products = [
     totalPrice: 397,
   },
 
-  // --- Samsung (Front and Back Views) ---
+  // --- Samsung (Single image property) ---
   {
     id: 7,
     brand: "Samsung",
     name: "Samsung Galaxy S23 Ultra",
-    imageFront: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1679051515252-873b22415124?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -94,8 +88,7 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    imageFront: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1707227156558-74219a0a229d?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -106,8 +99,7 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    imageFront: "https://images.unsplash.com/photo-1707227156558-74219a0a229d?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1707227156558-74219a0a229d?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 65,
     dailyPayment: 1.00,
@@ -115,13 +107,12 @@ const products = [
     totalPrice: 425,
   },
 
-  // --- Tecno (Front and Back Views) ---
+  // --- Tecno (Single image property) ---
   {
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    imageFront: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400", 
-    imageBack: "https://images.unsplash.com/photo-1644982647844-5ee1bdc5b114?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -132,8 +123,7 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
-    imageFront: "https://images.unsplash.com/photo-1644982647844-5ee1bdc5b114?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1644982647844-5ee1bdc5b114?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -141,13 +131,12 @@ const products = [
     totalPrice: 315,
   },
 
-  // --- Infinix (Front and Back Views) ---
+  // --- Infinix (Single image property) ---
   {
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    imageFront: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -158,8 +147,7 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    imageFront: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400",
-    imageBack: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=400",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.85,
@@ -167,12 +155,12 @@ const products = [
     totalPrice: 361,
   },
 
-  // --- Moto (Motorcycle Images - SINGLE IMAGE ONLY, UNALTERED) ---
+  // --- Moto (Motorcycle Images - SINGLE IMAGE ONLY) ---
   {
     id: 14,
     brand: "Moto",
     name: "Boxer 125cc",
-    image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400", 
+    image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 60,
     dailyPayment: 1.20,
@@ -183,7 +171,7 @@ const products = [
     id: 15,
     brand: "Moto",
     name: "TVS 125cc",
-    image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400", 
+    image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 60,
     dailyPayment: 1.25,
@@ -194,7 +182,7 @@ const products = [
     id: 16,
     brand: "Moto",
     name: "Boxer 150cc",
-    image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400", 
+    image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 70,
     dailyPayment: 1.35,
@@ -205,7 +193,7 @@ const products = [
     id: 17,
     brand: "Moto",
     name: "TVS 150cc",
-    image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400", 
+    image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=400",
     months: 18,
     downPayment: 70,
     dailyPayment: 1.40,
@@ -376,33 +364,15 @@ export default function PayLiteLanding() {
           {filteredProducts.map((product) => (
             <div key={product.id} className="pl-product-card">
               
+              {/* Simplified Image Container - Expects the provided URL to already have both views */}
               <div className="pl-image-container">
                 <span className="pl-card-badge">{product.months} mois</span>
-                
-                {/* CONDITIONAL RENDER: Dual images for phones, single image for motos */}
-                {product.imageFront && product.imageBack ? (
-                  <div className="pl-dual-image-wrapper">
-                    <img 
-                      src={product.imageFront} 
-                      alt={`${product.name} Front`} 
-                      className="pl-image dual-img" 
-                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
-                    />
-                    <img 
-                      src={product.imageBack} 
-                      alt={`${product.name} Back`} 
-                      className="pl-image dual-img" 
-                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
-                    />
-                  </div>
-                ) : (
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="pl-image" 
-                    onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
-                  />
-                )}
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="pl-image" 
+                  onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+                />
               </div>
 
               <h4 className="pl-product-name">{product.name}</h4>
@@ -435,7 +405,6 @@ export default function PayLiteLanding() {
                 </button>
               </div>
               
-              {/* Disclaimer text for Moto items */}
               {product.disclaimer && (
                 <p className="pl-disclaimer-text">
                   {product.disclaimer}
@@ -497,20 +466,12 @@ export default function PayLiteLanding() {
             </button>
 
             <div className="pl-modal-header">
-              {/* CONDITIONAL RENDER: Modal images */}
-              {selectedProduct.imageFront && selectedProduct.imageBack ? (
-                <div className="pl-modal-dual-img">
-                  <img src={selectedProduct.imageFront} alt="Front" className="pl-modal-img dual" />
-                  <img src={selectedProduct.imageBack} alt="Back" className="pl-modal-img dual" />
-                </div>
-              ) : (
-                <img 
-                  src={selectedProduct.image} 
-                  alt={selectedProduct.name} 
-                  className="pl-modal-img"
-                  onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
-                />
-              )}
+              <img 
+                src={selectedProduct.image} 
+                alt={selectedProduct.name} 
+                className="pl-modal-img"
+                onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+              />
               
               <div>
                 <h3 className="pl-modal-title">{selectedProduct.name}</h3>
