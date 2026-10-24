@@ -133,7 +133,6 @@ const products = [
     id: 12,
     brand: "Tecno",
     name: "Tecno Camon 40",
-    // ✅ FIXED: Using the single composite image that shows BOTH front and back.
     image: "https://fdn2.gsmarena.com/vv/bigpic/tecno-camon-40-4g.jpg", 
     months: 12,
     downPayment: 55,
@@ -276,6 +275,66 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
+        {/* ===================== NEW: LOAN LIMIT SECTION ===================== */}
+        <div 
+          style={{
+            marginBottom: "32px",
+            backgroundColor: "#f0fdf4",
+            padding: "24px",
+            borderRadius: "24px",
+            border: "1px solid #dcfce7",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)"
+          }}
+        >
+          <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#166534", marginBottom: "8px" }}>
+            Limite de prêt jusqu'à 35 000 $
+          </h2>
+          <p style={{ color: "#4b5563", marginBottom: "16px", fontSize: "14px", lineHeight: "1.5" }}>
+            Obtenez un financement rapide pour vos projets personnels ou professionnels avec des taux compétitifs et des remboursements flexibles.
+          </p>
+          <button 
+            onClick={() => navigate("/loan")} 
+            className="pl-btn-primary" 
+            style={{ width: "100%", padding: "14px", fontSize: "16px" }}
+          >
+            Demander un prêt
+          </button>
+        </div>
+
+        {/* ===================== NEW: CAR HIRE SECTION ===================== */}
+        <div 
+          style={{
+            marginBottom: "32px",
+            backgroundColor: "#ffffff",
+            padding: "16px",
+            borderRadius: "24px",
+            border: "1px solid #f3f4f6",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
+          }}
+        >
+          <img 
+            src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=800" 
+            alt="Location de voiture" 
+            style={{ width: "100%", height: "160px", objectFit: "cover", borderRadius: "16px", marginBottom: "16px" }} 
+          />
+          <div style={{ padding: "0 8px" }}>
+            <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#111827", marginBottom: "8px" }}>
+              Location de voitures abordable
+            </h2>
+            <p style={{ color: "#4b5563", marginBottom: "16px", fontSize: "14px", lineHeight: "1.5" }}>
+              Besoin d'une voiture pour un voyage, un événement ou le travail ? Découvrez notre flotte de véhicules à des prix imbattables.
+            </p>
+            <button 
+              onClick={() => navigate("/car-hire")} 
+              className="pl-btn-primary" 
+              style={{ width: "100%", padding: "14px", fontSize: "16px", backgroundColor: "#111827", color: "#fff" }}
+            >
+              Réserver une voiture
+            </button>
+          </div>
+        </div>
+
+        {/* ===================== PRODUCTS / OFFERS ===================== */}
         <div className="pl-categories" id="offers">
           <h2 className="pl-section-subtitle">Choisissez une marque</h2>
           <h3 className="pl-section-title">Parcourez les offres disponibles</h3>
