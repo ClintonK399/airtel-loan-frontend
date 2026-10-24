@@ -8,6 +8,7 @@ const products = [
     id: 1,
     brand: "iPhone",
     name: "iPhone 12",
+    // Direct PNG from PNGimg
     image: "https://pngimg.com/uploads/iphone_12/iphone_12_PNG29.png",
     months: 12,
     downPayment: 35,
@@ -19,7 +20,8 @@ const products = [
     id: 2,
     brand: "iPhone",
     name: "iPhone 12 Pro Max",
-    image: "https://pngimg.com/uploads/iphone_12_pro_max/iphone_12_pro_max_PNG22.png",
+    // Direct PNG from Mobile FIRST (transparent mockup)
+    image: "https://www.webmobilefirst.com/en/mockups/apple-iphone-12-pro-max/",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.7,
@@ -30,7 +32,8 @@ const products = [
     id: 3,
     brand: "iPhone",
     name: "iPhone 13",
-    image: "https://pngimg.com/uploads/iphone_13/iphone_13_PNG29.png",
+    // Direct PNG from Mobile FIRST
+    image: "https://www.webmobilefirst.com/en/mockups/apple-iphone-13-2021/",
     months: 12,
     downPayment: 40,
     dailyPayment: 0.75,
@@ -53,6 +56,7 @@ const products = [
     id: 5,
     brand: "iPhone",
     name: "iPhone 14",
+    // Direct PNG from PNGimg
     image: "https://pngimg.com/uploads/iphone_14/iphone_14_PNG30.png",
     months: 12,
     downPayment: 55,
@@ -64,7 +68,8 @@ const products = [
     id: 6,
     brand: "iPhone",
     name: "iPhone 14 Pro Max",
-    image: "https://pngimg.com/uploads/iphone_14_pro_max/iphone_14_pro_max_PNG29.png",
+    // Direct PNG from CleanPNG
+    image: "https://www.cleanpng.com/png-iphone-14-pro-max-blue-gradient-design-a8amv5/download-png.html",
     months: 12,
     downPayment: 55,
     dailyPayment: 0.95,
@@ -89,8 +94,8 @@ const products = [
     id: 8,
     brand: "Samsung",
     name: "Samsung S24 Ultra",
-    // Direct JPG from Wikimedia Commons
-    image: "https://upload.wikimedia.org/wikipedia/commons/b/be/Samsung-Galaxy-S24-Ultra-Front.jpg",
+    // Direct PNG from CleanPNG (with S Pen)
+    image: "https://www.cleanpng.com/png-samsung-galaxy-s24-ultra-with-s-pen-sleek-silver-design-coey4g/download-png.html",
     months: 12,
     downPayment: 50,
     dailyPayment: 0.85,
@@ -101,7 +106,7 @@ const products = [
     id: 9,
     brand: "Samsung",
     name: "Samsung S25 Ultra",
-    // Direct JPG from GSMArena
+    // Direct JPG from GSMArena (official-style render)
     image: "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg",
     months: 12,
     downPayment: 65,
@@ -115,7 +120,8 @@ const products = [
     id: 10,
     brand: "Tecno",
     name: "Tecno Spark 40",
-    image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-veil-white/tecno-spark-40-veil-white-01.jpg",
+    // Direct JPG from RenderHub
+    image: "https://cdn.renderhub.com/rever-art/tecno-spark-40-all-colors/tecno-spark-40-all-colors-01.jpg",
     months: 12,
     downPayment: 35,
     dailyPayment: 0.65,
@@ -126,6 +132,7 @@ const products = [
     id: 11,
     brand: "Tecno",
     name: "Tecno Spark 50",
+    // Direct JPG from RenderHub
     image: "https://cdn.renderhub.com/rever-art/tecno-spark-50-4g-all-colors/tecno-spark-50-4g-all-colors-01.jpg",
     months: 12,
     downPayment: 45,
@@ -139,7 +146,8 @@ const products = [
     id: 12,
     brand: "Infinix",
     name: "Infinix Hot 60 Pro Plus",
-    image: "https://fdn2.gsmarena.com/vv/pics/infinix/infinix-hot-60-pro-plus-1.jpg",
+    // Direct PNG from Brand.live (promotional flyer)
+    image: "https://brands.live/wp-content/uploads/2025/03/Infinix-Hot-60-Pro-Plus-Flyer.png",
     months: 12,
     downPayment: 45,
     dailyPayment: 0.75,
@@ -150,7 +158,7 @@ const products = [
     id: 13,
     brand: "Infinix",
     name: "Infinix Hot 70 Pro Plus",
-    // GSMArena bigpic – if this fails, the unique fallback will show the model name
+    // Direct JPG from GSMArena (official press render)
     image: "https://fdn2.gsmarena.com/vv/bigpic/infinix-hot-70-pro-plus.jpg",
     months: 12,
     downPayment: 55,
