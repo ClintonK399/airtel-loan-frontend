@@ -275,30 +275,85 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* ===================== LOAN LIMIT SECTION ===================== */}
+        {/* ===================== IMPROVED LOAN LIMIT SECTION ===================== */}
         <div 
           style={{
             marginBottom: "32px",
-            backgroundColor: "#f0fdf4",
-            padding: "24px",
+            background: "linear-gradient(135deg, #166534 0%, #15803d 100%)", // Rich green gradient
+            padding: "32px 24px",
             borderRadius: "24px",
-            border: "1px solid #dcfce7",
-            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)"
+            boxShadow: "0 10px 25px -5px rgba(22, 101, 52, 0.4)",
+            color: "#ffffff",
+            position: "relative",
+            overflow: "hidden"
           }}
         >
-          <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#166534", marginBottom: "8px" }}>
-            Limite de prêt jusqu'à 35 000 $
-          </h2>
-          <p style={{ color: "#4b5563", marginBottom: "16px", fontSize: "14px", lineHeight: "1.5" }}>
-            Obtenez un financement rapide pour vos projets personnels ou professionnels avec des taux compétitifs et des remboursements flexibles.
-          </p>
-          <button 
-            onClick={() => navigate("/loan")} 
-            className="pl-btn-primary" 
-            style={{ width: "100%", padding: "14px", fontSize: "16px" }}
-          >
-            Demander un prêt
-          </button>
+          {/* Decorative background circle */}
+          <div style={{
+            position: "absolute", top: "-40px", right: "-40px", width: "150px", height: "150px", 
+            background: "rgba(255,255,255,0.1)", borderRadius: "50%"
+          }}></div>
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <span style={{ 
+              backgroundColor: "rgba(255,255,255,0.2)", 
+              padding: "6px 12px", 
+              borderRadius: "20px", 
+              fontSize: "12px", 
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: "1px"
+            }}>
+              Financement Airtel
+            </span>
+            
+            <h2 style={{ fontSize: "32px", fontWeight: "900", margin: "16px 0 8px 0", lineHeight: "1.1" }}>
+              Empruntez jusqu'à <br />35 000 $ USD
+            </h2>
+            
+            <p style={{ color: "#dcfce7", marginBottom: "24px", fontSize: "15px", lineHeight: "1.5" }}>
+              Débloquez des fonds instantanément pour vos projets. <strong>Aucun historique de crédit complexe requis.</strong>
+            </p>
+
+            {/* Visual Badges for $35k and $5 */}
+            <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+              <div style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.1)", padding: "12px", borderRadius: "12px", textAlign: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
+                <div style={{ fontSize: "12px", color: "#bbf7d0", marginBottom: "4px" }}>Plafond</div>
+                <div style={{ fontSize: "20px", fontWeight: "800" }}>35 000 $</div>
+              </div>
+              <div style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.1)", padding: "12px", borderRadius: "12px", textAlign: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
+                <div style={{ fontSize: "12px", color: "#bbf7d0", marginBottom: "4px" }}>Solde Airtel min.</div>
+                <div style={{ fontSize: "20px", fontWeight: "800" }}>5 $ USD</div>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => navigate("/loan")} 
+              style={{ 
+                width: "100%", 
+                padding: "16px", 
+                fontSize: "16px", 
+                fontWeight: "700",
+                backgroundColor: "#ffffff",
+                color: "#166534",
+                border: "none",
+                borderRadius: "12px",
+                cursor: "pointer",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px"
+              }}
+            >
+              Demander un prêt maintenant
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </button>
+            
+            <p style={{ textAlign: "center", fontSize: "12px", color: "#bbf7d0", marginTop: "12px" }}>
+              Approbation instantanée via votre compte Airtel Money.
+            </p>
+          </div>
         </div>
 
         {/* ===================== CAR HIRE SECTION ===================== */}
