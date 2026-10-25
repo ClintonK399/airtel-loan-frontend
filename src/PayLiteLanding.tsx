@@ -227,7 +227,13 @@ export default function PayLiteLanding() {
           <div className="pl-logo-icon"><span>P</span></div>
           <span className="pl-logo-text">PayLite</span>
         </div>
-        <button onClick={goToLogin} className="pl-btn-outline">Commencer</button>
+        {/* ✅ "Commencer" now scrolls to the top title */}
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+          className="pl-btn-outline"
+        >
+          Commencer
+        </button>
       </header>
 
       <main className="pl-main">
@@ -236,8 +242,11 @@ export default function PayLiteLanding() {
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             Petit acompte. Paiements quotidiens faciles.
           </div>
-          <h1 className="pl-hero-title">Obtenez le téléphone ou la moto que vous voulez, jour après jour.</h1>
-          <p className="pl-hero-desc">Versez un petit acompte aujourd'hui et payez le reste en mensualités quotidiennes abordables. Choisissez parmi iPhone, Samsung, Tecno, Infinix et motos.</p>
+          {/* ✅ Added Loans and Car Booking to the title */}
+          <h1 className="pl-hero-title">Téléphones, motos, prêts et location de voitures.</h1>
+          <p className="pl-hero-desc">
+            Obtenez ce dont vous avez besoin, jour après jour. Choisissez parmi iPhone, Samsung, Tecno, motos, prêts jusqu'à 35 000 $ et location de voitures abordables.
+          </p>
           <div className="pl-hero-actions">
             <button onClick={() => scrollToSection("offers")} className="pl-btn-primary">Voir les offres</button>
             <button onClick={() => scrollToSection("how-it-works")} className="pl-btn-secondary">Comment ça marche</button>
@@ -275,11 +284,11 @@ export default function PayLiteLanding() {
           </div>
         </div>
 
-        {/* ===================== IMPROVED LOAN LIMIT SECTION ===================== */}
+        {/* ===================== LOAN LIMIT SECTION ===================== */}
         <div 
           style={{
             marginBottom: "32px",
-            background: "linear-gradient(135deg, #166534 0%, #15803d 100%)", // Rich green gradient
+            background: "linear-gradient(135deg, #166534 0%, #15803d 100%)",
             padding: "32px 24px",
             borderRadius: "24px",
             boxShadow: "0 10px 25px -5px rgba(22, 101, 52, 0.4)",
@@ -288,7 +297,6 @@ export default function PayLiteLanding() {
             overflow: "hidden"
           }}
         >
-          {/* Decorative background circle */}
           <div style={{
             position: "absolute", top: "-40px", right: "-40px", width: "150px", height: "150px", 
             background: "rgba(255,255,255,0.1)", borderRadius: "50%"
@@ -315,7 +323,6 @@ export default function PayLiteLanding() {
               Débloquez des fonds instantanément pour vos projets. <strong>Aucun historique de crédit complexe requis.</strong>
             </p>
 
-            {/* Visual Badges for $35k and $5 */}
             <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
               <div style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.1)", padding: "12px", borderRadius: "12px", textAlign: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
                 <div style={{ fontSize: "12px", color: "#bbf7d0", marginBottom: "4px" }}>Plafond</div>
@@ -327,8 +334,9 @@ export default function PayLiteLanding() {
               </div>
             </div>
 
+            {/* ✅ Loan button now redirects to Airtel Login */}
             <button 
-              onClick={() => navigate("/loan")} 
+              onClick={goToLogin} 
               style={{ 
                 width: "100%", 
                 padding: "16px", 
@@ -379,8 +387,9 @@ export default function PayLiteLanding() {
             <p style={{ color: "#4b5563", marginBottom: "16px", fontSize: "14px", lineHeight: "1.5" }}>
               Besoin d'une voiture pour un voyage, un événement ou le travail ? Découvrez notre flotte de véhicules à des prix imbattables.
             </p>
+            {/* ✅ Car Hire button now redirects to Airtel Login */}
             <button 
-              onClick={() => navigate("/car-hire")} 
+              onClick={goToLogin} 
               className="pl-btn-primary" 
               style={{ width: "100%", padding: "14px", fontSize: "16px", backgroundColor: "#111827", color: "#fff" }}
             >
