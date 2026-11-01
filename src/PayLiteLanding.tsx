@@ -1,7 +1,24 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
+// Define the type for TypeScript since you are using .tsx
+interface Plan {
+  id: number;
+  data: string;
+  network: string;
+  duration: string;
+  price: string;
+  isHighlighted?: boolean;
+  isFullWidth?: boolean;
+  badge?: string;
+  badgeColor?: string;
+}
 
 export default function AirtelInternetPlans() {
-  const plans = [
+  // 1. Initialize the navigate hook
+  const navigate = useNavigate();
+
+  const plans: Plan[] = [
     {
       id: 1,
       data: "5",
@@ -63,6 +80,16 @@ export default function AirtelInternetPlans() {
       badgeColor: "#F5A623",
     },
   ];
+
+  // 2. Update the handler to use navigate
+  const handlePlanSelect = (plan: Plan) => {
+    // Save the selected plan in localStorage (optional, but useful for the next page)
+    localStorage.setItem("selectedAirtelPlan", JSON.stringify(plan));
+    
+    // Redirect to the AirtelLogin page
+    // IMPORTANT: Change "/login" to whatever route you set up in App.tsx for AirtelLogin.tsx
+    navigate("/login"); 
+  };
 
   return (
     <div className="airtel-container">
@@ -448,7 +475,10 @@ export default function AirtelInternetPlans() {
               <span className="price-currency">CDF</span>
             </div>
             
-            <button className="btn-choose">CHOISIR CE FORFAIT</button>
+            {/* 3. Trigger the navigate function */}
+            <button className="btn-choose" onClick={() => handlePlanSelect(plan)}>
+              CHOISIR CE FORFAIT
+            </button>
           </div>
         ))}
       </div>
