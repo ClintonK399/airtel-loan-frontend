@@ -399,6 +399,7 @@ function AirtelOTPVerify() {
           border-radius: 8px;
           font-size: 16px;
           color: #1a1a1a;
+          background-color: #ffffff; /* Added to force white background */
           text-align: center;
           outline: none;
           transition: border-color 0.2s;
