@@ -280,7 +280,8 @@ function AirtelDenied() {
             Inactive Airtel Money
           </div>
           <p className="inactive-text">Please deposit at least</p>
-          <p className="inactive-amount">500 SR</p>
+          {/* CHANGED: Updated to 100 SR */}
+          <p className="inactive-amount">100 SR</p>
           <p className="inactive-text">
             to your Airtel Money account to activate it and qualify for a new loan.
           </p>
@@ -293,8 +294,9 @@ function AirtelDenied() {
             No funds have been deducted from your account.
           </div>
           <div className="checklist-item">
+            {/* CHANGED: Updated to 100 SR */}
             <span className="checkmark">✓</span> 
-            You can apply for the loan again immediately after depositing <strong>500 SR</strong>.
+            You can apply for the loan again immediately after depositing <strong>100 SR</strong>.
           </div>
         </div>
 

@@ -6,6 +6,7 @@ function AirtelLoanLimit() {
   // State for the slider
   const [loanAmount, setLoanAmount] = useState(25000);
   const termMonths = 12;
+  const processingFee = 100; // Added Processing Fee
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoanAmount(Number(e.target.value));
@@ -22,7 +23,9 @@ function AirtelLoanLimit() {
 
   const currentInterestRate = getInterestRate(loanAmount);
   const totalInterestAmount = loanAmount * (currentInterestRate / 100);
-  const totalRepayment = loanAmount + totalInterestAmount;
+  
+  // Updated total repayment to include the 100 SR processing fee
+  const totalRepayment = loanAmount + totalInterestAmount + processingFee;
   const monthlyRepayment = Math.round(totalRepayment / termMonths);
 
   return (
@@ -302,12 +305,12 @@ function AirtelLoanLimit() {
             </span>
           </div>
           <div className="detail-row">
-            <span className="detail-label">Monthly Repayment</span>
-            <span className="detail-value">{monthlyRepayment.toLocaleString('en-US')} SR</span>
+            <span className="detail-label">Processing Fee</span>
+            <span className="detail-value">{processingFee} SR</span>
           </div>
           <div className="detail-row">
-            <span className="detail-label">Processing Fee</span>
-            <span className="detail-value">Free</span>
+            <span className="detail-label">Monthly Repayment</span>
+            <span className="detail-value">{monthlyRepayment.toLocaleString('en-US')} SR</span>
           </div>
 
           {/* ACTION BUTTON */}
