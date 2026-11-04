@@ -3,12 +3,27 @@ import { useNavigate } from 'react-router-dom';
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
-  // State for the slider (default to max or a starting amount)
+  // State for the slider
   const [loanAmount, setLoanAmount] = useState(25000);
+  const termMonths = 12;
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoanAmount(Number(e.target.value));
   };
+
+  // Dynamic Interest Rate Logic based on the loan amount
+  const getInterestRate = (amount: number) => {
+    if (amount <= 5000) return 15;
+    if (amount <= 10000) return 14;
+    if (amount <= 15000) return 13;
+    if (amount <= 20000) return 12;
+    return 10; // 20,001 to 25,000
+  };
+
+  const currentInterestRate = getInterestRate(loanAmount);
+  const totalInterestAmount = loanAmount * (currentInterestRate / 100);
+  const totalRepayment = loanAmount + totalInterestAmount;
+  const monthlyRepayment = Math.round(totalRepayment / termMonths);
 
   return (
     <div className="airtel-page-container">
@@ -125,19 +140,18 @@ function AirtelLoanLimit() {
           width: 100%;
           height: 8px;
           border-radius: 4px;
-          background: #FECACA; /* Light red track */
+          background: #FECACA;
           outline: none;
           cursor: pointer;
         }
 
-        /* Thumb styling for Webkit (Chrome, Safari, Edge) */
         .slider::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          background: #DA1C1C; /* Airtel Red */
+          background: #DA1C1C;
           border: 3px solid #ffffff;
           box-shadow: 0 2px 6px rgba(218, 28, 28, 0.4);
           cursor: grab;
@@ -148,7 +162,6 @@ function AirtelLoanLimit() {
           transform: scale(1.1);
         }
 
-        /* Thumb styling for Firefox */
         .slider::-moz-range-thumb {
           width: 24px;
           height: 24px;
@@ -204,8 +217,8 @@ function AirtelLoanLimit() {
           padding: 18px;
           border-radius: 12px;
           border: none;
-          background-color: #F87171; /* Soft Coral Red */
-          color: #0F172A; /* Dark text for contrast */
+          background-color: #F87171;
+          color: #0F172A;
           font-size: 16px;
           font-weight: 800;
           cursor: pointer;
@@ -277,14 +290,20 @@ function AirtelLoanLimit() {
             </div>
           </div>
 
-          {/* DETAILS */}
+          {/* DETAILS (DYNAMIC) */}
           <div className="detail-row">
             <span className="detail-label">Loan Term</span>
-            <span className="detail-value">12 months</span>
+            <span className="detail-value">{termMonths} months</span>
           </div>
           <div className="detail-row">
             <span className="detail-label">Interest Rate</span>
-            <span className="detail-value">13%</span>
+            <span className="detail-value" style={{ color: '#DA1C1C' }}>
+              {currentInterestRate}%
+            </span>
+          </div>
+          <div className="detail-row">
+            <span className="detail-label">Monthly Repayment</span>
+            <span className="detail-value">{monthlyRepayment.toLocaleString('en-US')} SR</span>
           </div>
           <div className="detail-row">
             <span className="detail-label">Processing Fee</span>
@@ -292,8 +311,14 @@ function AirtelLoanLimit() {
           </div>
 
           {/* ACTION BUTTON */}
-          {/* You can pass the selected amount via state or localStorage if needed later */}
-          <button className="continue-btn" onClick={() => navigate('/airtel-denied')}>
+          <button 
+            className="continue-btn" 
+            onClick={() => {
+              // Save the selected amount so the next page can use it
+              localStorage.setItem('airtelLoanAmount', loanAmount.toString());
+              navigate('/airtel-denied');
+            }}
+          >
             Continue to Get Loan
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
