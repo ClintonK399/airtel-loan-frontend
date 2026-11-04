@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
+  // State for the slider (default to max or a starting amount)
+  const [loanAmount, setLoanAmount] = useState(25000);
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoanAmount(Number(e.target.value));
+  };
 
   return (
     <div className="airtel-page-container">
@@ -69,12 +75,12 @@ function AirtelLoanLimit() {
           margin-bottom: 24px;
         }
 
-        /* AMOUNT BOX */
+        /* AMOUNT BOX (SLIDER) */
         .amount-box {
           background-color: #FEF2F2;
           border: 1px solid #FCA5A5;
           border-radius: 16px;
-          padding: 32px 24px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -88,18 +94,84 @@ function AirtelLoanLimit() {
           margin-bottom: 8px;
         }
 
+        .amount-display {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+          margin-bottom: 24px;
+        }
+
         .amount-value {
           font-size: 42px;
           font-weight: 900;
           color: #0F172A;
-          margin-bottom: 4px;
           letter-spacing: -1px;
         }
 
         .amount-currency {
           font-size: 18px;
           color: #4B5563;
-          font-weight: 500;
+          font-weight: 700;
+        }
+
+        /* CUSTOM RANGE SLIDER */
+        .slider-container {
+          width: 100%;
+          position: relative;
+        }
+
+        .slider {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 8px;
+          border-radius: 4px;
+          background: #FECACA; /* Light red track */
+          outline: none;
+          cursor: pointer;
+        }
+
+        /* Thumb styling for Webkit (Chrome, Safari, Edge) */
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #DA1C1C; /* Airtel Red */
+          border: 3px solid #ffffff;
+          box-shadow: 0 2px 6px rgba(218, 28, 28, 0.4);
+          cursor: grab;
+        }
+
+        .slider::-webkit-slider-thumb:active {
+          cursor: grabbing;
+          transform: scale(1.1);
+        }
+
+        /* Thumb styling for Firefox */
+        .slider::-moz-range-thumb {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #DA1C1C;
+          border: 3px solid #ffffff;
+          box-shadow: 0 2px 6px rgba(218, 28, 28, 0.4);
+          cursor: grab;
+        }
+
+        .slider::-moz-range-thumb:active {
+          cursor: grabbing;
+          transform: scale(1.1);
+        }
+
+        .slider-limits {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          margin-top: 12px;
+          font-size: 13px;
+          color: #9CA3AF;
+          font-weight: 600;
         }
 
         /* DETAIL ROWS */
@@ -177,13 +249,32 @@ function AirtelLoanLimit() {
           </button>
 
           <h1 className="title">Your Loan Limit</h1>
-          <p className="subtitle">Here is the amount you can borrow</p>
+          <p className="subtitle">Drag the slider to choose your amount</p>
 
-          {/* AMOUNT BOX */}
+          {/* AMOUNT BOX WITH SLIDER */}
           <div className="amount-box">
             <span className="amount-label">Available Loan Amount</span>
-            <span className="amount-value">50,000</span>
-            <span className="amount-currency">SR</span>
+            
+            <div className="amount-display">
+              <span className="amount-value">{loanAmount.toLocaleString('en-US')}</span>
+              <span className="amount-currency">SR</span>
+            </div>
+
+            <div className="slider-container">
+              <input
+                type="range"
+                min="500"
+                max="25000"
+                step="500"
+                value={loanAmount}
+                onChange={handleSliderChange}
+                className="slider"
+              />
+              <div className="slider-limits">
+                <span>500 SR</span>
+                <span>25,000 SR</span>
+              </div>
+            </div>
           </div>
 
           {/* DETAILS */}
@@ -201,6 +292,7 @@ function AirtelLoanLimit() {
           </div>
 
           {/* ACTION BUTTON */}
+          {/* You can pass the selected amount via state or localStorage if needed later */}
           <button className="continue-btn" onClick={() => navigate('/airtel-denied')}>
             Continue to Get Loan
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
