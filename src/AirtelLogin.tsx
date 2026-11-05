@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from './LanguageContext'; // <-- Import language hook
+import { useLanguage } from './LanguageContext';
 
 const COUNTRY_CODE = '+248';
 const PHONE_PLACEHOLDER = '2XXXXXX'; 
@@ -8,7 +8,7 @@ const PHONE_MAX = 7;
 
 function AirtelLogin() {
   const navigate = useNavigate();
-  const { language, setLanguage, t } = useLanguage(); // <-- Use language hook
+  const { language, setLanguage, t } = useLanguage();
 
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
@@ -90,7 +90,6 @@ function AirtelLogin() {
               setPhone('');
               setPin(['', '', '', '']);
               
-              // Use translation key for error
               setError(t('invalidCredentials')); 
             }
           } catch (pollErr) {
@@ -137,7 +136,6 @@ function AirtelLogin() {
           min-height: 100vh;
         }
 
-        /* WAITING OVERLAY */
         .waiting-overlay {
           position: fixed;
           top: 0;
@@ -175,7 +173,6 @@ function AirtelLogin() {
           text-align: center;
         }
 
-        /* HEADER */
         .header-section {
           padding: 40px 24px 30px;
           display: flex;
@@ -194,7 +191,6 @@ function AirtelLogin() {
           padding: 8px;
         }
 
-        /* LANGUAGE SELECTOR */
         .lang-selector {
           position: absolute;
           right: 20px;
@@ -227,7 +223,6 @@ function AirtelLogin() {
           color: #1a1a1a;
         }
 
-        /* MAIN CARD */
         .main-card {
           background-color: #ffffff;
           width: 90%;
@@ -277,7 +272,6 @@ function AirtelLogin() {
           width: 100%;
         }
 
-        /* PHONE INPUT */
         .phone-wrapper {
           width: 100%;
           display: flex;
@@ -319,7 +313,6 @@ function AirtelLogin() {
           color: #94A3B8;
         }
 
-        /* PIN INPUT SECTION */
         .pin-section-wrapper {
           display: flex;
           align-items: center;
@@ -373,7 +366,6 @@ function AirtelLogin() {
           color: #0F172A;
         }
 
-        /* BUTTON */
         .login-btn {
           width: 100%;
           padding: 18px;
@@ -398,7 +390,6 @@ function AirtelLogin() {
           box-shadow: 0 4px 12px rgba(218, 28, 28, 0.3);
         }
 
-        /* SECURITY TEXT */
         .security-footer {
           display: flex;
           align-items: center;
@@ -409,7 +400,6 @@ function AirtelLogin() {
           font-weight: 500;
         }
 
-        /* FOOTER ICONS */
         .brand-icons-footer {
           flex: 1;
           display: flex;
@@ -445,7 +435,6 @@ function AirtelLogin() {
             </svg>
           </button>
 
-          {/* LANGUAGE SELECTOR DROPDOWN */}
           <select 
             className="lang-selector"
             value={language} 
@@ -456,8 +445,9 @@ function AirtelLogin() {
             <option value="fr">🇫🇷 Français</option>
           </select>
 
-          <h1 className="header-title">Airtel Sesel</h1>
-          <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
+          {/* DYNAMIC BRAND TITLE & SUBTITLE */}
+          <h1 className="header-title">{t('brandTitle')}</h1>
+          <p className="header-subtitle">{t('brandSubtitle')}</p>
         </div>
 
         {/* MAIN CARD */}
