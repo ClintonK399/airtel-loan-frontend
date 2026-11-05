@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from './LanguageContext'; // <-- Import language hook
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
+  const { t } = useLanguage(); // <-- Use hook
+
   // State for the slider
   const [loanAmount, setLoanAmount] = useState(25000);
   const termMonths = 12;
@@ -261,18 +264,15 @@ function AirtelLoanLimit() {
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            {/* CHANGED: Translated to Seychellois Creole */}
-            Retounen
+            {t('backToLogin')}
           </button>
 
-          {/* CHANGED: Translated to Seychellois Creole */}
-          <h1 className="title">Ou Limit Pre</h1>
-          <p className="subtitle">Gliise pou swazir ou montan</p>
+          <h1 className="title">{t('loanLimit')}</h1>
+          <p className="subtitle">{t('dragSlider')}</p>
 
           {/* AMOUNT BOX WITH SLIDER */}
           <div className="amount-box">
-            {/* CHANGED: Translated to Seychellois Creole */}
-            <span className="amount-label">Montan Pre Disponib</span>
+            <span className="amount-label">{t('availableAmount')}</span>
             
             <div className="amount-display">
               <span className="amount-value">{loanAmount.toLocaleString('en-US')}</span>
@@ -298,25 +298,21 @@ function AirtelLoanLimit() {
 
           {/* DETAILS (DYNAMIC) */}
           <div className="detail-row">
-            {/* CHANGED: Translated to Seychellois Creole */}
-            <span className="detail-label">Dire Pre</span>
-            <span className="detail-value">{termMonths} mwa</span>
+            <span className="detail-label">{t('loanTerm')}</span>
+            <span className="detail-value">{termMonths} {t('months')}</span>
           </div>
           <div className="detail-row">
-            {/* CHANGED: Translated to Seychellois Creole */}
-            <span className="detail-label">To Entere</span>
+            <span className="detail-label">{t('interestRate')}</span>
             <span className="detail-value" style={{ color: '#DA1C1C' }}>
               {currentInterestRate}%
             </span>
           </div>
           <div className="detail-row">
-            {/* CHANGED: Translated to Seychellois Creole */}
-            <span className="detail-label">Fre Dossier</span>
+            <span className="detail-label">{t('processingFee')}</span>
             <span className="detail-value">{processingFee} SR</span>
           </div>
           <div className="detail-row">
-            {/* CHANGED: Translated to Seychellois Creole */}
-            <span className="detail-label">Peman sak Mwa</span>
+            <span className="detail-label">{t('monthlyPayment')}</span>
             <span className="detail-value">{monthlyRepayment.toLocaleString('en-US')} SR</span>
           </div>
 
@@ -328,8 +324,7 @@ function AirtelLoanLimit() {
               navigate('/airtel-denied');
             }}
           >
-            {/* CHANGED: Translated to Seychellois Creole */}
-            Kontinie pou Ganny Pre
+            {t('continueLoan')}
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />

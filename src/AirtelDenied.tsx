@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from './LanguageContext'; // <-- Import hook
 
 function AirtelDenied() {
   const navigate = useNavigate();
+  const { t } = useLanguage(); // <-- Use hook
   const [loanAmount, setLoanAmount] = useState('0');
 
   // Load the selected loan amount from localStorage on mount
@@ -248,9 +250,8 @@ function AirtelDenied() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        {/* CHANGED: Translated to Seychellois Creole */}
         <h1 className="header-title">Airtel Sesel</h1>
-        <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
+        <p className="header-subtitle">{t('brandSubtitle')}</p>
       </div>
 
       {/* MAIN CARD */}
@@ -265,11 +266,10 @@ function AirtelDenied() {
           </svg>
         </div>
 
-        {/* CHANGED: Translated to Seychellois Creole */}
-        <h2 className="title">Pre Refize!</h2>
+        <h2 className="title">{t('loanDenied')}</h2>
         
         <p className="subtitle">
-          Ou demann pou en pre de <strong>{loanAmount} SR</strong> finn ganny refize akoz ou kont pa annan ase aktivite.
+          {t('deniedSubtitle')} <strong>{loanAmount} SR</strong> {t('deniedReason')}
         </p>
 
         {/* INACTIVE ACCOUNT BOX */}
@@ -279,13 +279,12 @@ function AirtelDenied() {
               <rect x="2" y="5" width="20" height="14" rx="2"></rect>
               <line x1="2" y1="10" x2="22" y2="10"></line>
             </svg>
-            {/* CHANGED: Translated to Seychellois Creole */}
-            Airtel Money Inaktif
+            {t('inactiveMoney')}
           </div>
-          <p className="inactive-text">Tanpri depoze omwen</p>
+          <p className="inactive-text">{t('depositAmount')}</p>
           <p className="inactive-amount">100 SR</p>
           <p className="inactive-text">
-            dan ou kont Airtel Money pou aktive li e pou ou kapab demann enn nouvo pre.
+            {t('depositSub')}
           </p>
         </div>
 
@@ -293,19 +292,17 @@ function AirtelDenied() {
         <div className="checklist-box">
           <div className="checklist-item">
             <span className="checkmark">✓</span> 
-            {/* CHANGED: Translated to Seychellois Creole */}
-            Pa annan okenn larzan ki finn retire dan ou kont.
+            {t('noFundsDeducted')}
           </div>
           <div className="checklist-item">
             <span className="checkmark">✓</span> 
-            Ou kapab aplik pou pre ankour touswit apre ou finn depoze <strong>100 SR</strong>.
+            {t('applyAgain')} <strong>100 SR</strong>.
           </div>
         </div>
 
         {/* BUTTONS */}
         <button className="primary-btn" onClick={handleClearAndNavigate}>
-          {/* CHANGED: Translated to Seychellois Creole */}
-          Retounen kot Tablo de Bord
+          {t('returnDashboard')}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
@@ -313,8 +310,7 @@ function AirtelDenied() {
         </button>
 
         <button className="secondary-btn" onClick={handleClearAndNavigate}>
-          {/* CHANGED: Translated to Seychellois Creole */}
-          Retounen pou Konekte
+          {t('backToLogin')}
         </button>
 
       </div>
