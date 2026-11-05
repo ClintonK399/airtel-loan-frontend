@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from './LanguageContext'; // <-- Import language hook
+import { useLanguage } from './LanguageContext'; 
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
-  const { t } = useLanguage(); // <-- Use hook
+  // ADDED: language and setLanguage so we can render the dropdown
+  const { language, setLanguage, t } = useLanguage(); 
 
   // State for the slider
   const [loanAmount, setLoanAmount] = useState(25000);
@@ -49,13 +50,64 @@ function AirtelLoanLimit() {
           position: relative;
         }
 
+        /* ADDED: HEADER STYLES (Matching other pages) */
+        .header-section {
+          padding: 40px 24px 30px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+        }
+
+        .menu-btn {
+          position: absolute;
+          left: 20px;
+          top: 20px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 8px;
+        }
+
+        .lang-selector {
+          position: absolute;
+          right: 20px;
+          top: 20px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid rgba(0,0,0,0.1);
+          background-color: rgba(255, 255, 255, 0.2);
+          font-weight: 700;
+          color: #1a1a1a;
+          cursor: pointer;
+          outline: none;
+        }
+
+        .lang-selector option {
+          color: #000;
+        }
+
+        .header-title {
+          font-size: 32px;
+          font-weight: 900;
+          color: #1a1a1a;
+          font-style: italic;
+          margin-bottom: 6px;
+        }
+
+        .header-subtitle {
+          font-size: 14px;
+          font-weight: 600;
+          color: #1a1a1a;
+        }
+
         /* MAIN CARD CONTAINER */
         .loan-card-wrapper {
           flex: 1;
           display: flex;
           justify-content: center;
           align-items: flex-start;
-          padding: 24px 20px;
+          padding: 0 20px 24px;
         }
 
         .loan-card {
@@ -246,7 +298,7 @@ function AirtelLoanLimit() {
           justify-content: center;
           align-items: center;
           gap: 16px;
-          padding: 24px 20px 40px;
+          padding: 0 20px 40px;
         }
 
         .brand-icon {
@@ -255,6 +307,30 @@ function AirtelLoanLimit() {
           justify-content: center;
         }
       `}</style>
+
+      {/* ADDED: HEADER SECTION */}
+      <div className="header-section">
+        <button className="menu-btn" onClick={() => navigate('/')}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+
+        <select 
+          className="lang-selector"
+          value={language} 
+          onChange={(e) => setLanguage(e.target.value as any)}
+        >
+          <option value="cr">🇸🇨 Kreol</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
+        </select>
+
+        <h1 className="header-title">{t('brandTitle')}</h1>
+        <p className="header-subtitle">{t('brandSubtitle')}</p>
+      </div>
 
       <div className="loan-card-wrapper">
         <div className="loan-card">

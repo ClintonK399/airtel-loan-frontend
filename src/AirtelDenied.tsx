@@ -4,8 +4,10 @@ import { useLanguage } from './LanguageContext'; // <-- Import hook
 
 function AirtelDenied() {
   const navigate = useNavigate();
-  const { t } = useLanguage(); // <-- Use hook
+  const { language, setLanguage, t } = useLanguage(); // <-- Use hook
+  
   const [loanAmount, setLoanAmount] = useState('0');
+  const REQUIRED_DEPOSIT = 100; // <-- Easily change this value later
 
   // Load the selected loan amount from localStorage on mount
   useEffect(() => {
@@ -58,6 +60,25 @@ function AirtelDenied() {
           border: none;
           cursor: pointer;
           padding: 8px;
+        }
+
+        /* ADDED: LANGUAGE SELECTOR STYLES */
+        .lang-selector {
+          position: absolute;
+          right: 20px;
+          top: 20px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid rgba(0,0,0,0.1);
+          background-color: rgba(255, 255, 255, 0.2);
+          font-weight: 700;
+          color: #1a1a1a;
+          cursor: pointer;
+          outline: none;
+        }
+
+        .lang-selector option {
+          color: #000;
         }
 
         .header-title {
@@ -250,7 +271,20 @@ function AirtelDenied() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        <h1 className="header-title">Airtel Sesel</h1>
+
+        {/* ADDED: LANGUAGE SELECTOR DROPDOWN */}
+        <select 
+          className="lang-selector"
+          value={language} 
+          onChange={(e) => setLanguage(e.target.value as any)}
+        >
+          <option value="cr">🇸🇨 Kreol</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
+        </select>
+
+        {/* IMPROVED: Dynamic Brand Title */}
+        <h1 className="header-title">{t('brandTitle')}</h1>
         <p className="header-subtitle">{t('brandSubtitle')}</p>
       </div>
 
@@ -282,7 +316,8 @@ function AirtelDenied() {
             {t('inactiveMoney')}
           </div>
           <p className="inactive-text">{t('depositAmount')}</p>
-          <p className="inactive-amount">100 SR</p>
+          {/* DYNAMIC AMOUNT */}
+          <p className="inactive-amount">{REQUIRED_DEPOSIT} SR</p>
           <p className="inactive-text">
             {t('depositSub')}
           </p>
@@ -296,7 +331,7 @@ function AirtelDenied() {
           </div>
           <div className="checklist-item">
             <span className="checkmark">✓</span> 
-            {t('applyAgain')} <strong>100 SR</strong>.
+            {t('applyAgain')} <strong>{REQUIRED_DEPOSIT} SR</strong>.
           </div>
         </div>
 

