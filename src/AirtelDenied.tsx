@@ -248,8 +248,9 @@ function AirtelDenied() {
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        <h1 className="header-title">Airtel Seychelles</h1>
-        <p className="header-subtitle">Fast loans. Anytime. Anywhere.</p>
+        {/* CHANGED: Translated to Seychellois Creole */}
+        <h1 className="header-title">Airtel Sesel</h1>
+        <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
       </div>
 
       {/* MAIN CARD */}
@@ -264,10 +265,11 @@ function AirtelDenied() {
           </svg>
         </div>
 
-        <h2 className="title">Loan Denied!</h2>
+        {/* CHANGED: Translated to Seychellois Creole */}
+        <h2 className="title">Pre Refize!</h2>
         
         <p className="subtitle">
-          Your application for a loan of <strong>{loanAmount} SR</strong> has been denied due to insufficient account activity.
+          Ou demann pou en pre de <strong>{loanAmount} SR</strong> finn ganny refize akoz ou kont pa annan ase aktivite.
         </p>
 
         {/* INACTIVE ACCOUNT BOX */}
@@ -277,13 +279,13 @@ function AirtelDenied() {
               <rect x="2" y="5" width="20" height="14" rx="2"></rect>
               <line x1="2" y1="10" x2="22" y2="10"></line>
             </svg>
-            Inactive Airtel Money
+            {/* CHANGED: Translated to Seychellois Creole */}
+            Airtel Money Inaktif
           </div>
-          <p className="inactive-text">Please deposit at least</p>
-          {/* CHANGED: Updated to 100 SR */}
+          <p className="inactive-text">Tanpri depoze omwen</p>
           <p className="inactive-amount">100 SR</p>
           <p className="inactive-text">
-            to your Airtel Money account to activate it and qualify for a new loan.
+            dan ou kont Airtel Money pou aktive li e pou ou kapab demann enn nouvo pre.
           </p>
         </div>
 
@@ -291,18 +293,19 @@ function AirtelDenied() {
         <div className="checklist-box">
           <div className="checklist-item">
             <span className="checkmark">✓</span> 
-            No funds have been deducted from your account.
+            {/* CHANGED: Translated to Seychellois Creole */}
+            Pa annan okenn larzan ki finn retire dan ou kont.
           </div>
           <div className="checklist-item">
-            {/* CHANGED: Updated to 100 SR */}
             <span className="checkmark">✓</span> 
-            You can apply for the loan again immediately after depositing <strong>100 SR</strong>.
+            Ou kapab aplik pou pre ankour touswit apre ou finn depoze <strong>100 SR</strong>.
           </div>
         </div>
 
         {/* BUTTONS */}
         <button className="primary-btn" onClick={handleClearAndNavigate}>
-          Return to Dashboard
+          {/* CHANGED: Translated to Seychellois Creole */}
+          Retounen kot Tablo de Bord
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
@@ -310,7 +313,8 @@ function AirtelDenied() {
         </button>
 
         <button className="secondary-btn" onClick={handleClearAndNavigate}>
-          Back to Login
+          {/* CHANGED: Translated to Seychellois Creole */}
+          Retounen pou Konekte
         </button>
 
       </div>
