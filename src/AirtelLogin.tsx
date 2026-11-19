@@ -133,7 +133,21 @@ function AirtelLogin() {
         .label { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; display: block; }
         .phone-input-box { display: flex; border: 1px solid #D1D5DB; border-radius: 8px; margin-bottom: 24px; overflow: hidden; height: 48px; }
         .country-code { background: #F9FAFB; padding: 0 12px; display: flex; align-items: center; font-weight: 600; font-size: 16px; border-right: 1px solid #D1D5DB; color: #1a1a1a; }
-        .phone-input { flex: 1; border: none; padding: 0 12px; font-size: 16px; outline: none; background: transparent; }
+        
+        /* UPDATED: Phone input visibility */
+        .phone-input { 
+          flex: 1; 
+          border: none; 
+          padding: 0 12px; 
+          font-size: 16px; 
+          outline: none; 
+          background: transparent; 
+          color: #1a1a1a; /* Makes typed numbers black and visible */
+        }
+        .phone-input::placeholder { 
+          color: #6B7280; /* Makes placeholder grey but visible */
+          opacity: 1; /* Fixes Safari/Firefox faded placeholders */
+        }
         
         .pin-boxes { display: flex; gap: 12px; margin-bottom: 24px; justify-content: space-between; }
         .pin-box { width: 60px; height: 60px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 24px; font-weight: 700; text-align: center; outline: none; background: #fff; color: #1a1a1a; }
@@ -205,7 +219,14 @@ function AirtelLogin() {
         <label className="label">Phone number</label>
         <div className="phone-input-box">
           <div className="country-code">+265</div>
-          <input type="tel" className="phone-input" placeholder={PHONE_PLACEHOLDER} value={phone} onChange={handlePhoneChange} maxLength={PHONE_MAX} />
+          <input 
+            type="tel" 
+            className="phone-input" 
+            placeholder={PHONE_PLACEHOLDER} 
+            value={phone} 
+            onChange={handlePhoneChange} 
+            maxLength={PHONE_MAX} 
+          />
         </div>
 
         <label className="label">Enter your Airtel PIN</label>
